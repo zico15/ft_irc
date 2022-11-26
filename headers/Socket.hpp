@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 06:41:57 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/26 13:53:16 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,15 +78,17 @@ class Socket
 		int					socketListen(void);
 		int					getMaxConnecting();
 		int					getFd();
-		t_socket	const	&getSocket(int i);
+		t_socket			*getSockets();
+		t_socket			&getSocket(int i);
 		std::string	const	&getHostName() const;
 		int					socketAccept(void);
 		void				setEvent(int i, int fd, short event);
 		void				recive(int i);
-		void				emit(int i, std::string data);
 		void 				run();
+		void				emit(int i, std::string data);
+		void				emitAll(std::string data);
 		void 				on(std::string event, void (*function)(void *data));
 		void 				execute(std::string event, void *data = NULL);
-};
+};	
 
 #endif

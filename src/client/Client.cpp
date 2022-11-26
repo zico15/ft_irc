@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 07:49:08 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/26 14:13:26 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ Client::Client(std::string hostname, int port)
     _socket = new Socket(CLIENT, hostname, port, 10);
     fcntl(_socket->getFd(), F_SETFL, O_NONBLOCK);
     fcntl(1, F_SETFL, O_NONBLOCK);
-    
+    _socket->setEvent(1, 1, POLLIN);
 }
 
 Client::~Client() 
@@ -46,43 +46,39 @@ void Client::receiver()
 		buffer[length] = 0;
 		std::cout << "recv: " << buffer << "\n";
 	}
-   // std::cout << "receiver\n";
 }
 
 
 bool Client::run()
 {
-    usleep(100);
-    receiver();
-    if (_datas.size() > 0)
-    {    
-
-        if(send(_socket->getFd(), _datas[0]->data.c_str(), _datas[0]->size, 0) < 0)
-            return (false);
-        delete _datas[0];
-        _datas.erase(_datas.begin());
-        //close(_socket->getFd());
-    }
-    else
+    while (true)
     {
-        std::string 		  line;
 
-
-        char buffer[256];
-	    int length = 0;
-        
-	    if  ((length = read(1, buffer, 255)) > 0) {
-	    	buffer[length] = 0;
-            line = buffer;
-	    	std::cout << "line: " << buffer << "\n";
-            _datas = Data::write(4, "msg", line);
-	    }
-        if (line.size() > 0)
-        {   
-            
-            //std::cout << "line: " << line;
+        int s = _socket->socketListen();
+        if(s <= 0)
+            continue ;
+        usleep(1000);
+        receiver();
+        if (_datas.size() > 0)
+        { 
+            if(send(_socket->getFd(), _datas[0]->data.c_str(), _datas[0]->size, 0) < 0)
+                continue;
+            delete _datas[0];
+            _datas.erase(_datas.begin());
         }
-            
+        else
+        {
+            std::string 		  line;
+            char buffer[256];
+	        int length = 0;
+
+	        if  ((length = read(1, buffer, 255)) > 0) {
+	        	buffer[length] = 0;
+                line = buffer;
+	        	std::cout << "line: " << buffer << "\n";
+                _datas = Data::write(4, "msg", line);
+	        }    
+        }
     }
     return (true);
 }

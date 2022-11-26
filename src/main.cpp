@@ -2,6 +2,8 @@
 #include "Util.hpp"
 #include "Client.hpp"
 
+Server *s = NULL;
+
 int exit_error(std::string msg)
 {
 	std::cerr << "Error: " << msg << std::endl;
@@ -11,6 +13,8 @@ int exit_error(std::string msg)
 
 void signal_handler(int signal)
 {
+	if (s != nullptr)
+		s->getSocket()->emitAll("com^Dman^Dd\n");
   	exit(0);
 }
 
@@ -21,15 +25,13 @@ int main(int argc, char **argv)
 	if (argc == 1)
 	{
 		
-		Server s("localhost", 1234);
-		//while (true)
-			s.run();
+		s = new Server("localhost", 1234);
+		s->run();
 	}
 	else
 	{
 		Client c("localhost", 1234);
-		while (true)
-			c.run();
+		c.run();
 	}
     return  (0);
 }

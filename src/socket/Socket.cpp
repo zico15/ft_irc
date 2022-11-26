@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 07:36:34 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/26 14:03:34 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,13 @@ std::string const &Socket::getHostName() const
 	return this->_hostname;
 }
 
-t_socket	const	&Socket::getSocket(int i)
+t_socket	&Socket::getSocket(int i)
 {
 	return (_fds[i]);
+}
+
+t_socket	*Socket::getSockets(){
+	return (_fds);
 }
 
 void	Socket::recive(int i)
@@ -140,11 +144,35 @@ void	Socket::emit(int i, std::string data)
 {
 	int size;
 
-	data += "d\r\n";
+	//data += "\r\n";
 	size = send(_fds[i].fd, data.c_str(), data.length(), 0);
-	if (size == -1)
-		return;
 	_fds[i].events = POLLIN | POLLOUT;
+}
+
+void	Socket::emitAll(std::string data)
+{
+	for (size_t i = 1; i < getMaxConnecting(); i++)
+	{
+		if (_fds[i].fd > 0)
+		{	
+			emit(i, data);
+			_fds[i].events = POLLHUP;
+			//close(_fds[i].fd);
+		}
+	}
+}
+
+
+void Socket::on(std::string event, function fun)
+{
+	_events.insert(std::pair<std::string, function>(event,fun));
+}
+
+void Socket::execute(std::string event, void *data)
+{
+	function fun = _events[event];
+	if (fun)
+		fun(data);
 }
 
 void Socket::run()
@@ -165,7 +193,7 @@ void Socket::run()
                 else if (_fds[i].revents & POLLIN)
                 {
 					recive(i);
-					//emit(i, "hello word!");
+					emit(i, "hello word!");
 				}             
 	    	}
         }
@@ -174,16 +202,4 @@ void Socket::run()
             std::cout << "error: " << e.what() << '\n';
         }
     }
-}
-
-void Socket::on(std::string event, function fun)
-{
-	_events.insert(std::pair<std::string, function>(event,fun));
-}
-
-void Socket::execute(std::string event, void *data)
-{
-	function fun = _events[event];
-	if (fun)
-		fun(data);
 }
