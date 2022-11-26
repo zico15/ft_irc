@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/25 12:10:17 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/26 06:57:44 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <map>
+#include <thread>
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <bits/stdc++.h>
@@ -37,12 +38,17 @@ typedef struct pollfd t_socket;
 class Client {
 
 	private:
-		Socket 		*_socket;
+		Socket 				  *_socket;
+		int					  _id;
+		std::vector<t_data *> _datas;
+
 
 	public:
 		Client();
 		Client(std::string hostname, int port);
 		~Client();
+		Socket *getSocket();
+		void receiver();
 		bool run();
 };
 #endif

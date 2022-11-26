@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/25 23:56:22 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/26 06:41:57 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,13 @@
 #include <sys/poll.h>
 #include <bits/stdc++.h>
 #include "Util.hpp"
+#include "Data.hpp"
 
-#define BUFFER_SIZE 1024
 #define TIME_OUT 3 * 60 * 1000
+#define BUFFER_SIZE 1024
 
 typedef struct pollfd t_socket;
+typedef void (*function)(void *data);
 
 typedef enum e_type
 {
@@ -43,19 +45,31 @@ typedef enum e_type
 	NONE
 } t_type;
 
+typedef enum e_events
+{
+	SEND,
+	RECV,
+	CONNECTION,
+	CLOSE
+} t_events;
+
+
+
 class Socket 
 {
 	private:
-		t_type					_type;
-		std::string				_hostname;
-		struct sockaddr_in		_addr;
-		socklen_t         		_size;
-		char					_buffer[BUFFER_SIZE];
-		int						_port;
-		int						_fd;
-		id_t					_size_clinets;
-		size_t					_maxConnecting;
-		t_socket				*_fds;
+		t_type								_type;
+		std::string							_hostname;
+		struct sockaddr_in					_addr;
+		socklen_t         					_size;
+		char								_buffer[BUFFER_SIZE];
+		int									_port;
+		int									_fd;
+		id_t								_size_clinets;
+		size_t								_maxConnecting;
+		t_socket							*_fds;
+		std::map<std::string, function>		_events;
+		std::map<int, t_data *>				_datas;
 
 	public:
 		Socket();
@@ -64,14 +78,15 @@ class Socket
 		int					socketListen(void);
 		int					getMaxConnecting();
 		int					getFd();
-		t_socket			*getEvent(int i);
+		t_socket	const	&getSocket(int i);
 		std::string	const	&getHostName() const;
 		int					socketAccept(void);
 		void				setEvent(int i, int fd, short event);
-		bool				createClient(void);
 		void				recive(int i);
-		void				send(int i);
+		void				emit(int i, std::string data);
 		void 				run();
+		void 				on(std::string event, void (*function)(void *data));
+		void 				execute(std::string event, void *data = NULL);
 };
 
 #endif

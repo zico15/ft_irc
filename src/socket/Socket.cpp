@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/25 23:56:55 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/26 07:36:34 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,10 @@ Socket::Socket(){}
 Socket::Socket(t_type type, std::string hostname, int port, size_t maxConnecting):
 _type(type), _hostname(hostname), _port(port), _maxConnecting(maxConnecting)
 {
-
 	bzero((char *) &_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_port = htons(port);
 	_addr.sin_addr.s_addr = INADDR_ANY;	
-	//memset(&(_addr.sin_zero), '\0', 8);
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	_fds = new t_socket[_maxConnecting];
 	//====================================
@@ -46,11 +44,9 @@ _type(type), _hostname(hostname), _port(port), _maxConnecting(maxConnecting)
 		struct hostent *sname = gethostbyname(hostname.c_str());
 		if (!sname)
 			exit_error("hostent");
-		_addr.sin_family = AF_INET;
 		bcopy((char *) sname->h_addr, (char *) &_addr.sin_addr.s_addr, sname->h_length);
-		if (connect(_fd, (struct sockaddr*) &_addr, sizeof(_addr)) < 0)
-			exit_error(strerror(errno));
-		//setEvent(1, , POLLIN | POLL_OUT);
+		if (connect(_fd, (struct sockaddr*) &_addr, sizeof(_addr)))
+			exit_error(strerror(errno));	
 		std::cout << "Client has been created: " << port << "\n";
 	}
 	_size_clinets = 1;
@@ -67,7 +63,6 @@ Socket::~Socket()
 
 int Socket::socketListen(void)
 {
-
 	return (poll(_fds, getMaxConnecting(), 2));
 }
 
@@ -86,10 +81,6 @@ int	Socket::socketAccept(void)
 	return (accept(_fd, NULL, NULL));
 }
 
-t_socket	*Socket::getEvent(int i)
-{
-	return (&_fds[i]);
-}
 
 void	Socket::setEvent(int i, int fd, short event)
 {
@@ -103,55 +94,57 @@ std::string const &Socket::getHostName() const
 	return this->_hostname;
 }
 
-bool Socket::createClient()
+t_socket	const	&Socket::getSocket(int i)
 {
-	int fd_client = socketAccept();
-	if (fd_client < 0)
-		return (false);
-	for (size_t i = 1; i < _maxConnecting; i++)
-    {
-        if (_fds[i].fd == 0)
-		{
-		
-			setEvent(i, fd_client, POLLIN | POLLOUT);
-			_size_clinets++;
-			std::cout << "new client: " << _fds[i].fd << "\n";
-			return (true);
-		}
-    }
-	return (false);
+	return (_fds[i]);
 }
 
 void	Socket::recive(int i)
 {
-	char buffer[BUFFER_SIZE + 1];
-	int size;
-	bool pin = _fds[i].revents & POLLIN;
-	bool pou = _fds[i].revents & POLLOUT;
+	t_data		*data;	
+	char		buffer[BUFFER_SIZE + 1];
+	int 		size;
 
 	size = recv(_fds[i].fd, buffer, BUFFER_SIZE, 0);
 	if (size == -1)
 		return;
 	buffer[size] = 0;
-	std::cout << "FD: " << _fds[i].fd << " POLLIN: " << pin;
-	std::cout << " POLLOUT: " << pou << " BUFFER: " << buffer << "\n";
-	_fds[i].events = POLL_IN;
+	std::cout << "Buffer: " << buffer << "\n";
+	data = Data::read(std::string(buffer));
+	if (data->sends == 1)
+	{	
+		execute(data->event, (void *) data->data.c_str());
+		delete data;
+	}
+	else
+	{
+		t_data *tmp = _datas[data->id];
+		if (tmp == NULL)
+			_datas[data->id] = data;
+		else
+		{
+			tmp->data += data->data;
+			if (data->send == data->sends)
+			{
+				execute(tmp->event, (void *) tmp->data.c_str());
+  				_datas.erase (_datas.find(data->id));
+				delete tmp;
+			}
+			delete data;
+		}	
+	}
+	_fds[i].events = POLLIN | POLLOUT;
 }
 
-void	Socket::send(int i)
+void	Socket::emit(int i, std::string data)
 {
-	char buffer[BUFFER_SIZE + 1];
 	int size;
-	bool pin = _fds[i].revents & POLLIN;
-	bool pou = _fds[i].revents & POLLOUT;
 
-	size = recv(_fds[i].fd, buffer, BUFFER_SIZE, 0);
+	data += "d\r\n";
+	size = send(_fds[i].fd, data.c_str(), data.length(), 0);
 	if (size == -1)
 		return;
-	buffer[size] = 0;
-	std::cout << "FD: " << _fds[i].fd << " POLLIN: " << pin;
-	std::cout << " POLLOUT: " << pou << " BUFFER: " << buffer << "\n";
-	_fds[i].events = POLL_IN;
+	_fds[i].events = POLLIN | POLLOUT;
 }
 
 void Socket::run()
@@ -165,18 +158,15 @@ void Socket::run()
                 continue ;
             for (int i = 0; i < getMaxConnecting(); i++)
         	{
-        		if(getEvent(i)->revents == 0)
+        		if(_fds[i].revents == 0)
         			continue;
-                else 
+                if (_fds[i].fd == getFd())
+	    		    execute("connect", this);
+                else if (_fds[i].revents & POLLIN)
                 {
-                    if (getEvent(i)->fd == getFd())
-	    			    createClient();
-                    else if (getEvent(i)->revents & POLLIN)
-                    {    
-						recive(i);
-						send(i);
-					}
-                }
+					recive(i);
+					//emit(i, "hello word!");
+				}             
 	    	}
         }
         catch(const std::exception& e)
@@ -184,4 +174,16 @@ void Socket::run()
             std::cout << "error: " << e.what() << '\n';
         }
     }
+}
+
+void Socket::on(std::string event, function fun)
+{
+	_events.insert(std::pair<std::string, function>(event,fun));
+}
+
+void Socket::execute(std::string event, void *data)
+{
+	function fun = _events[event];
+	if (fun)
+		fun(data);
 }

@@ -1,6 +1,7 @@
 NAME = ircserv
 
-CC = c++ -std=c++98 -pedantic -fsanitize=address -g
+CC = c++  -pedantic 
+#-fsanitize=address -g
 
 SRCS =	$(shell find . -name '*.cpp')
 OBJS = $(addsuffix .o, $(basename $(SRCS)))
