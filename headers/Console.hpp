@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   Console.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/28 00:06:12 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/28 00:01:59 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_HPP
-# define CLIENT_HPP
+#ifndef CONSOLE_HPP
+# define CONSOLE_HPP
 
 #include <iostream>
 #include <string.h>
@@ -24,31 +24,40 @@
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 #include <fcntl.h>
-#include <map>
+#include <vector>
 #include <thread>
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <bits/stdc++.h>
+#include "Util.hpp"
 
-# include "File.hpp"
-# include "Socket.hpp"
+#define COLOUR_RED "\033[31m"
+#define COLOUR_YELLO "\033[33m"
 
-typedef struct pollfd t_socket;
+#define COLOUR_GREEN "\033[7;1;32m"
+#define COLOUR_END "\033[0m"
+#define  COLOUR_YELLOW "\033[7;1;33m"
 
-class Client {
+
+class Console {
 
 	private:
-		Socket 				  *_socket;
-		int					  _id;
-		std::vector<t_data *> _datas;
-
-
+		int						 w;
+		int						 h;
+		int     				 index_h;
+		int						 index_line;
+		int						 font;
+		int						 marge;
+		std::vector<std::string> data;
+		std::stringstream		 out;
+		
 	public:
-		Client();
-		Client(std::string hostname, int port);
-		~Client();
-		Socket *getSocket();
-		void receiver();
-		bool run();
+		Console();
+		~Console();
+		void render();
+		void cread_line(std::string text);
+		void render_line(std::string left, std::string center, std::string right);
+		void add_data(std::string txt);
+		std::string getOut();
 };
 #endif

@@ -6,18 +6,24 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2022/11/26 13:56:51 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/27 23:59:40 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <string>
-#include <iostream>
 #include <vector>
+#include <iostream>
+#include <string>
+#include <time.h>
+#include <cstdlib>
+#include "Console.hpp"
+
 
 #include "Socket.hpp"
+
+#define RPL_JOIN(source, channel)					":" + source + " JOIN :" + channel
 
 class Server {
 

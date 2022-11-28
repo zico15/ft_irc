@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 14:03:34 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/28 00:13:40 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ _type(type), _hostname(hostname), _port(port), _maxConnecting(maxConnecting)
 		_size = sizeof(_addr);
 		std::cout << "\t\t...Waiting for connections... \n\n";
 		for (size_t i = 1; i < _maxConnecting; i++)
-			setEvent(i, 0, 0);
+			setEvent(i, -1, 0);
 	}
 	else if (type == CLIENT)
 	{
@@ -63,7 +63,7 @@ Socket::~Socket()
 
 int Socket::socketListen(void)
 {
-	return (poll(_fds, getMaxConnecting(), 2));
+	return (poll(_fds, getMaxConnecting(), __INT_MAX__));
 }
 
 int		Socket::getMaxConnecting()
@@ -82,11 +82,11 @@ int	Socket::socketAccept(void)
 }
 
 
-void	Socket::setEvent(int i, int fd, short event)
+void	Socket::setEvent(int i, int fd, short event, int revents)
 {
 	_fds[i].fd = fd;
   	_fds[i].events = event;
-	_fds[i].revents = 0;
+	_fds[i].revents = revents;
 }
 
 std::string const &Socket::getHostName() const
@@ -137,19 +137,23 @@ void	Socket::recive(int i)
 			delete data;
 		}	
 	}
-	_fds[i].events = POLLIN | POLLOUT;
+	_fds[i].events = POLLOUT;
+	_fds[i].revents = 0;
 }
 
-void	Socket::emit(int i, std::string data)
+void	Socket::emit(int i, const std::string &data)
 {
 	int size;
 
-	//data += "\r\n";
-	size = send(_fds[i].fd, data.c_str(), data.length(), 0);
-	_fds[i].events = POLLIN | POLLOUT;
+	console.add_data(data);
+	std::string a = console.getOut() + "\n";
+	std::cout << a;
+	size = send(_fds[i].fd, a.c_str(), a.length(), 0);
+	_fds[i].revents = 0;
+	_fds[i].events = POLLIN;
 }
 
-void	Socket::emitAll(std::string data)
+void	Socket::emitAll(const std::string &data)
 {
 	for (size_t i = 1; i < getMaxConnecting(); i++)
 	{
@@ -157,7 +161,6 @@ void	Socket::emitAll(std::string data)
 		{	
 			emit(i, data);
 			_fds[i].events = POLLHUP;
-			//close(_fds[i].fd);
 		}
 	}
 }
@@ -177,6 +180,7 @@ void Socket::execute(std::string event, void *data)
 
 void Socket::run()
 {
+	size_t i = 0;
     while (true)
     {
         try
@@ -188,6 +192,7 @@ void Socket::run()
         	{
         		if(_fds[i].revents == 0)
         			continue;
+				std::cout << "fd: " << _fds[i].fd << " POLLIN: " << (_fds[i].revents & POLLIN) << " POLLOUT: " << (_fds[i].revents & POLLOUT) << "\n";
                 if (_fds[i].fd == getFd())
 	    		    execute("connect", this);
                 else if (_fds[i].revents & POLLIN)

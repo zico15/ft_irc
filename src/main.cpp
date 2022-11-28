@@ -15,7 +15,7 @@ void signal_handler(int signal)
 {
 	if (s != nullptr)
 		s->getSocket()->emitAll("com^Dman^Dd\n");
-  	exit(0);
+  	exit(1);
 }
 
 int main(int argc, char **argv)
@@ -33,5 +33,5 @@ int main(int argc, char **argv)
 		Client c("localhost", 1234);
 		c.run();
 	}
-    return  (0);
+    return  (1);
 }

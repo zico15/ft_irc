@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 13:57:36 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/28 00:08:54 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,16 @@ static void connect(void *data)
 		return ;
 	for (size_t i = 1; i < socket->getMaxConnecting(); i++)
     {
-        if (socket->getSocket(i).fd == 0)
+        if (socket->getSocket(i).fd == -1)
 		{
-			socket->setEvent(i, fd_client, POLLIN | POLLOUT);
-            socket->emit(i, "conect: ok");            
+            const std::string a = "as";
+			socket->setEvent(i, fd_client, POLLIN);
+            socket->emit(i, socket->console.getOut());            
 			std::cout << "new client: " << socket->getSocket(i).fd << "\n"; 
 			break;
 		}
     }
+    socket->setEvent(0, socket->getFd(), POLLIN | POLLOUT);
 }
 
 static void msg(void *data)
@@ -57,32 +59,6 @@ Socket	*Server::getSocket(){
 void Server::run()
 {
     _socket->run();
-   /*while (true)
-    {
-        try
-        {
-            int s = _socket->socketListen();
-            if(s <= 0)
-                continue ;
-            for (int i = 0; i < _socket->getMaxConnecting(); i++)
-        	{
-               // t_socket client = _socket->getSockets()[i];
-        		if(_socket->getSockets()[i].revents == 0)
-        			continue;
-                if (_socket->getSockets()[i].fd == _socket->getFd())
-	    		    _socket->execute("connect", this);
-                else if (_socket->getSockets()[i].revents & POLLIN)
-                {
-					_socket->recive(i);
-					_socket->emit(i, "hello word!");
-				}             
-	    	}
-        }
-        catch(const std::exception& e)
-        {
-            std::cout << "error: " << e.what() << '\n';
-        }
-    }*/
 }
 
 Server::~Server()

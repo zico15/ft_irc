@@ -15,6 +15,7 @@
 
 #define SPACES "\n\r\t\v\f "
 
-int exit_error(std::string msg);
+int                         exit_error(std::string msg);
+std::vector<std::string>	split(std::string str, std::string set);
 
 #endif

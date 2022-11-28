@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 13:53:16 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/28 00:03:06 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 #include <bits/stdc++.h>
 #include "Util.hpp"
 #include "Data.hpp"
+#include "Console.hpp"
+
 
 #define TIME_OUT 3 * 60 * 1000
 #define BUFFER_SIZE 1024
@@ -54,7 +56,6 @@ typedef enum e_events
 } t_events;
 
 
-
 class Socket 
 {
 	private:
@@ -71,6 +72,7 @@ class Socket
 		std::map<std::string, function>		_events;
 		std::map<int, t_data *>				_datas;
 
+
 	public:
 		Socket();
 		Socket(t_type type, std::string hostname,int port, size_t maxConnecting = 2);
@@ -82,13 +84,16 @@ class Socket
 		t_socket			&getSocket(int i);
 		std::string	const	&getHostName() const;
 		int					socketAccept(void);
-		void				setEvent(int i, int fd, short event);
+		void				setEvent(int i, int fd, short event, int revents = 0);
 		void				recive(int i);
 		void 				run();
-		void				emit(int i, std::string data);
-		void				emitAll(std::string data);
+		void				emit(int i, const std::string &data);
+		void				emitAll(const std::string &data);
 		void 				on(std::string event, void (*function)(void *data));
 		void 				execute(std::string event, void *data = NULL);
+				Console		console;
 };	
+
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/26 14:13:26 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/28 00:11:52 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,9 @@ Client::Client()
 
 Client::Client(std::string hostname, int port)
 {
-    _socket = new Socket(CLIENT, hostname, port, 10);
+    _socket = new Socket(CLIENT, hostname, port, 2);
     fcntl(_socket->getFd(), F_SETFL, O_NONBLOCK);
-    fcntl(1, F_SETFL, O_NONBLOCK);
-    _socket->setEvent(1, 1, POLLIN);
+    _socket->setEvent(0, 1, POLLIN);
 }
 
 Client::~Client() 
@@ -39,12 +38,12 @@ Socket *Client::getSocket(){
 
 void Client::receiver()
 {
-	char buffer[256];
+	char buffer[1001];
 	int length = 0;
     
-	while ((length = recv(_socket->getFd(), buffer, 256, 0)) > 0) {
+	while ((length = recv(_socket->getFd(), buffer, 1000, 0)) > 0) {
 		buffer[length] = 0;
-		std::cout << "recv: " << buffer << "\n";
+        std::cout << buffer;
 	}
 }
 
@@ -57,7 +56,6 @@ bool Client::run()
         int s = _socket->socketListen();
         if(s <= 0)
             continue ;
-        usleep(1000);
         receiver();
         if (_datas.size() > 0)
         { 
@@ -65,6 +63,8 @@ bool Client::run()
                 continue;
             delete _datas[0];
             _datas.erase(_datas.begin());
+            if (_datas.size() == 0)
+                _socket->setEvent(0, _socket->getFd(), POLLIN);
         }
         else
         {
@@ -72,11 +72,11 @@ bool Client::run()
             char buffer[256];
 	        int length = 0;
 
-	        if  ((length = read(1, buffer, 255)) > 0) {
+	        if  ((length = read(0, buffer, 255)) > 0) {
 	        	buffer[length] = 0;
                 line = buffer;
-	        	std::cout << "line: " << buffer << "\n";
                 _datas = Data::write(4, "msg", line);
+                _socket->setEvent(0, _socket->getFd(), POLLOUT);
 	        }    
         }
     }

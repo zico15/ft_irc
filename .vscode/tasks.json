@@ -8,7 +8,7 @@
                 "-fcolor-diagnostics",
                 "-fansi-escape-codes",
                 "-g",
-                "${file}",
+                "./src/main.cpp ./src/util/String.cpp ./src/util/File/File.cpp ./src/server/Server.cpp ./src/socket/Socket.cpp ./src/client/Client.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
