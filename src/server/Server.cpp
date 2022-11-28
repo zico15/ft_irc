@@ -19,6 +19,7 @@ Server::Server(){}
 
 Server::Server(std::string hostname, int port)
 {
+    
     std::cout << "Server has been created: " << port << "\n";
     _socket = new Socket(SERVER, hostname, port, 200);
     _socket->on("connect",  connect);
