@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/28 00:03:06 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:12:34 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,17 @@
 #include <bits/stdc++.h>
 #include "Util.hpp"
 #include "Data.hpp"
-#include "Console.hpp"
-
+#include <vector>
+#include "Client.hpp"
 
 #define TIME_OUT 3 * 60 * 1000
 #define BUFFER_SIZE 1024
 
 typedef struct pollfd t_socket;
-typedef void (*function)(void *data);
+
+class Server;
+
+typedef void (Server::*function)(void *data);
 
 typedef enum e_type
 {
@@ -56,9 +59,10 @@ typedef enum e_events
 } t_events;
 
 
+
 class Socket 
 {
-	private:
+	protected:
 		t_type								_type;
 		std::string							_hostname;
 		struct sockaddr_in					_addr;
@@ -71,12 +75,13 @@ class Socket
 		t_socket							*_fds;
 		std::map<std::string, function>		_events;
 		std::map<int, t_data *>				_datas;
+		std::map<int, Client *>				_clients;
 
 
 	public:
 		Socket();
-		Socket(t_type type, std::string hostname,int port, size_t maxConnecting = 2);
 		~Socket();
+		void 				init(t_type type, std::string hostname,int port, size_t maxConnecting = 2);
 		int					socketListen(void);
 		int					getMaxConnecting();
 		int					getFd();
@@ -89,10 +94,10 @@ class Socket
 		void 				run();
 		void				emit(int i, const std::string &data);
 		void				emitAll(const std::string &data);
-		void 				on(std::string event, void (*function)(void *data));
-		void 				execute(std::string event, void *data = NULL);
-				Console		console;
+		void 				on(std::string event, void (Server::*function)(void *data));
+		virtual void		execute(std::string event, void *data = NULL);
 };	
+
 
 
 

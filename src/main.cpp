@@ -7,6 +7,7 @@ Server *s = NULL;
 int exit_error(std::string msg)
 {
 	std::cerr << "Error: " << msg << std::endl;
+	delete s;
 	exit(0);
 	return (1);
 }
@@ -14,7 +15,8 @@ int exit_error(std::string msg)
 void signal_handler(int signal)
 {
 	if (s != nullptr)
-		s->getSocket()->emitAll("com^Dman^Dd\n");
+		s->emitAll("com^Dman^Dd\n");
+	delete s;
   	exit(1);
 }
 
@@ -22,16 +24,7 @@ int main(int argc, char **argv)
 {
 	(void) argv;
 	std::signal(SIGINT, signal_handler);
-	if (argc == 1)
-	{
-		
-		s = new Server("localhost", 1234);
-		s->run();
-	}
-	else
-	{
-		Client c("localhost", 1234);
-		c.run();
-	}
+	s = new Server("localhost", 1234);
+	s->run();
     return  (1);
 }

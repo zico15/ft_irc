@@ -3,7 +3,7 @@ NAME = ircserv
 CC = c++  -pedantic 
 #-fsanitize=address -g
 
-SRCS =	$(shell find . -name '*.cpp')
+SRCS =	$(shell find src/ -name '*.cpp')
 OBJS = $(addsuffix .o, $(basename $(SRCS)))
 INCLUDES = $(addprefix -I, $(shell find headers -type d))
 

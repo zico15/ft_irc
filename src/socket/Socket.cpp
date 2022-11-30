@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/28 00:13:40 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/11/30 19:21:41 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,12 @@
 
 Socket::Socket(){}
 
-Socket::Socket(t_type type, std::string hostname, int port, size_t maxConnecting):
-_type(type), _hostname(hostname), _port(port), _maxConnecting(maxConnecting)
+void Socket::init(t_type type, std::string hostname, int port, size_t maxConnecting)
 {
+	_type = type;
+	_hostname  = hostname;
+	_port = port;
+	_maxConnecting = maxConnecting;
 	bzero((char *) &_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_port = htons(port);
@@ -105,7 +108,9 @@ t_socket	*Socket::getSockets(){
 
 void	Socket::recive(int i)
 {
-	t_data		*data;	
+	t_data		*data;
+	std::string event;
+	std::string value;
 	char		buffer[BUFFER_SIZE + 1];
 	int 		size;
 
@@ -113,41 +118,24 @@ void	Socket::recive(int i)
 	if (size == -1)
 		return;
 	buffer[size] = 0;
-	std::cout << "Buffer: " << buffer << "\n";
-	data = Data::read(std::string(buffer));
-	if (data->sends == 1)
-	{	
-		execute(data->event, (void *) data->data.c_str());
-		delete data;
-	}
-	else
+	for (size_t i = 0; i < size; i++)
 	{
-		t_data *tmp = _datas[data->id];
-		if (tmp == NULL)
-			_datas[data->id] = data;
-		else
-		{
-			tmp->data += data->data;
-			if (data->send == data->sends)
-			{
-				execute(tmp->event, (void *) tmp->data.c_str());
-  				_datas.erase (_datas.find(data->id));
-				delete tmp;
-			}
-			delete data;
-		}	
+		if (!buffer[i] || isspace(buffer[i]))
+			break;
+		event += buffer[i];
 	}
-	_fds[i].events = POLLOUT;
+	std::cout << "Buffer: " << event << "\n";
+	execute(event, _clients[i]);
+	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
+	
 }
 
 void	Socket::emit(int i, const std::string &data)
 {
 	int size;
 
-	console.add_data(data);
-	std::string a = console.getOut() + "\n";
-	std::cout << a;
+	std::string a = data + "\n";
 	size = send(_fds[i].fd, a.c_str(), a.length(), 0);
 	_fds[i].revents = 0;
 	_fds[i].events = POLLIN;
@@ -173,9 +161,7 @@ void Socket::on(std::string event, function fun)
 
 void Socket::execute(std::string event, void *data)
 {
-	function fun = _events[event];
-	if (fun)
-		fun(data);
+
 }
 
 void Socket::run()
@@ -192,13 +178,16 @@ void Socket::run()
         	{
         		if(_fds[i].revents == 0)
         			continue;
-				std::cout << "fd: " << _fds[i].fd << " POLLIN: " << (_fds[i].revents & POLLIN) << " POLLOUT: " << (_fds[i].revents & POLLOUT) << "\n";
+				if(_fds[i].revents == POLLHUP)
+        		{	
+					std::cout << "close\n";
+					continue;
+				}
                 if (_fds[i].fd == getFd())
 	    		    execute("connect", this);
                 else if (_fds[i].revents & POLLIN)
                 {
 					recive(i);
-					emit(i, "hello word!");
 				}             
 	    	}
         }
