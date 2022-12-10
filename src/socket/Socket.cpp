@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/30 19:21:41 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/09 20:17:21 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ Socket::~Socket()
 
 int Socket::socketListen(void)
 {
-	return (poll(_fds, getMaxConnecting(), __INT_MAX__));
+	return (poll(_fds, getMaxConnecting(), -1));
 }
 
 int		Socket::getMaxConnecting()
@@ -108,24 +108,24 @@ t_socket	*Socket::getSockets(){
 
 void	Socket::recive(int i)
 {
-	t_data		*data;
-	std::string event;
-	std::string value;
+	String 		event;
+	String 		value;
 	char		buffer[BUFFER_SIZE + 1];
 	int 		size;
 
-	size = recv(_fds[i].fd, buffer, BUFFER_SIZE, 0);
-	if (size == -1)
-		return;
-	buffer[size] = 0;
-	for (size_t i = 0; i < size; i++)
+	while ((size = recv(_fds[i].fd, buffer, BUFFER_SIZE, 0)) > 0)
 	{
-		if (!buffer[i] || isspace(buffer[i]))
+		buffer[size] = 0;
+		value += buffer;
+		if (size < BUFFER_SIZE)
 			break;
-		event += buffer[i];
 	}
-	std::cout << "Buffer: " << event << "\n";
-	execute(event, _clients[i]);
+	if (value.empty())
+		return;
+	event = value.substr(0, value.find_first_of(SPACES, 0));
+	value = &value[event.size()];
+	value = trim(value);
+	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
 	
@@ -135,8 +135,7 @@ void	Socket::emit(int i, const std::string &data)
 {
 	int size;
 
-	std::string a = data + "\n";
-	size = send(_fds[i].fd, a.c_str(), a.length(), 0);
+	size = send(_fds[i].fd, data.c_str(), data.length(), 0);
 	_fds[i].revents = 0;
 	_fds[i].events = POLLIN;
 }
@@ -159,9 +158,9 @@ void Socket::on(std::string event, function fun)
 	_events.insert(std::pair<std::string, function>(event,fun));
 }
 
-void Socket::execute(std::string event, void *data)
+void Socket::execute(Client *client, std::string event, String data)
 {
-
+	return ;
 }
 
 void Socket::run()
@@ -184,7 +183,7 @@ void Socket::run()
 					continue;
 				}
                 if (_fds[i].fd == getFd())
-	    		    execute("connect", this);
+	    		    execute(NULL, "connect");
                 else if (_fds[i].revents & POLLIN)
                 {
 					recive(i);

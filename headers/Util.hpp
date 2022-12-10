@@ -17,5 +17,6 @@
 
 int                         exit_error(std::string msg);
 std::vector<std::string>	split(std::string str, std::string set);
+std::string                 trim(std::string str);
 
 #endif

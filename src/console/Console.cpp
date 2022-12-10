@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/27 22:51:58 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/27 23:56:46 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/04 12:43:27 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void Console::add_data(std::string txt)
 {
    std::vector<std::string> list =  split(txt, "\n\r");
    for (size_t i = 0; i < list.size(); i++)
-        data.insert(data.begin(), list[i]);
+        data.insert(data.end(), list[i]);
 }
 
 
@@ -71,7 +71,7 @@ std::string Console::getOut()
         index_h += font;
         index_line++;
     }
-    //render_line("┣", "━", "┫");
     render_line("┗", "━", "┛");
+    out << "\033[32m [ Gust_1 ] " << COLOUR_END;
     return (out.str());
 }

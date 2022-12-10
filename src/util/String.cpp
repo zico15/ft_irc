@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 19:28:51 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/27 23:45:24 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/09 19:24:03 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,14 @@ std::vector<std::string>	split(std::string str, std::string set)
         ret.push_back(str.substr(0, i));
         tmp += i;
     }
-    
-    
 	return (ret);
+}
+
+std::string trim(std::string str) 
+{
+    int length;
+    while (!str.empty()  && isspace(*str.begin()))
+        str.erase(str.begin());
+    for (length = (str.length() - 1); length >= 0 && isspace(str[length]); length--);
+    return str.substr(0, length + 1);
 }

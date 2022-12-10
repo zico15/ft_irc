@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/30 19:12:34 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/09 18:24:40 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct pollfd t_socket;
 
 class Server;
 
-typedef void (Server::*function)(void *data);
+typedef void (Server::*function)(Client *client, String data);
 
 typedef enum e_type
 {
@@ -76,6 +76,7 @@ class Socket
 		std::map<std::string, function>		_events;
 		std::map<int, t_data *>				_datas;
 		std::map<int, Client *>				_clients;
+		function							_function_default;
 
 
 	public:
@@ -94,8 +95,8 @@ class Socket
 		void 				run();
 		void				emit(int i, const std::string &data);
 		void				emitAll(const std::string &data);
-		void 				on(std::string event, void (Server::*function)(void *data));
-		virtual void		execute(std::string event, void *data = NULL);
+		void 				on(std::string event, void (Server::*function)(Client *client, String data));
+		virtual void		execute(Client *client, std::string event, String data = "");
 };	
 
 
