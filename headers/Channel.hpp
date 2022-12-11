@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/09 22:14:23 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/10 10:13:24 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Channel {
 		~Channel();
 		void add(Client *client);
 		void remove(Client *client);
-		std::string getChannel();
+		std::string getName();
 		std::vector<Client *> getClients();
 		size_t getSize();
 };

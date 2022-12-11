@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/09 20:17:21 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/11 15:32:04 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void Socket::init(t_type type, std::string hostname, int port, size_t maxConnect
 		if (listen(_fd, maxConnecting) < 0)
 			exit_error(strerror(errno));
 		_size = sizeof(_addr);
-		std::cout << "\t\t...Waiting for connections... \n\n";
+		std::cout << "...Waiting for connections... \n";
 		for (size_t i = 1; i < _maxConnecting; i++)
 			setEvent(i, -1, 0);
 	}
@@ -137,7 +137,7 @@ void	Socket::emit(int i, const std::string &data)
 
 	size = send(_fds[i].fd, data.c_str(), data.length(), 0);
 	_fds[i].revents = 0;
-	_fds[i].events = POLLIN;
+	_fds[i].events = POLLIN | POLLOUT | POLLHUP;
 }
 
 void	Socket::emitAll(const std::string &data)
@@ -187,7 +187,9 @@ void Socket::run()
                 else if (_fds[i].revents & POLLIN)
                 {
 					recive(i);
-				}             
+				}
+				else if (!(_fds[i].revents & POLLOUT))
+					  std::cout << "POLL: " << _fds[i].revents << "\n";        
 	    	}
         }
         catch(const std::exception& e)

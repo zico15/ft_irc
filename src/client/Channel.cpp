@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/09 22:57:35 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/10 10:13:17 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void Channel::remove(Client *client){
     }
 }
 
-std::string Channel::getChannel()
+std::string Channel::getName()
 {
   return (_channel);
 }

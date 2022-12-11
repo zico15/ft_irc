@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/09 18:32:07 by edos-san         ###   ########.fr       */
+/*   Updated: 2022/12/10 11:02:03 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class Client {
 
 	private:		  
 		int					  _fd;
+		int					  _index_fd;
 		std::string 		  _nickname;
 		std::string			  _username;
 		Console				  _console;
@@ -32,7 +33,7 @@ class Client {
 
 	public:
 		Client();
-		Client(int fd);
+		Client(int fd, int index);
 		~Client();
 		void receiver();
 		bool run();
@@ -62,6 +63,10 @@ class Client {
 
 		int getFd(){
 			return _fd;
+		};
+
+		int getIndexFd(){
+			return _index_fd;
 		};
 };
 #endif
