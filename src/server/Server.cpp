@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/18 18:42:19 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/20 21:31:47 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,12 @@ Server::Server(std::string hostname, int port)
     std::cout << "\x1B[2J\x1B[HServer has been created: " << port << "\n";
     init(SERVER, hostname, port, 200);
     on("connect",  &Server::connect);
+    //CAP
+    on("PASS",  &Server::pass);
     _function_default =  &Server::msg;
     on("/help", &Server::help);
-    on("/nick", &Server::nick);
+    on("NICK", &Server::nick);
+    on("USER", &Server::user);
     on("/join", &Server::join);
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
@@ -30,23 +33,46 @@ Server::Server(std::string hostname, int port)
     on("/clear", &Server::clear);
 }
 
+void Server::pass(Client *client, String data)
+{
+    std::string message;
+    
+    client->setPassword(data);
+    //message = std::string(":test 001 " + client->getNickname() + " :Welcome to server, nick");
+   // std::cout << "tes" << "\n";
+   // send(client, message);
+
+    //send(client, "\x1B[2J\x1B[H");
+    std::cout << "Pass" << std::endl;
+}
+
 void Server::clear(Client *client, String data)
 {
     send(client, "\x1B[2J\x1B[H");
-    response(client);
 }
 
 /*nick [login]       change your login*/
 void Server::nick(Client *client, String data)
 {
     if (data.empty())
-    {   
+    {
         std::cout << "Nick invalido\n";
         send(client, "Nick invalido\n");
     }
     else
         client->setNickname(data);
-    response(client);
+    std::cout << "Nick" << std::endl;
+}
+
+void Server::user(Client *client, String data)
+{
+    std::string message;
+    
+    client->setUsername(data);
+    message = std::string(":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\r\n");
+    std::cout << std::endl << "User: " << message << std::endl;
+    send(client, message);
+
 }
 
 /*
@@ -60,7 +86,6 @@ void Server::leave(Client *client, String data)
         send(client, client->getChannel()->getClients(), "\rUser: " + client->getNickname() + " remove room\n", RED);
         client->setChannel(NULL);
     }
-    response(client);
 }
 
 /*join [channel]     join channel*/
@@ -79,7 +104,6 @@ void Server::join(Client *client, String data)
         channel->add(client);
         send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
     }
-    response(client);
 }
 
 /*
@@ -113,7 +137,6 @@ void Server::who(Client *client, String data)
   }
   else
     send(client, MSG_COMMAND_INVALID);
-  response(client);
 }
 
 /*
@@ -135,14 +158,12 @@ void Server::msg_private(Client *client, String data)
             {    
                 data = "\r" + std::string(BLUE) + "[private: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
                 send(clients[i], data);
-                response(clients[i]);
-                response(client);
+        
                 return ;
             }
         }
     }
     send(client, MSG_MSG_INVALID);
-    response(client);
 }
 
 /*
@@ -159,7 +180,6 @@ void Server::msg_private(Client *client, String data)
 void Server::help(Client *client, String data)
 {
     send(client, MSH_HELP);
-    response(client);
 }
 
 void Server::connect(Client *client, String data)
@@ -173,7 +193,6 @@ void Server::connect(Client *client, String data)
 		{
 			setEvent(i, fd_client, POLLIN | POLLHUP);
             _clients[i] = new Client(_fds[i].fd, i);
-            response(_clients[i]);
 			break;
 		}
     }
@@ -193,13 +212,12 @@ void Server::execute(Client *client, std::string event, String data)
 
 void Server::msg(Client *client, String data)
 {
-   Channel *channel = client->getChannel();
-   if (channel)
+    Channel *channel = client->getChannel();
+    if (channel)
     {    
         data = "\r" + std::string(MAGENTA) + "[public: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
         send(client, channel->getClients(), data);
     }
-   response(client);
 }
 
 void Server::send(Client *client, std::vector<Client *> clients, std::string data, std::string color)
@@ -207,10 +225,7 @@ void Server::send(Client *client, std::vector<Client *> clients, std::string dat
     for (size_t i = 0; i < clients.size(); i++)
     {
         if (clients[i] != client)
-        {
              send(clients[i], data , color);
-             response(clients[i]);
-        }
     }
 }
 
@@ -218,17 +233,7 @@ void Server::send(Client *client, std::string data, std::string color)
 {
     if (!client)
         return ;
-   emit(client->getIndexFd(), color + data + "\033[0m");
-}
-
-void Server::response(Client *client){
-    if (client->getChannel())
-    {    
-        send(client, "[" + client->getNickname() + "]  ", GREEN);
-        send(client, client->getChannel()->getName() + " > ");
-    }
-    else
-        send(client, "[" + client->getUsername() + "]  ", GREEN);  
+   emit(client->getIndexFd(), data);
 }
 
 Server::~Server()

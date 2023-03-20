@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/10 11:02:03 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/20 21:15:26 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Client {
 		int					  _index_fd;
 		std::string 		  _nickname;
 		std::string			  _username;
+		std::string			  _password;
 		Console				  _console;
 		Channel 			 *_channel;
 
@@ -51,6 +52,14 @@ class Client {
 		
 		std::string &getNickname(){
 			return _nickname;
+		};
+		
+		std::string &getPassword(){
+			return _password;
+		};
+
+		void setPassword(std::string data){
+			_password = data;
 		};
 		
 		void setUsername(std::string username){

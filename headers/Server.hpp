@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/18 18:42:24 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/20 21:31:15 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,13 @@ class Server: public Socket {
 		void nick(Client *client, String data);
 		void join(Client *client, String data);
 		void execute(Client *client, std::string event, String data = "");
-		void response(Client *client);
 		void leave(Client *client, String data);
 		void quit(Client *client, String data);
 		void who(Client *client, String data);
 		void msg_private(Client *client, String data);
 		void clear(Client *client, String data);
-	
+	    void pass(Client *client, String data);
+		void user(Client *client, String data);
 };
 
 typedef void (Server::*functionsd)(void *data);

@@ -1,6 +1,6 @@
 NAME = ircserv
 
-CC = c++  -pedantic 
+CC = c++  -pedantic
 #-fsanitize=address -g
 
 SRCS =	$(shell find src/ -name '*.cpp')
