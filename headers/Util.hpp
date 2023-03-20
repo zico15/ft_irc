@@ -41,7 +41,7 @@
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
 #define MSH_HELP "/nick [login]       change your login\n/join [channel]     join channel\n/leave              leave current channel\n/quit               quit irc\n/who                list of users in channel\n/msg [login] [msg]  submit msg at login\n/list               list of channel\n/me                 defined an action\n[msg]               send msg in channel\n"
-#define MSG_COMMAND_INVALID "\033[31mCommand Invalid!\n\033[0m"
+#define MSG_COMMAND_INVALID "Command Invalid!\n"
 #define MSG_MSG_INVALID "\033[31mNickname Invalid!\n\033[0m"
 #define MSG_NEW_CLIENT(username, fd) "\033[33mNew client: " + username + " fd: " + fd + "\n\033[0m";
 #define MSG_CLOSE_CLIENT(username, fd) "\033[31mClose client: " + username + " fd: " + fd + "\n\033[0m";

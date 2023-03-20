@@ -80,6 +80,11 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "typeindex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "barrier": "cpp",
+        "source_location": "cpp",
+        "latch": "cpp",
+        "semaphore": "cpp",
+        "syncstream": "cpp"
     }
 }

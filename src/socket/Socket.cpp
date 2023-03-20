@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/20 21:22:33 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/20 23:18:57 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void	Socket::recive(int i)
 	event = value.substr(0, value.find_first_of(SPACES, 0));
 	value = &value[event.size()];
 	value = trim(value);
-	std::cout << "o valor é: " << value << " evento: " << event << std::endl;
+	std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
@@ -201,3 +201,21 @@ void Socket::run()
         }
     }
 }
+
+/*
+authenticate/nick/username - Ezequiel
+Join/ (help) - eduardo
+send recibe private messages chanel - eduardo
+
+◦ You must have operators and regular users. - PESQUISA
+◦ Then, you have to implement the commands that are specific to operators. - PESQUISA
+
+ctrl+D - REVIEW
+ 
+• Handle file transfer. - VERIFICAR
+• A bot - Ruben
+
+
+https://docs.kde.org/trunk5/en/konversation/konversation/irc-cmds.html
+https://defs.ircdocs.horse/defs/numerics.html
+*/

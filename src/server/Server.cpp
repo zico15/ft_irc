@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/20 21:31:47 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/20 23:02:33 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,13 @@ Server::Server(std::string hostname, int port)
     //CAP
     on("PASS",  &Server::pass);
     _function_default =  &Server::msg;
+    //on("help", &Server::help);
+    //on("PRIVMSG", )
     on("/help", &Server::help);
     on("NICK", &Server::nick);
     on("USER", &Server::user);
-    on("/join", &Server::join);
+    //on("/join", &Server::join);
+    on("JOIN", &Server::join);
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/who", &Server::who);
@@ -179,6 +182,7 @@ void Server::msg_private(Client *client, String data)
 */
 void Server::help(Client *client, String data)
 {
+        std::cout << "help" << std::endl;
     send(client, MSH_HELP);
 }
 

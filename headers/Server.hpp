@@ -6,13 +6,12 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/20 21:31:15 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/20 23:08:43 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
-
 
 #include <iostream>
 #include <string>
