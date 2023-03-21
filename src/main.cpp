@@ -15,7 +15,7 @@ int exit_error(std::string msg)
 void signal_handler(int signal)
 {
 	if (s != nullptr)
-		s->emitAll("com^Dman^Dd\n");
+		s->emitAll("com^Dman^Dd\n");//comando enviado para todos
 	delete s;
   	exit(1);
 }
