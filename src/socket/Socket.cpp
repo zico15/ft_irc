@@ -203,7 +203,7 @@ void Socket::run()
 }
 
 /*
-authenticate/nick/username - Ezequiel
+ezequiel - authenticate/nick/username 
 Join/ (help) - eduardo
 send recibe private messages chanel - eduardo
 
