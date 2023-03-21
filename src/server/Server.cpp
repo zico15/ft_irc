@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/21 23:24:49 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/21 23:57:20 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,27 +54,26 @@ void Server::clear(Client *client, String data)
 /*nick [login]       change your login*/
 void Server::nick(Client *client, String data)
 {
-   
     client->setNickname(data);
     std::cout << "Nick" << std::endl;
 }
 
 void Server::user(Client *client, String data)
 {
-    /*client->setUsername(data);
+    client->setUsername(data);
     if (client->getPassword().compare(this->getPassword()))
         send(client, PASSWORD_OK(client->getNickname()));
     else if (Client::isNickname(this->_clients,client->getNickname()))
         send(client, NICKNAME_ERROR(client->getNickname()));
     else
-        send(client, PASSWORD_ERROR(client->getNickname()));*/
+        send(client, PASSWORD_ERROR(client->getNickname()));
 //We still need to parse the user modes and then store this information in the server for example: "8 *" is the mode of this client
-    client->setUsername(data.substr(0, data.find(' ')));
+    /*client->setUsername(data.substr(0, data.find(' ')));
     client->setNickname(data.substr(data.find(':') + 1));
     std::string reply = ":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n";
 
     //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
-    send(client, reply);
+    send(client, reply);*/
 }
 
 /*
