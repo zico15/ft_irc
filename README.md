@@ -128,3 +128,6 @@ Establishing a server to client connection
    and as the server could discover (from DNS/authentication servers).
    The server must send this information out with NICK first followed by
    USER.
+
+
+   SOURCE: https://www.rfc-editor.org/rfc/rfc1459#section-4.5.1
