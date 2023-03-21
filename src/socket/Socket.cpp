@@ -126,7 +126,8 @@ void	Socket::recive(int i)
 	event = value.substr(0, value.find_first_of(SPACES, 0));
 	value = &value[event.size()];
 	value = trim(value);
-	std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
+	if (event != "PING" && event != "USER" && event != "NICK" && event != "CAP") //<<<----  Ignoring this functions events!
+		std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;

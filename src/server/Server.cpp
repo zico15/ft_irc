@@ -16,6 +16,8 @@ Server::Server(){}
 
 Server::Server(std::string hostname, int port)
 {
+    on("PING", &Server::ping);
+    on("CAP", &Server::cap);
     std::cout << "\x1B[2J\x1B[HServer has been created: " << port << "\n";
     init(SERVER, hostname, port, 200);
     on("connect",  &Server::connect);
@@ -35,6 +37,26 @@ Server::Server(std::string hostname, int port)
     on("/msg", &Server::msg_private);
     on("/clear", &Server::clear);
 }
+
+//The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message
+void Server::ping(Client *client, String data)
+{
+    std::string reply = ("PONG :" + data + "\n");
+
+    //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
+    send(client, reply);
+}
+
+//https://ircv3.net/specs/core/capability-negotiation-3.1.html#available-capabilities
+void Server::cap(Client *client, String data)
+{
+    //We still need to see what type of capability we can do with out irc server you can see in the link
+    //send(client, list of capabilities.....);
+    
+    //for now we will send no capabilities, we need to study some of them like prefix!
+    send(client, "CAP NAK :unknown-capability\n");
+}
+
 
 void Server::pass(Client *client, String data)
 {
@@ -64,18 +86,18 @@ void Server::nick(Client *client, String data)
     }
     else
         client->setNickname(data);
-    std::cout << "Nick" << std::endl;
 }
 
+//The USER event is sent by a client to the server when the client first connects to the server. The information in the USER event is used to identify the user to the server.
 void Server::user(Client *client, String data)
 {
-    std::string message;
-    
-    client->setUsername(data);
-    message = std::string(":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\r\n");
-    std::cout << std::endl << "User: " << message << std::endl;
-    send(client, message);
+//We still need to parse the user modes and then store this information in the server for example: "8 *" is the mode of this client
+    client->setUsername(data.substr(0, data.find(' ')));
+    client->setNickname(data.substr(data.find(':') + 1));
+    std::string reply = ":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n";
 
+    //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
+    send(client, reply);
 }
 
 /*

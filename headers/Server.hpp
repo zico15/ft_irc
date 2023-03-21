@@ -43,7 +43,12 @@ class Server: public Socket {
 		void msg_private(Client *client, String data);
 		void clear(Client *client, String data);
 	    void pass(Client *client, String data);
-		void user(Client *client, String data);
+
+		//Eduardo Work...
+		void	user(Client *client, String data);
+		void	ping(Client *client, String data);
+		void	cap(Client *client, String data);
+		//End of Eduardo work...
 };
 
 typedef void (Server::*functionsd)(void *data);
