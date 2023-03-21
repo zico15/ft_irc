@@ -126,7 +126,7 @@ void	Socket::recive(int i)
 	event = value.substr(0, value.find_first_of(SPACES, 0));
 	value = &value[event.size()];
 	value = trim(value);
-	std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
+	std::cout << "event: " << event << " value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
@@ -218,4 +218,5 @@ ctrl+D - REVIEW
 
 https://docs.kde.org/trunk5/en/konversation/konversation/irc-cmds.html
 https://defs.ircdocs.horse/defs/numerics.html
+https://dd.ircdocs.horse/refs/numerics/001.html
 */

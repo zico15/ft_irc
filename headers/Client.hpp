@@ -77,5 +77,7 @@ class Client {
 		int getIndexFd(){
 			return _index_fd;
 		};
+
+		static bool isNickname(std::map<int, Client *> clients, std::string nickname);
 };
 #endif
