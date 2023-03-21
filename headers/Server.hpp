@@ -23,11 +23,13 @@
 class Server: public Socket {
 
 	private:
+		
 		std::map<String, Channel *> _channels;
+		std::string					_password;
 
 	public:
 		Server();
-		Server(std::string name, int port);
+		Server(std::string name, int port, std::string password);
 		~Server();
 		void send(Client *client, std::string data, std::string color = "\033[0m");
 		void send(Client *client, std::vector<Client *> clients, std::string data, std::string color = "\033[0m");
@@ -44,8 +46,8 @@ class Server: public Socket {
 		void clear(Client *client, String data);
 	    void pass(Client *client, String data);
 		void user(Client *client, String data);
+		std::string &getPassword();
+
+		typedef void (Server::*functionsd)(void *data);
 };
-
-typedef void (Server::*functionsd)(void *data);
-
 #endif

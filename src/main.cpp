@@ -24,7 +24,13 @@ int main(int argc, char **argv)
 {
 	(void) argv;
 	std::signal(SIGINT, signal_handler);
-	s = new Server("localhost", 1234);
+	if (argc < 3 || !argv[2])
+		std::cout << "ARGS: porta,  password\n";
+	else
+	{
+			s = new Server("localhost", 1234, argv[2]);
 	s->run();
+	}
+
     return  (1);
 }

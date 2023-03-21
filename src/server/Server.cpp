@@ -14,9 +14,9 @@
 
 Server::Server(){}
 
-Server::Server(std::string hostname, int port)
+Server::Server(std::string hostname, int port, std::string password): _password(password)
 {
-    std::cout << "\x1B[2J\x1B[HServer has been created: " << port << "\n";
+    std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
     init(SERVER, hostname, port, 200);
     on("connect",  &Server::connect);
     //CAP
@@ -38,15 +38,7 @@ Server::Server(std::string hostname, int port)
 
 void Server::pass(Client *client, String data)
 {
-    std::string message;
-    
     client->setPassword(data);
-    //message = std::string(":test 001 " + client->getNickname() + " :Welcome to server, nick");
-   // std::cout << "tes" << "\n";
-   // send(client, message);
-
-    //send(client, "\x1B[2J\x1B[H");
-    std::cout << "Pass" << std::endl;
 }
 
 void Server::clear(Client *client, String data)
@@ -57,25 +49,20 @@ void Server::clear(Client *client, String data)
 /*nick [login]       change your login*/
 void Server::nick(Client *client, String data)
 {
-    if (data.empty())
-    {
-        std::cout << "Nick invalido\n";
-        send(client, "Nick invalido\n");
-    }
-    else
-        client->setNickname(data);
+   
+    client->setNickname(data);
     std::cout << "Nick" << std::endl;
 }
 
 void Server::user(Client *client, String data)
 {
-    std::string message;
-    
     client->setUsername(data);
-    message = std::string(":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\r\n");
-    std::cout << std::endl << "User: " << message << std::endl;
-    send(client, message);
-
+    if (client->getPassword().compare(this->getPassword()))
+        send(client, PASSWORD_OK(client->getNickname()));
+    else if (Client::isNickname(this->_clients,client->getNickname()))
+        send(client, NICKNAME_ERROR(client->getNickname()));
+    else
+        send(client, PASSWORD_ERROR(client->getNickname()));
 }
 
 /*
@@ -219,7 +206,6 @@ void Server::msg(Client *client, String data)
     Channel *channel = client->getChannel();
     if (channel)
     {    
-        data = "\r" + std::string(MAGENTA) + "[public: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
         send(client, channel->getClients(), data);
     }
 }
@@ -237,10 +223,15 @@ void Server::send(Client *client, std::string data, std::string color)
 {
     if (!client)
         return ;
-   emit(client->getIndexFd(), data);
+   emit(client->getIndexFd(), data + "\r\n");
 }
+
+std::string &Server::getPassword(){
+	return _password;
+};
 
 Server::~Server()
 {
     std::cout << "~Server\n";
 }
+

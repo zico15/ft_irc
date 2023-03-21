@@ -33,6 +33,7 @@
 #include "Data.hpp"
 #include <vector>
 #include "Client.hpp"
+#include "Msg.hpp"
 
 #define TIME_OUT 3 * 60 * 1000
 #define BUFFER_SIZE 1024

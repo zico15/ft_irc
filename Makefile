@@ -24,7 +24,7 @@ fclean:
 re: clean all
 
 r:
-	make && make clean && clear && ./$(NAME)
+	make && make clean && clear && ./$(NAME) 1234 abc
 
 m:
 	make fclean && make clean && clear
