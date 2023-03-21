@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/20 23:08:43 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/21 23:21:57 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,12 @@ class Server: public Socket {
 		void msg_private(Client *client, String data);
 		void clear(Client *client, String data);
 	    void pass(Client *client, String data);
-		//void user(Client *client, String data);
+		void user(Client *client, String data);
 		std::string &getPassword();
 
 		typedef void (Server::*functionsd)(void *data);
 
-		//Eduardo Work...
-		void	user(Client *client, String data);
 		void	ping(Client *client, String data);
 		void	cap(Client *client, String data);
-		//End of Eduardo work...
 };
 #endif

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/20 23:02:33 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/21 23:24:49 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,48 @@ void Server::who(Client *client, String data)
   }
   else
     send(client, MSG_COMMAND_INVALID);
+      /*
+      Command: WHO
+   Parameters: [<name> [<o>]]
+   The WHO message is used by a client to generate a query which returns
+   a list of information which 'matches' the <name> parameter given by
+   the client.  In the absence of the <name> parameter, all visible
+   (users who aren't invisible (user mode +i) and who don't have a
+   common channel with the requesting client) are listed.  The same
+   result can be achieved by using a <name> of "0" or any wildcard which
+   will end up matching every entry possible.
+   The <name> passed to WHO is matched against users' host, server, real
+   name and nickname if the channel <name> cannot be found.
+   If the "o" parameter is passed only operators are returned according
+   to the name mask supplied.
+   Numeric Replies:
+           ERR_NOSUCHSERVER
+           RPL_WHOREPLY                    RPL_ENDOFWHO
+   Examples:
+   WHO *.fi                        ; List all users who match against
+                                   "*.fi".
+   WHO jto* o                      ; List all users with a match against
+                                   "jto*" if they are an operator.
+    */
+}
+
+//The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message
+void Server::ping(Client *client, String data)
+{
+    std::string reply = ("PONG :" + data + "\n");
+
+    //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
+    send(client, reply);
+}
+
+//https://ircv3.net/specs/core/capability-negotiation-3.1.html#available-capabilities
+void Server::cap(Client *client, String data)
+{
+    //We still need to see what type of capability we can do with out irc server you can see in the link
+    //send(client, list of capabilities.....);
+
+    //for now we will send no capabilities, we need to study some of them like prefix!
+    send(client, "CAP NAK :unknown-capability\n");
 }
 
 /*
