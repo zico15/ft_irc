@@ -16,6 +16,11 @@ Server::Server(){}
 
 Server::Server(std::string hostname, int port, std::string password): _password(password)
 {
+    //testing bellow
+    on("PING", &Server::ping);
+    on("CAP", &Server::cap);
+    on("/who", &Server::who);
+    //testing up
     std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
     init(SERVER, hostname, port, 200);
     on("connect",  &Server::connect);
@@ -56,13 +61,20 @@ void Server::nick(Client *client, String data)
 
 void Server::user(Client *client, String data)
 {
-    client->setUsername(data);
+    /*client->setUsername(data);
     if (client->getPassword().compare(this->getPassword()))
         send(client, PASSWORD_OK(client->getNickname()));
     else if (Client::isNickname(this->_clients,client->getNickname()))
         send(client, NICKNAME_ERROR(client->getNickname()));
     else
-        send(client, PASSWORD_ERROR(client->getNickname()));
+        send(client, PASSWORD_ERROR(client->getNickname()));*/
+//We still need to parse the user modes and then store this information in the server for example: "8 *" is the mode of this client
+    client->setUsername(data.substr(0, data.find(' ')));
+    client->setNickname(data.substr(data.find(':') + 1));
+    std::string reply = ":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n";
+
+    //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
+    send(client, reply);
 }
 
 /*

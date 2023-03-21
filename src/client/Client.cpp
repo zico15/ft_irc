@@ -35,7 +35,7 @@ Client::~Client()
 
 void Client::setNickname(std::string nickname){
 	_nickname = trim(nickname);
-	std::cout << "Client: " << _username << " set nickname: " << _nickname << std::endl;
+	//std::cout << "Client: " << _username << " set nickname: " << _nickname << std::endl;
 }
 
 bool Client::isNickname(std::map<int, Client *> clients, std::string nickname)
