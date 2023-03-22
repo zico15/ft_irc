@@ -14,9 +14,10 @@
 # define FILE_HPP
 
 # include <iostream>
-# include <fstream>
-# include <string>
-# include  <bits/stdc++.h>
+# include <sstream>//added
+# include <fstream>//added
+//# include <string>
+//# include  <bits/stdc++.h>
 
 class File
 {

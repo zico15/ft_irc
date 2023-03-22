@@ -16,8 +16,8 @@ SRCS 			= $(shell find src/ -name '*.cpp')
 OBJS 			= $(addsuffix .o, $(basename $(SRCS)))
 INCLUDES 		= $(addprefix -I, $(shell find headers -type d))
 
-CXX 			= c++ -pedantic #-fsanitize=address -g
-CXXFLAGS		= #-Wall -Wextra -Werror -std=c++98 -Wshadow
+CXX 			= c++
+CXXFLAGS		= -O0 #-pedantic #-Wall -Wextra -Werror -std=c++98 -Wshadow #-fsanitize=address -g
 RM				= rm -f
 
 
@@ -33,15 +33,15 @@ $(NAME): $(OBJS)
 clean:
 	rm -rf $(OBJS)
 
-fclean:
+fclean: clean
 	rm -rf $(NAME)
 
-re: clean all
+re: fclean all
 
-r:
-	make && make clean && clear && ./$(NAME) 1234 abc
+r: re
+	clear && ./$(NAME) 1234 abc
 
 m:
 	make fclean && make clean && clear
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re r m
