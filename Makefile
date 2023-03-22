@@ -1,7 +1,7 @@
 NAME = ircserv
 
-CC = c++  -pedantic
-#-fsanitize=address -g
+CXX = c++
+CXXFLAGS =  -pedantic #-fsanitize=address -g
 
 SRCS =	$(shell find src/ -name '*.cpp')
 OBJS = $(addsuffix .o, $(basename $(SRCS)))
@@ -10,23 +10,23 @@ INCLUDES = $(addprefix -I, $(shell find headers -type d))
 all: $(NAME)
 
 %.o:%.cpp
-	$(CC) $(INCLUDES) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 $(NAME): $(OBJS)
-	$(CC) -o $@  $^
+	$(CXX) $(CXXFLAGS) -o $@  $^
 
 clean:
 	rm -rf $(OBJS)
 
-fclean:
+fclean: clean
 	rm -rf $(NAME)
 
-re: clean all
+re: fclean all
 
-r:
-	make && make clean && clear && ./$(NAME)
+r: re
+	./$(NAME)
 
 m:
 	make fclean && make clean && clear
 
-.PHONY: all clean re
+.PHONY: all clean fclean re r m
