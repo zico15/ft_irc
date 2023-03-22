@@ -10,30 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FILE_HPP
-# define FILE_HPP
+#ifndef MSG_HPP
+# define MSG_HPP
 
-# include <iostream>
-# include <sstream>//added
-# include <fstream>//added
-//# include <string>
-//# include  <bits/stdc++.h>
 
-class File
-{
-	private:
-		std::string 		_path;
-		std::stringstream   _out;
-		size_t				_size;				
-	public:
-		File(std::string path);
-		File(std::string absolute, std::string file);
-		~File();
-		std::string read();
-		void		write(std::string value);
-		size_t		size();
-		std::string getExtensao();
-};
-
+#define  PASSWORD_OK(nickname) std::string(":teste 001 "+nickname+" :Welcome to server, "+nickname)
+#define  PASSWORD_ERROR(nickname) std::string("NOTICE "+nickname+" :Senha incorreta.")
+#define  NICKNAME_ERROR(nickname) std::string("433 *"+nickname+"* :Nickname incorreta.")
 
 #endif

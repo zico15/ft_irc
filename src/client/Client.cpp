@@ -38,4 +38,17 @@ void Client::setNickname(std::string nickname){
 	//std::cout << "Client: " << _username << " set nickname: " << _nickname << std::endl;
 }
 
+bool Client::isNickname(std::map<int, Client *> clients, std::string nickname)
+{
+    std::map<int, Client *>::iterator it;
+
+    it = clients.begin();
+    for (it; it != clients.end(); it++)
+    {
+        if (nickname.compare(it->second->getNickname()))
+            return (true);
+    }
+    return (false);
+}
+
 

@@ -1,11 +1,26 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rteles <rteles@student.42.fr>              +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/03/21 23:30:53 by rteles            #+#    #+#              #
+#    Updated: 2023/03/21 23:45:58 by rteles           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME = ircserv
 
-CXX = c++
-CXXFLAGS =  -pedantic #-fsanitize=address -g
+SRCS 			= $(shell find src/ -name '*.cpp')
+OBJS 			= $(addsuffix .o, $(basename $(SRCS)))
+INCLUDES 		= $(addprefix -I, $(shell find headers -type d))
 
-SRCS =	$(shell find src/ -name '*.cpp')
-OBJS = $(addsuffix .o, $(basename $(SRCS)))
-INCLUDES = $(addprefix -I, $(shell find headers -type d))
+CXX 			= c++
+CXXFLAGS		= -O0 #-pedantic #-Wall -Wextra -Werror -std=c++98 -Wshadow #-fsanitize=address -g
+RM				= rm -f
+
+
 
 all: $(NAME)
 
@@ -24,7 +39,7 @@ fclean: clean
 re: fclean all
 
 r: re
-	./$(NAME)
+	clear && ./$(NAME) 1234 abc
 
 m:
 	make fclean && make clean && clear

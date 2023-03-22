@@ -14,8 +14,8 @@
 # define DATA_HPP
 
 #include <iostream>
-#include <string>
-#include <string.h>
+//#include <string>
+//#include <string.h>
 #include <vector>
 
 #define DATA_SIZE 20

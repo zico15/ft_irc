@@ -10,9 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include <string>
+//# include <string>
 # include <iostream>
-# include  <bits/stdc++.h>
+# include <vector>//added
+//# include  <bits/stdc++.h>
 
 bool	isEqual(char c, const std::string &str)
 {
