@@ -130,4 +130,4 @@ Establishing a server to client connection
    USER.
 
 
-   SOURCE: https://www.rfc-editor.org/rfc/rfc1459#section-4.5.1
+   SOURCE: https://www.rfc-editor.org/rfc/rfc1459#section-4.5.1   https://ircv3.net/irc/

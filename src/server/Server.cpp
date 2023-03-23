@@ -43,7 +43,8 @@ Server::Server(std::string hostname, int port, std::string password): _password(
 
 void Server::pass(Client *client, String data)
 {
-    client->setPassword(data);
+    if (data[0])
+        client->setPassword(data.substr(1));
 }
 
 void Server::clear(Client *client, String data)
@@ -55,25 +56,26 @@ void Server::clear(Client *client, String data)
 void Server::nick(Client *client, String data)
 {
     client->setNickname(data);
-    std::cout << "Nick" << std::endl;
+    //std::cout << "Nick" << std::endl;
 }
 
 void Server::user(Client *client, String data)
 {
-    client->setUsername(data);
+    /*client->setUsername(data);
     if (client->getPassword().compare(this->getPassword()))
         send(client, PASSWORD_OK(client->getNickname()));
     else if (Client::isNickname(this->_clients,client->getNickname()))
         send(client, NICKNAME_ERROR(client->getNickname()));
     else
-        send(client, PASSWORD_ERROR(client->getNickname()));
+        send(client, PASSWORD_ERROR(client->getNickname()));*/
 //We still need to parse the user modes and then store this information in the server for example: "8 *" is the mode of this client
-    /*client->setUsername(data.substr(0, data.find(' ')));
-    client->setNickname(data.substr(data.find(':') + 1));
-    std::string reply = ":teste 001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n";
+    client->setUsername(data.substr(0, data.find(' ')));
+    client->setRealname(data.substr(data.find(':') + 1));
+    //std::string reply = "001 " + client->getUsername() + " :Welcome to server, " + client->getUsername() + "\n";
 
     //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
-    send(client, reply);*/
+    //send(client, "001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n");
+    //send(client, "CAP * LS :multi-prefix message-tags \r\n");
 }
 
 /*
@@ -179,7 +181,30 @@ void Server::cap(Client *client, String data)
     //send(client, list of capabilities.....);
 
     //for now we will send no capabilities, we need to study some of them like prefix!
-    send(client, "CAP NAK :unknown-capability\n");
+    //std::cout << YELLOW "The following message will be sent to the client: ->\t\t" RED << ":teste CAP " + client->getUsername() + " LS :message-tags" RESET << std::endl;
+    //send(client, ":teste CAP " + client->getUsername() + " LS :message-tags\r\n");
+    //send(client, "CAP * LS :message-tags\r\n");
+    // send(client, ":test CAP " + client->getUsername() + " REQ :message-tags\r\n");
+    // send(client, ":test CAP " + client->getUsername() + " ACK :message-tags\r\n");
+    if (data == "LS 302")
+    {
+        //send(client, "CAP * NAK\r\n");
+        send(client, "CAP * LS :message-tags multi-prefix\r\n");
+    }
+    else if (data == "REQ :multi-prefix") {
+        send(client, "CAP * ACK :multi-prefix");
+    }
+    else if (data == "END")
+    {
+        if (this->getPassword() == client->getPassword())
+        {
+            send(client, "001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n");
+        }
+        else
+        {
+            send(client, ":test 464 " + client->getNickname() + " :Password incorrect\r\n");
+        }
+    }
 }
 
 /*
@@ -222,8 +247,10 @@ void Server::msg_private(Client *client, String data)
 */
 void Server::help(Client *client, String data)
 {
-        std::cout << "help" << std::endl;
-    send(client, MSH_HELP);
+    if (data.size() == 0)
+        send(client, MSH_HELP);
+    else
+        send(client, "HELP LIST COMMAND!\r\n");
 }
 
 void Server::connect(Client *client, String data)

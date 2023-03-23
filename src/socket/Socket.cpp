@@ -126,12 +126,11 @@ void	Socket::recive(int i)
 	event = value.substr(0, value.find_first_of(SPACES, 0));
 	value = &value[event.size()];
 	value = trim(value);
-	if (event != "PING" && event != "USER" && event != "NICK" && event != "CAP") //<<<----  Ignoring this functions events!   just to see event remain....
+	if (1)// && event != "CAP") //<<<----  Ignoring this functions events!   just to see event remain....
 		std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
-	
 }
 
 void	Socket::emit(int i, const std::string &data)
@@ -193,7 +192,7 @@ void Socket::run()
 					recive(i);
 				}
 				else if (!(_fds[i].revents & POLLOUT))
-					  std::cout << "POLL: " << _fds[i].revents << "\n";        
+					  std::cout << "POLL: " << _fds[i].revents << "\n";
 	    	}
         }
         catch(const std::exception& e)

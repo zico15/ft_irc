@@ -33,7 +33,7 @@ Client::~Client()
     std::cout << MSG_CLOSE_CLIENT(_username, std::to_string(_fd));
 }
 
-void Client::setNickname(std::string nickname){
+void Client::setNickname(const std::string& nickname){
 	_nickname = trim(nickname);
 	//std::cout << "Client: " << _username << " set nickname: " << _nickname << std::endl;
 }

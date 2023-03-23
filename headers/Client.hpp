@@ -28,6 +28,7 @@ class Client {
 		int					  _index_fd;
 		std::string 		  _nickname;
 		std::string			  _username;
+		std::string			  _realname;
 		std::string			  _password;
 		Console				  _console;
 		Channel 			 *_channel;
@@ -38,8 +39,8 @@ class Client {
 		~Client();
 		void receiver();
 		bool run();
-		void setNickname(std::string nickname);
-		
+		void setNickname(const std::string& nickname);
+
 		void setChannel(Channel *channel)
 		{
 			_channel = channel;
@@ -49,20 +50,24 @@ class Client {
 		{
 			return _channel;
 		};
-		
+
 		std::string &getNickname(){
 			return _nickname;
 		};
-		
+
 		std::string &getPassword(){
 			return _password;
 		};
 
-		void setPassword(std::string data){
+		void setPassword(const std::string& data){
 			_password = data;
 		};
-		
-		void setUsername(std::string username){
+
+		void setRealname(const std::string& realname){
+			_realname = realname;
+		};
+
+		void setUsername(const std::string& username){
 			_username = username;
 		};
 
