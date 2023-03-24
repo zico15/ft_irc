@@ -14,21 +14,7 @@
 # define SOCKET_HPP
 
 #include <iostream>
-//#include <string.h>
-//#include <sys/types.h>
-//#include <sys/socket.h>
-//#include <netinet/in.h>
-//#include <netdb.h>
-//#include <arpa/inet.h>
-//#include <stdlib.h>
-//#include <unistd.h>
-//#include <sys/ioctl.h>
-//#include <sys/poll.h>
-//#include <fcntl.h>
 #include <map>
-//#include <sys/socket.h>
-//#include <sys/poll.h>
-//#include <bits/stdc++.h>
 #include "Util.hpp"
 #include "Data.hpp"
 #include <vector>

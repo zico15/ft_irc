@@ -40,8 +40,15 @@ Server::Server(std::string hostname, int port, std::string password): _password(
 
 void Server::pass(Server *server, Client *client, String data)
 {
-    if (data[0])
-        client->setPassword(data.substr(1));
+    data = data.substr(1);
+
+
+    if (server->getPassword() == data)
+        client->setPassword(data);
+    else
+        server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
+    if (client->isValid())
+        server->send(client, RPL_WELCOME(client->getNickname()));
 }
 
 void Server::clear(Server *server, Client *client, String data)
@@ -53,13 +60,21 @@ void Server::clear(Server *server, Client *client, String data)
 void Server::nick(Server *server, Client *client, String data)
 {
     client->setNickname(data);
-    //std::cout << "Nick" << std::endl;
+    if (Client::isNickname(server->getClients(), client))
+    {   
+        server->send(client, NICKNAME_ERROR(client->getNickname()));
+        client->setNickname("");
+    }
+    else if (client->isValid())
+        server->send(client, RPL_WELCOME(client->getNickname()));
 }
 
 void Server::user(Server *server, Client *client, String data)
 {
     client->setUsername(data.substr(0, data.find(' ')));
     client->setRealname(data.substr(data.find(':') + 1));
+    if (client->isValid())
+        server->send(client, RPL_WELCOME(client->getNickname()));
 }
 
 /*
@@ -148,10 +163,8 @@ void Server::cap(Server *server, Client *client, String data)
         server->send(client, "CAP * ACK :multi-prefix");
     else if (data == "END")
     {
-        if (server->getPassword() == client->getPassword())
-            server->send(client, RPL_WELCOME(client->getNickname()));
-        else
-            server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
+    
+     
     }
 }
 

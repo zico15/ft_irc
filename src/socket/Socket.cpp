@@ -42,17 +42,6 @@ void Socket::init(t_type type, std::string hostname, int port, size_t maxConnect
 		for (size_t i = 1; i < _maxConnecting; i++)
 			setEvent(i, -1, 0);
 	}
-	/* Bonus - BOT 
-	else if (type == CLIENT)
-	{
-		struct hostent *sname = gethostbyname(hostname.c_str());
-		if (!sname)
-			exit_error("hostent");
-		bcopy((char *) sname->h_addr, (char *) &_addr.sin_addr.s_addr, sname->h_length);
-		if (connect(_fd, (struct sockaddr*) &_addr, sizeof(_addr)))
-			exit_error(strerror(errno));	
-		std::cout << "Client has been created: " << port << "\n";
-	}*/
 	_size_clinets = 1;
 	_fds[0].fd = _fd;
   	_fds[0].events = POLLIN;	

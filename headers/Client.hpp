@@ -30,6 +30,7 @@ class Client {
 		std::string			  _username;
 		std::string			  _realname;
 		std::string			  _password;
+
 		Console				  _console;
 		Channel 			 *_channel;
 
@@ -37,9 +38,11 @@ class Client {
 		Client();
 		Client(int fd, int index);
 		~Client();
+		bool isConnect;
 		void receiver();
 		bool run();
 		void setNickname(const std::string& nickname);
+		bool	isValid();
 
 		void setChannel(Channel *channel)
 		{
@@ -83,6 +86,6 @@ class Client {
 			return _index_fd;
 		};
 
-		static bool isNickname(std::map<int, Client *> clients, std::string nickname);
+		static bool isNickname(std::map<int, Client *> clients, Client *client);
 };
 #endif
