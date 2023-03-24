@@ -38,7 +38,7 @@ class Server: public Socket {
 		std::map<String, Channel *> &getChannels();
 	
 		static void connect(Server *server, Client *client, String data);
-		static void msg(Server *server, Client *client, String data);
+		static void errorcommand(Server *server, Client *client, String data);
 		static void help(Server *server, Client *client, String data);
 		static void nick(Server *server, Client *client, String data);
 		static void leave(Server *server, Client *client, String data);

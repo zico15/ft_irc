@@ -19,5 +19,5 @@
 #define  RPL_WELCOME(nickname) std::string(":"+SERVER_NAME+" 001 "+nickname+" :Welcome to server, "+nickname)
 #define  ERR_PASSWDMISMATCH(nickname) std::string(":"+SERVER_NAME+" 464 " + nickname + " :Password incorrect\r\n")
 #define  NICKNAME_ERROR(nickname) std::string("433 *"+nickname+"* :Nickname incorreta.")
-
+#define  ERR_UNKNOWNERROR(data)   std::string(":"+SERVER_NAME+" 421 " + std::string(data) +" :" + std::string(data))
 #endif

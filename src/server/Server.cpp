@@ -25,7 +25,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("connect",  &Server::connect);
     //CAP
     on("PASS",  &Server::pass);
-    _function_default =  &Server::msg;
+    _function_default =  &Server::errorcommand;
     on("/help", &Server::help);
     on("NICK", &Server::nick);
     on("USER", &Server::user);
@@ -234,21 +234,18 @@ void Server::connect(Server *server, Client *client, String data)
 void Server::execute(Client *client, std::string event, String data)
 {
 	function fun = _events[event];
-	if (!fun)
-    {    
-        fun = _function_default;
-        data = event + " " + data;
+	if (!fun)  
+    {
+        _function_default(this, client, event);
+        std::cout << "event: " << event << " msg: " <<  ERR_UNKNOWNERROR(event) << "\n";
     }
-    (fun)(this, client, data);
+    else
+        (fun)(this, client, data);
 }
 
-void Server::msg(Server *server, Client *client, String data)
+void Server::errorcommand(Server *server, Client *client, String data)
 {
-    Channel *channel = client->getChannel();
-    if (channel)
-    {    
-        server->send(client, channel->getClients(), data);
-    }
+    server->send(client, ERR_UNKNOWNERROR(data));
 }
 
 void Server::send(Client *client, std::vector<Client *> clients, std::string data, std::string color)
