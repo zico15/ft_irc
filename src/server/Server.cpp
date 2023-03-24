@@ -16,24 +16,21 @@ Server::Server(){}
 
 Server::Server(std::string hostname, int port, std::string password): _password(password)
 {
+    std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
+    init(SERVER, hostname, port, 200);
     //testing bellow
     on("PING", &Server::ping);
     on("CAP", &Server::cap);
     on("/who", &Server::who);
-    //testing up
-    std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
-    init(SERVER, hostname, port, 200);
     on("connect",  &Server::connect);
     //CAP
     on("PASS",  &Server::pass);
     _function_default =  &Server::msg;
-    //on("help", &Server::help);
-    //on("PRIVMSG", )
     on("/help", &Server::help);
     on("NICK", &Server::nick);
     on("USER", &Server::user);
-    //on("/join", &Server::join);
-    on("JOIN", &Server::join);
+
+    on("JOIN", &Channel::join);
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/who", &Server::who);
@@ -41,93 +38,61 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("/clear", &Server::clear);
 }
 
-void Server::pass(Client *client, String data)
+void Server::pass(Server *server, Client *client, String data)
 {
     if (data[0])
         client->setPassword(data.substr(1));
 }
 
-void Server::clear(Client *client, String data)
+void Server::clear(Server *server, Client *client, String data)
 {
-    send(client, "\x1B[2J\x1B[H");
+    server->send(client, "\x1B[2J\x1B[H");
 }
 
 /*nick [login]       change your login*/
-void Server::nick(Client *client, String data)
+void Server::nick(Server *server, Client *client, String data)
 {
     client->setNickname(data);
     //std::cout << "Nick" << std::endl;
 }
 
-void Server::user(Client *client, String data)
+void Server::user(Server *server, Client *client, String data)
 {
-    /*client->setUsername(data);
-    if (client->getPassword().compare(this->getPassword()))
-        send(client, PASSWORD_OK(client->getNickname()));
-    else if (Client::isNickname(this->_clients,client->getNickname()))
-        send(client, NICKNAME_ERROR(client->getNickname()));
-    else
-        send(client, PASSWORD_ERROR(client->getNickname()));*/
-//We still need to parse the user modes and then store this information in the server for example: "8 *" is the mode of this client
     client->setUsername(data.substr(0, data.find(' ')));
     client->setRealname(data.substr(data.find(':') + 1));
-    //std::string reply = "001 " + client->getUsername() + " :Welcome to server, " + client->getUsername() + "\n";
-
-    //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
-    //send(client, "001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n");
-    //send(client, "CAP * LS :multi-prefix message-tags \r\n");
 }
 
 /*
 /leave              leave current channel
 */
-void Server::leave(Client *client, String data)
+void Server::leave(Server *server, Client *client, String data)
 {
     if (client->getChannel())
     {    
         client->getChannel()->remove(client);
-        send(client, client->getChannel()->getClients(), "\rUser: " + client->getNickname() + " remove room\n", RED);
+        server->send(client, client->getChannel()->getClients(), "\rUser: " + client->getNickname() + " remove room\n", RED);
         client->setChannel(NULL);
-    }
-}
-
-/*join [channel]     join channel*/
-void Server::join(Client *client, String data)
-{
-    if (data.empty() || client->getChannel())
-        send(client, MSG_COMMAND_INVALID);
-    else
-    {
-        Channel *channel = _channels[data];
-        if (!channel)
-        {
-            channel = new Channel(data);
-            _channels[data] = channel; 
-        }
-        channel->add(client);
-        send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
     }
 }
 
 /*
 /quit               quit irc
 */
-void Server::quit(Client *client, String data)
+void Server::quit(Server *server, Client *client, String data)
 {
   if (client->getChannel())
-    leave(client, "");
-  send(client, "com^Dman^Dd\n", "");
+    server->leave(server, client, "");
+  server->send(client, "com^Dman^Dd\n", "");
   close(client->getFd());
-  setEvent(client->getIndexFd(), -1, 0, 0);
-  _clients.erase(client->getIndexFd());
+  server->setEvent(client->getIndexFd(), -1, 0, 0);
+  server->removeClient(client);
   delete client;
-  
 }
 
 /*
 /who                list of users in channel
 */
-void Server::who(Client *client, String data)
+void Server::who(Server *server, Client *client, String data)
 {
   if (client->getChannel())
   {
@@ -135,11 +100,11 @@ void Server::who(Client *client, String data)
     for (size_t i = 0; i < clients.size(); i++)
     {
         if (clients[i] != client)
-            send(client, std::to_string(i) + ": " + clients[i]->getNickname() + "\n", YELLOW);
+            server->send(client, std::to_string(i) + ": " + clients[i]->getNickname() + "\n", YELLOW);
     }
   }
   else
-    send(client, MSG_COMMAND_INVALID);
+    server->send(client, MSG_COMMAND_INVALID);
       /*
       Command: WHO
    Parameters: [<name> [<o>]]
@@ -166,51 +131,34 @@ void Server::who(Client *client, String data)
 }
 
 //The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message
-void Server::ping(Client *client, String data)
+void Server::ping(Server *server, Client *client, String data)
 {
-    std::string reply = ("PONG :" + data + "\n");
+    std::string reply = ("PONG :" + data );
 
     //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
-    send(client, reply);
+    server->send(client, reply);
 }
 
 //https://ircv3.net/specs/core/capability-negotiation-3.1.html#available-capabilities
-void Server::cap(Client *client, String data)
+void Server::cap(Server *server, Client *client, String data)
 {
-    //We still need to see what type of capability we can do with out irc server you can see in the link
-    //send(client, list of capabilities.....);
-
-    //for now we will send no capabilities, we need to study some of them like prefix!
-    //std::cout << YELLOW "The following message will be sent to the client: ->\t\t" RED << ":teste CAP " + client->getUsername() + " LS :message-tags" RESET << std::endl;
-    //send(client, ":teste CAP " + client->getUsername() + " LS :message-tags\r\n");
-    //send(client, "CAP * LS :message-tags\r\n");
-    // send(client, ":test CAP " + client->getUsername() + " REQ :message-tags\r\n");
-    // send(client, ":test CAP " + client->getUsername() + " ACK :message-tags\r\n");
     if (data == "LS 302")
-    {
-        //send(client, "CAP * NAK\r\n");
-        send(client, "CAP * LS :message-tags multi-prefix\r\n");
-    }
-    else if (data == "REQ :multi-prefix") {
-        send(client, "CAP * ACK :multi-prefix");
-    }
+        server->send(client, "CAP * LS :message-tags multi-prefix");
+    else if (data == "REQ :multi-prefix")
+        server->send(client, "CAP * ACK :multi-prefix");
     else if (data == "END")
     {
-        if (this->getPassword() == client->getPassword())
-        {
-            send(client, "001 " + client->getNickname() + " :Welcome to server, " + client->getNickname() + "\n");
-        }
+        if (server->getPassword() == client->getPassword())
+            server->send(client, RPL_WELCOME(client->getNickname()));
         else
-        {
-            send(client, ":test 464 " + client->getNickname() + " :Password incorrect\r\n");
-        }
+            server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
     }
 }
 
-/*
+/*+ " :Password incorrect\r\n"
 /msg [login] [msg]  submit msg at loginlogin
 */
-void Server::msg_private(Client *client, String data)
+void Server::msg_private(Server *server, Client *client, String data)
 {
     std::string user;
 
@@ -225,13 +173,13 @@ void Server::msg_private(Client *client, String data)
             if (clients[i]->getNickname() == user && client != clients[i])
             {    
                 data = "\r" + std::string(BLUE) + "[private: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
-                send(clients[i], data);
+                server->send(clients[i], data);
         
                 return ;
             }
         }
     }
-    send(client, MSG_MSG_INVALID);
+    server->send(client, MSG_MSG_INVALID);
 }
 
 /*
@@ -245,29 +193,29 @@ void Server::msg_private(Client *client, String data)
 /me                 defined an action
 [msg]               send msg in channel
 */
-void Server::help(Client *client, String data)
+void Server::help(Server *server, Client *client, String data)
 {
     if (data.size() == 0)
-        send(client, MSH_HELP);
+        server->send(client, MSH_HELP);
     else
-        send(client, "HELP LIST COMMAND!\r\n");
+        server->send(client, "HELP LIST COMMAND!\r\n");
 }
 
-void Server::connect(Client *client, String data)
+void Server::connect(Server *server, Client *client, String data)
 {
-    int fd_client = socketAccept();
+    int fd_client = server->socketAccept();
 	if (fd_client < 0)
 		return ;
-	for (size_t i = 1; i < getMaxConnecting(); i++)
+	for (size_t i = 1; i < server->getMaxConnecting(); i++)
     {
-        if (getSocket(i).fd == -1)
+        if (server->getSocket(i).fd == -1)
 		{
-			setEvent(i, fd_client, POLLIN | POLLHUP);
-            _clients[i] = new Client(_fds[i].fd, i);
+			server->setEvent(i, fd_client, POLLIN | POLLHUP);
+            server->addClient(i, new Client(server->getSocket(i).fd, i));
 			break;
 		}
     }
-    setEvent(0, getFd(), POLLIN | POLLOUT | POLLHUP);
+    server->setEvent(0, server->getFd(), POLLIN | POLLOUT | POLLHUP);
 }
 
 void Server::execute(Client *client, std::string event, String data)
@@ -278,15 +226,15 @@ void Server::execute(Client *client, std::string event, String data)
         fun = _function_default;
         data = event + " " + data;
     }
-    (this->*fun)(client, data);
+    (fun)(this, client, data);
 }
 
-void Server::msg(Client *client, String data)
+void Server::msg(Server *server, Client *client, String data)
 {
     Channel *channel = client->getChannel();
     if (channel)
     {    
-        send(client, channel->getClients(), data);
+        server->send(client, channel->getClients(), data);
     }
 }
 
@@ -308,6 +256,9 @@ void Server::send(Client *client, std::string data, std::string color)
 
 std::string &Server::getPassword(){
 	return _password;
+}
+std::map<String, Channel *> &Server::getChannels(){
+    return _channels;
 };
 
 Server::~Server()

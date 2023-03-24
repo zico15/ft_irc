@@ -158,12 +158,27 @@ void	Socket::emitAll(const std::string &data)
 
 void Socket::on(std::string event, function fun)
 {
-	_events.insert(std::pair<std::string, function>(event,fun));
+	_events.insert(std::pair<std::string, function>(event, fun));
 }
 
 void Socket::execute(Client *client, std::string event, String data)
 {
 	return ;
+}
+
+std::map<int, Client *> &Socket::getClients()
+{
+    return this->_clients; 
+}
+
+void Socket::removeClient(Client *client)
+{
+	_clients.erase(client->getIndexFd());
+}
+
+void Socket::addClient(int fd, Client *client)
+{
+	_clients[fd] = client;
 }
 
 void Socket::run()
@@ -215,8 +230,4 @@ ctrl+D - REVIEW
 • Handle file transfer. - VERIFICAR
 • A bot - Ruben
 
-
-https://docs.kde.org/trunk5/en/konversation/konversation/irc-cmds.html
-https://defs.ircdocs.horse/defs/numerics.html
-https://dd.ircdocs.horse/refs/numerics/001.html
 */

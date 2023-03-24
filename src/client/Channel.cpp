@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include "Server.hpp"
 
 Channel::Channel(std::string	channel): _channel(channel)
 {
@@ -66,4 +67,23 @@ std::ostream& operator<<(std::ostream& os, Channel *channel)
 	{*/
 	//}
     return os;
+}
+
+
+/*join [channel]     join channel*/
+void Channel::join(Server *server, Client *client, String data)
+{
+    if (data.empty() || client->getChannel())
+        server->send(client, MSG_COMMAND_INVALID);
+    else
+    {
+        Channel *channel = server->getChannels()[data];
+        if (!channel)
+        {
+            channel = new Channel(data);
+            server->getChannels()[data] = channel;
+        }
+        channel->add(client);
+        server->send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
+    }
 }

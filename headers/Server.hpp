@@ -33,24 +33,26 @@ class Server: public Socket {
 		~Server();
 		void send(Client *client, std::string data, std::string color = "\033[0m");
 		void send(Client *client, std::vector<Client *> clients, std::string data, std::string color = "\033[0m");
-		void connect(Client *client, String data);
-		void msg(Client *client, String data);
-		void help(Client *client, String data);
-		void nick(Client *client, String data);
-		void join(Client *client, String data);
 		void execute(Client *client, std::string event, String data = "");
-		void leave(Client *client, String data);
-		void quit(Client *client, String data);
-		void who(Client *client, String data);
-		void msg_private(Client *client, String data);
-		void clear(Client *client, String data);
-	    void pass(Client *client, String data);
-		void user(Client *client, String data);
 		std::string &getPassword();
+		std::map<String, Channel *> &getChannels();
+	
+		static void connect(Server *server, Client *client, String data);
+		static void msg(Server *server, Client *client, String data);
+		static void help(Server *server, Client *client, String data);
+		static void nick(Server *server, Client *client, String data);
+		static void leave(Server *server, Client *client, String data);
+		static void quit(Server *server, Client *client, String data);
+		static void who(Server *server, Client *client, String data);
+		static void msg_private(Server *server, Client *client, String data);
+		static void clear(Server *server, Client *client, String data);
+	    static void pass(Server *server, Client *client, String data);
+		static void user(Server *server, Client *client, String data);
+		static void	ping(Server *server, Client *client, String data);
+		static void	cap(Server *server, Client *client, String data);
 
-		typedef void (Server::*functionsd)(void *data);
+		
 
-		void	ping(Client *client, String data);
-		void	cap(Client *client, String data);
+
 };
 #endif

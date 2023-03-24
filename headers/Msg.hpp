@@ -14,8 +14,10 @@
 # define MSG_HPP
 
 
-#define  PASSWORD_OK(nickname) std::string(":teste 001 "+nickname+" :Welcome to server, "+nickname)
-#define  PASSWORD_ERROR(nickname) std::string("NOTICE "+nickname+" :Senha incorreta.")
+#define SERVER_NAME  std::string("test")
+
+#define  RPL_WELCOME(nickname) std::string(":"+SERVER_NAME+" 001 "+nickname+" :Welcome to server, "+nickname)
+#define  ERR_PASSWDMISMATCH(nickname) std::string(":"+SERVER_NAME+" 464 " + nickname + " :Password incorrect\r\n")
 #define  NICKNAME_ERROR(nickname) std::string("433 *"+nickname+"* :Nickname incorreta.")
 
 #endif

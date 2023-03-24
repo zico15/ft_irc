@@ -39,6 +39,7 @@ typedef std::string String;
 typedef struct pollfd t_socket;
 
 class Client;
+class Server;
 
 class Channel {
 
@@ -55,6 +56,7 @@ class Channel {
 		std::string getName();
 		std::vector<Client *> getClients();
 		size_t getSize();
+		static void join(Server *server, Client *client, String data);
 };
 
 #include "Client.hpp"

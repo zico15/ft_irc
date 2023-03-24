@@ -42,7 +42,7 @@ typedef struct pollfd t_socket;
 
 class Server;
 
-typedef void (Server::*function)(Client *client, String data);
+typedef void (*function)(Server *server, Client *client, String data);
 
 typedef enum e_type
 {
@@ -83,21 +83,24 @@ class Socket
 	public:
 		Socket();
 		~Socket();
-		void 				init(t_type type, std::string hostname,int port, size_t maxConnecting = 2);
-		int					socketListen(void);
-		int					getMaxConnecting();
-		int					getFd();
-		t_socket			*getSockets();
-		t_socket			&getSocket(int i);
-		std::string	const	&getHostName() const;
-		int					socketAccept(void);
-		void				setEvent(int i, int fd, short event, int revents = 0);
-		void				recive(int i);
-		void 				run();
-		void				emit(int i, const std::string &data);
-		void				emitAll(const std::string &data);
-		void 				on(std::string event, void (Server::*function)(Client *client, String data));
-		virtual void		execute(Client *client, std::string event, String data = "");
+		void 					init(t_type type, std::string hostname,int port, size_t maxConnecting = 2);
+		int						socketListen(void);
+		int						getMaxConnecting();
+		int						getFd();
+		t_socket				*getSockets();
+		t_socket				&getSocket(int i);
+		std::string	const		&getHostName() const;
+		int						socketAccept(void);
+		void					setEvent(int i, int fd, short event, int revents = 0);
+		void					recive(int i);
+		void 					run();
+		void					emit(int i, const std::string &data);
+		void					emitAll(const std::string &data);
+		void 					on(std::string event, void (*function)(Server *server, Client *client, String data));
+		virtual void			execute(Client *client, std::string event, String data = "");
+		std::map<int, Client *> &getClients();
+		void					addClient(int fd, Client *client);
+		void					removeClient(Client *client);
 };	
 
 
