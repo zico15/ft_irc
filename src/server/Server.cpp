@@ -50,10 +50,7 @@ void Server::pass(Server *server, Client *client, String data)
     data = data.substr(1);
 
 
-    if (server->getPassword() == data)
-        client->setPassword(data);
-    else
-        server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
+    client->setPassword(data);
     if (client->isValid())
         server->send(client, RPL_WELCOME(client->getNickname()));
 }
@@ -79,8 +76,15 @@ void Server::user(Server *server, Client *client, String data)
 {
     client->setUsername(data.substr(0, data.find(' ')));
     client->setRealname(data.substr(data.find(':') + 1));
+    if (server->getPassword() != client->getPassword())
+    {
+        std::cout << "A senha esta incorreta!\n";
+        server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
+        client->setPassword("");
+    }
     if (client->isValid())
         server->send(client, RPL_WELCOME(client->getNickname()));
+
 }
 
 /*
