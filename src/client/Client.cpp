@@ -14,19 +14,20 @@
 
 static	int		id_clinet = 1;	
 
-Client::Client(): isConnect(false)
+Client::Client(): _isConnect(false)
 {
     return ;
 }
 
-Client::Client(int fd, int index): isConnect(false)
+Client::Client(int fd, int index): _isConnect(false)
 {
     _fd = fd;
     _index_fd = index;
     _username = "";
     _nickname = "";
     _password = "";
-    std::cout << MSG_NEW_CLIENT(std::string("Tes"), std::to_string(fd));
+    _capend = false;
+    std::cout << MSG_NEW_CLIENT(std::string(""), std::to_string(fd));
 }
 
 Client::~Client() 
@@ -36,7 +37,7 @@ Client::~Client()
 
 bool Client::isValid()
 {
-    return !(_username.empty() || _nickname.empty() || _password.empty());
+    return !(_username.empty() || _nickname.empty() || _password.empty() || !_capend);
 }
 void Client::setNickname(const std::string& nickname){
 	_nickname = trim(nickname);
@@ -50,7 +51,6 @@ bool Client::isNickname(std::map<int, Client *> clients, Client *client)
     it = clients.begin();
     for (it; it != clients.end(); it++)
     {
-        std::cout << "NICK:" << it->second->getNickname() << " | " << client->getNickname().compare(it->second->getNickname())<< "\n";
         if (client != it->second && client->getNickname().compare(it->second->getNickname()) == 0)
             return (true);
     }

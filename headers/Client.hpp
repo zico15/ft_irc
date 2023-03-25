@@ -30,6 +30,8 @@ class Client {
 		std::string			  _username;
 		std::string			  _realname;
 		std::string			  _password;
+		bool 				  _isConnect;
+		bool				  _capend;
 
 		Console				  _console;
 		Channel 			 *_channel;
@@ -38,7 +40,6 @@ class Client {
 		Client();
 		Client(int fd, int index);
 		~Client();
-		bool isConnect;
 		void receiver();
 		bool run();
 		void setNickname(const std::string& nickname);
@@ -47,6 +48,10 @@ class Client {
 		void setChannel(Channel *channel)
 		{
 			_channel = channel;
+		};
+
+		void setcapend(bool status){
+			_capend = status;
 		};
 
 		Channel *getChannel()
