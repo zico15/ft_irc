@@ -164,14 +164,16 @@ void Server::msg_private(Server *server, Client *client, String data)
     std::string dest;
     Client  *client_dest;
 
-    dest = data.substr(0, data.find_first_of(SPACES, 0));
-    
-    if (user.empty())
+    dest = data.substr(0, data.find(' '));
+
+    if (dest.empty())
         return ;
-    
-    dest = dest.substr(1, dest.find(":")-1);
+
     client_dest = server->getClient(dest);
-    std::string message = data.substr(0, data.find(":"));
+    std::string message = data.substr(data.find(":"), data.size());
+
+    if (!client_dest)
+        return;
 
     message = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + client_dest->getUsername() + " " + message;
 
