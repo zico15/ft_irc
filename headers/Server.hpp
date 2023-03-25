@@ -50,6 +50,7 @@ class Server: public Socket {
 		static void user(Server *server, Client *client, String data);
 		static void	ping(Server *server, Client *client, String data);
 		static void	cap(Server *server, Client *client, String data);
+		static void userhost(Server *server, Client *client, String data);
 
 		
 
