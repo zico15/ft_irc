@@ -114,6 +114,7 @@ void Server::quit(Server *server, Client *client, String data)
 */
 void Server::who(Server *server, Client *client, String data)
 {
+    //falta criar uma funcao que faz send para o client todos os users e respetivas salas onde estão dentro, ver MSG.hpp para ver implementação
     server->send(client, RPL_ENDOFWHO(client));
 }
 
