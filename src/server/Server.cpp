@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/21 23:57:20 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 14:58:37 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ Server::Server(std::string hostname, int port, std::string password): _password(
 {
     std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
     init(SERVER, hostname, port, 200);
+
+    on("PRIVMSG", &Server::msg_private);
     //testing bellow
     on("PING", &Server::ping);
     on("CAP", &Server::cap);
@@ -34,7 +36,6 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("JOIN", &Channel::join);
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
-    on("/msg", &Server::msg_private);
     on("/clear", &Server::clear);
 }
 
@@ -147,13 +148,27 @@ void Server::cap(Server *server, Client *client, String data)
 */
 void Server::msg_private(Server *server, Client *client, String data)
 {
-    std::string user;
+    std::string user = "";
+    int         send_fd = -1;
+    std::string message = "PRIVMSG ";
 
     user = data.substr(0, data.find_first_of(SPACES, 0));
+    
+    if (user.empty())
+        return ;
+    
+    message = "PRIVMSG " + user + " ";
+    std::cout << "User: " << user << std::endl;
+    std::cout << "message: " << message << std::endl;
+    
 	data = &data[user.size()];
 	data = trim(data);
+    std::cout << "data: " << data << std::endl;
+
     if (client->getChannel())
     {
+        std::cout << "aquiii: " << data << std::endl;
+    
         std::vector<Client *> clients = client->getChannel()->getClients();
         for (size_t i = 0; i < clients.size(); i++)
         {
@@ -165,6 +180,10 @@ void Server::msg_private(Server *server, Client *client, String data)
                 return ;
             }
         }
+    }
+    else
+    {
+        //Public Channel
     }
     server->send(client, MSG_MSG_INVALID);
 }
