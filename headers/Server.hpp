@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/25 17:12:48 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:49:07 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <string>
 #include <time.h>
 #include <cstdlib>
+#include <unistd.h>
 #include "Socket.hpp"
 #include "Channel.hpp"
 

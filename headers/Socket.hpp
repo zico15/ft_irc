@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 00:36:38 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:36:30 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ class Socket
 		std::map<int, Client *> &getClients();
 		void					addClient(int fd, Client *client);
 		void					removeClient(Client *client);
+		Client *				getClient(std::string nickname);
+
 };	
 
 

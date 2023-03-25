@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 17:53:18 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:48:29 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,44 +155,27 @@ void Server::cap(Server *server, Client *client, String data)
 */
 void Server::msg_private(Server *server, Client *client, String data)
 {
-    std::string user = "";
-    int         send_fd = -1;
-    std::string message = "PRIVMSG ";
+    //PRIVMSG <nick> :<mensagem>
+    //:nick!user@host PRIVMSG user
 
-    user = data.substr(0, data.find_first_of(SPACES, 0));
+    std::string user = client->getUsername();
+    std::string nick = client->getNickname();
+    std::string host = server->getHostName();
+    std::string dest;
+    Client  *client_dest;
+
+    dest = data.substr(0, data.find_first_of(SPACES, 0));
     
     if (user.empty())
         return ;
     
-    message = "PRIVMSG " + user + " ";
-    std::cout << "User: " << user << std::endl;
-    std::cout << "message: " << message << std::endl;
-    
-	data = &data[user.size()];
-	data = trim(data);
-    std::cout << "data: " << data << std::endl;
+    dest = dest.substr(1, dest.find(":")-1);
+    client_dest = server->getClient(dest);
+    std::string message = data.substr(0, data.find(":"));
 
-    if (client->getChannel())
-    {
-        std::cout << "aquiii: " << data << std::endl;
-    
-        std::vector<Client *> clients = client->getChannel()->getClients();
-        for (size_t i = 0; i < clients.size(); i++)
-        {
-            if (clients[i]->getNickname() == user && client != clients[i])
-            {    
-                data = "\r" + std::string(BLUE) + "[private: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
-                server->send(clients[i], data);
-        
-                return ;
-            }
-        }
-    }
-    else
-    {
-        //Public Channel
-    }
-    server->send(client, MSG_MSG_INVALID);
+    message = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + client_dest->getUsername() + " " + message;
+
+    server->send(client_dest, message);
 }
 
 /*

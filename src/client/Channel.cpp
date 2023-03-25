@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 18:18:31 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:20:50 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void Channel::join(Server *server, Client *client, String data)
     //transformar
     //
     //:nick!user@host JOIN #canal
-    //:nome_servidor 353 nick = #canal :@nick1 +nick2
+
     std::string canal = data;
     std::string nick = client->getNickname();
     std::string user = client->getUsername();
