@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 18:20:50 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:51:39 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void Channel::join(Server *server, Client *client, String data)
 
 
         //:nick!user@host JOIN #canal
-        std::string message = ":" + nick + "!" + user + "@" + server->getHostName() + " JOIN " + canal + "\r\n";
+        std::string message = ":" + nick + "!" + user + "@" + server->getHostName() + " JOIN " + canal;
         server->send(client, message, YELLOW);
         //send(client->getFd(), message.c_str(), message.size(), 0);
 
