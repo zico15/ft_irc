@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/10 10:13:17 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/25 18:06:05 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,16 @@ std::ostream& operator<<(std::ostream& os, Channel *channel)
 /*join [channel]     join channel*/
 void Channel::join(Server *server, Client *client, String data)
 {
+    //JOIN #canal
+    //
+    //transformar
+    //
+    //:nick!user@host JOIN #canal
+    //:nome_servidor 353 nick = #canal :@nick1 +nick2
+    std::string canal = data;
+    std::string nick = client->getNickname();
+    
+
     if (data.empty() || client->getChannel())
         server->send(client, MSG_COMMAND_INVALID);
     else
@@ -84,6 +94,21 @@ void Channel::join(Server *server, Client *client, String data)
             server->getChannels()[data] = channel;
         }
         channel->add(client);
-        server->send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
+
+
+        //:nick!user@host JOIN #canal
+        std::string message = ":test JOIN #" + canal + "\r\n";
+//        std::string message = ":" + nick + "!user@" + server->getHostName() + " JOIN " + data + "\r\n";
+        send(client->getFd(), message.c_str(), message.size(), 0);
+
+        //:nome_servidor 353 nick = #canal :@nick1 +nick2
+        message = ":test 353 " + nick + " = #" + canal + " :@nick1 +nick2\r\n";
+        send(client->getFd(), message.c_str(), message.size(), 0);
+        
+        //:nome_servidor 366 nick
+        message = ":test 366 " + nick + " #" + canal + " :End of /NAMES list\r\n";
+        send(client->getFd(), message.c_str(), message.size(), 0);
+        
+        //server->send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
     }
 }

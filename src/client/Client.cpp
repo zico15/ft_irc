@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 00:42:26 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 17:27:06 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,3 +56,8 @@ bool Client::isNickname(std::map<int, Client *> clients, Client *client)
     }
     return (false);
 }
+
+void Client::addChannel(std::string name, Channel *channel)
+{
+    _channels.insert(std::make_pair(name, channel));
+};

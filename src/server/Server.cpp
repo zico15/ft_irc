@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 14:58:37 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 17:53:18 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/clear", &Server::clear);
+
+    addChannel("public");
 }
 
 void Server::userhost(Server *server, Client *client, String data)
@@ -139,7 +141,12 @@ void Server::cap(Server *server, Client *client, String data)
     {
         client->setcapend(true);
         if (client->isValid())
+        {
             server->send(client, RPL_WELCOME(client->getNickname()));
+            //Channel *public_channel = this->_channels["public"];
+            //client->setChannel(_channels["public"]);
+            //client->addChannel(_channels["public"])
+        }
     }
 }
 
@@ -254,6 +261,11 @@ void Server::send(Client *client, std::string data, std::string color)
    emit(client->getIndexFd(), data + "\r\n");
 }
 
+void Server::addChannel(std::string const channelName)
+{
+    _channels.insert(std::make_pair(channelName, new Channel(channelName)));
+}
+
 std::string &Server::getPassword(){
 	return _password;
 }
@@ -265,4 +277,3 @@ Server::~Server()
 {
     std::cout << "~Server\n";
 }
-
