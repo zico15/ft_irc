@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 19:29:11 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 19:57:25 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,10 +172,26 @@ void Server::msg_private(Server *server, Client *client, String data)
     client_dest = server->getClient(dest);
     std::string message = data.substr(data.find(":"), data.size());
 
-    if (!client_dest)
+    if (!client_dest && dest.find("#") == std::string::npos)
         return;
+    else if (dest.find("#") == 0)
+    {
+        message = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + client_dest->getUsername() + " " + message;
 
-    message = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + client_dest->getUsername() + " " + message;
+        Channel *chanel = server->getChannels()[dest];
+        if (chanel)
+        {
+            std::vector<Client *> clientss = chanel->getClients();
+            std::vector<Client *>::iterator it;
+            for (it = clientss.begin(); it < clientss.end(); ++it)
+            {
+                server->send((*it), message); 
+            }
+            
+        }
+        
+        return ;
+    }
 
     server->send(client_dest, message);
 }
