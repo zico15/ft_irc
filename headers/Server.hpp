@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/25 18:49:07 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 19:28:48 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Server: public Socket {
 		static void	cap(Server *server, Client *client, String data);
 		static void userhost(Server *server, Client *client, String data);
 
-		void addChannel(std::string const channelName);
+		Channel *addChannel(std::string const channelName);
 
 
 };

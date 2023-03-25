@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 18:48:29 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 19:29:11 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,9 +246,10 @@ void Server::send(Client *client, std::string data, std::string color)
    emit(client->getIndexFd(), data + "\r\n");
 }
 
-void Server::addChannel(std::string const channelName)
+Channel *Server::addChannel(std::string const channelName)
 {
-    _channels.insert(std::make_pair(channelName, new Channel(channelName)));
+    _channels[channelName] = new Channel(channelName);
+    return _channels[channelName];
 }
 
 std::string &Server::getPassword(){

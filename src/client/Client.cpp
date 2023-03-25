@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 17:27:06 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 19:31:07 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,5 @@ bool Client::isNickname(std::map<int, Client *> clients, Client *client)
 
 void Client::addChannel(std::string name, Channel *channel)
 {
-    _channels.insert(std::make_pair(name, channel));
+    _channels[channel->getName()] = channel;
 };

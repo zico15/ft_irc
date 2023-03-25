@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 18:51:39 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 19:31:18 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,14 +88,12 @@ void Channel::join(Server *server, Client *client, String data)
         server->send(client, MSG_COMMAND_INVALID);
     else
     {
+        std::cout << "Nome do channel: " << data << std::endl;
         Channel *channel = server->getChannels()[data];
         if (!channel)
-        {
-            channel = new Channel(data);
-            server->getChannels()[data] = channel;
-        }
+            channel = server->addChannel(data);
         channel->add(client);
-
+        client->addChannel(data, channel);
 
         //:nick!user@host JOIN #canal
         std::string message = ":" + nick + "!" + user + "@" + server->getHostName() + " JOIN " + canal;
