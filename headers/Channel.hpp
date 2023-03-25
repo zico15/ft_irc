@@ -44,6 +44,8 @@ class Channel {
 		std::vector<Client *> getClients();
 		size_t getSize();
 		static void join(Server *server, Client *client, String data);
+		static void part(Server *server, Client *client, String data);
+
 };
 
 #include "Client.hpp"

@@ -32,6 +32,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("USER", &Server::user);
 
     on("JOIN", &Channel::join);
+    on("PART", &Channel::part);
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/msg", &Server::msg_private);

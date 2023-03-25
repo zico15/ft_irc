@@ -21,8 +21,10 @@
 #define  NICKNAME_ERROR(nickname) std::string("433 *"+nickname+"* :Nickname incorreta.")
 #define  ERR_UNKNOWNERROR(data)   std::string(":" + SERVER_NAME + " 421 " + std::string(data) + " :" + std::string(data))
 #define  RPL_USERHOST(data)       std::string(":" + SERVER_NAME + " 302 " + std::string(data.substr(0, data.find(' '))) + " :" + data)
-#define  RPL_ENDOFWHO(client)     std::string(":" + SERVER_NAME + " 315 " + std::string(client->getUsername()) + " :End of /WHO list.")
+#define  RPL_ENDOFWHO(client)     std::string(":" + SERVER_NAME + " 315 " + std::string(client->getNickname()) + " :End of /WHO list.")
+#define  RPL_TOPIC(client, data)  std::string(":" + SERVER_NAME + " 332 " + std::string(client->getNickname()) + " " + data.substr(0, data.find(' ')) + " :Welcome to " + data.substr(0, data.find(' ')))
 
+//JOIN RPL_TOPIC REPLY: :irc.example.com 332 username #channel :Welcome to #channel
 
 //352	RPL_WHOREPLY	RFC1459	<client> <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real_name>	Reply to vanilla WHO (See RFC). This format can be very different if the 'WHOX' version of the command is used (see ircu).
 //315	RPL_ENDOFWHO	RFC1459	<client> <name> :<info>	Used to terminate a list of RPL_WHOREPLY replies
