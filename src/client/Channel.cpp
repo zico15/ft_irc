@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 18:06:05 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:18:31 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void Channel::join(Server *server, Client *client, String data)
     //:nome_servidor 353 nick = #canal :@nick1 +nick2
     std::string canal = data;
     std::string nick = client->getNickname();
+    std::string user = client->getUsername();
     
 
     if (data.empty() || client->getChannel())
@@ -97,17 +98,18 @@ void Channel::join(Server *server, Client *client, String data)
 
 
         //:nick!user@host JOIN #canal
-        std::string message = ":test JOIN #" + canal + "\r\n";
-//        std::string message = ":" + nick + "!user@" + server->getHostName() + " JOIN " + data + "\r\n";
-        send(client->getFd(), message.c_str(), message.size(), 0);
+        std::string message = ":" + nick + "!" + user + "@" + server->getHostName() + " JOIN " + canal + "\r\n";
+        server->send(client, message, YELLOW);
+        //send(client->getFd(), message.c_str(), message.size(), 0);
 
+        /* Lista de Usuarios no Server
         //:nome_servidor 353 nick = #canal :@nick1 +nick2
         message = ":test 353 " + nick + " = #" + canal + " :@nick1 +nick2\r\n";
         send(client->getFd(), message.c_str(), message.size(), 0);
         
         //:nome_servidor 366 nick
         message = ":test 366 " + nick + " #" + canal + " :End of /NAMES list\r\n";
-        send(client->getFd(), message.c_str(), message.size(), 0);
+        send(client->getFd(), message.c_str(), message.size(), 0);*/
         
         //server->send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
     }
