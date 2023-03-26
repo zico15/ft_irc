@@ -35,7 +35,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("PART", &Channel::part);
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
-    on("/msg", &Server::msg_private);
+    on("PRIVMSG", &Server::msg_private);
     on("/clear", &Server::clear);
 }
 
@@ -44,6 +44,37 @@ void Server::userhost(Server *server, Client *client, String data)
     server->send(client, RPL_USERHOST(data));
 }
 
+bool Server::isChannel(std::string data) {
+    std::map<std::string, Channel *>::iterator it;
+
+    it = _channels.begin();
+    for (it; it != _channels.end(); it++)
+    {
+        if (it->second->getName() == data.substr(0, data.find(' ')))
+            return (true);
+    }
+    return (false);
+}
+
+void Server::addChannel(std::string const name)
+{
+    _channels[name] = new Channel(name);
+}
+
+void Server::addClientToChannel(Server *server, Client *client, String channelname)
+{
+    std::map<std::string, Channel *>::iterator it;
+
+    it = _channels.begin();
+    for (it; it != _channels.end(); it++)
+    {
+        if (it->second->getName() == channelname)
+        {
+            it->second->add(client);
+            break ;
+        }
+    }
+}
 
 void Server::pass(Server *server, Client *client, String data)
 {
@@ -152,26 +183,24 @@ void Server::cap(Server *server, Client *client, String data)
 */
 void Server::msg_private(Server *server, Client *client, String data)
 {
-    std::string user;
+    std::string dest = data.substr(0, data.find(' '));
+    std::string message = data;
 
-    user = data.substr(0, data.find_first_of(SPACES, 0));
-	data = &data[user.size()];
-	data = trim(data);
-    if (client->getChannel())
-    {
-        std::vector<Client *> clients = client->getChannel()->getClients();
-        for (size_t i = 0; i < clients.size(); i++)
-        {
-            if (clients[i]->getNickname() == user && client != clients[i])
-            {    
-                data = "\r" + std::string(BLUE) + "[private: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
-                server->send(clients[i], data);
-        
-                return ;
+    if (dest[0] == '#') {
+        std::map<std::string, Channel *>::iterator it;
+
+        it = server->getChannels().begin();
+        for (it; it != server->getChannels().end(); it++) {
+            if (it->second->getName() == dest) {
+                it->second->sendmessage(server, client, message);
+                break ;
             }
         }
     }
-    server->send(client, MSG_MSG_INVALID);
+    else
+    {
+        //enviar privado para dest
+    }
 }
 
 /*

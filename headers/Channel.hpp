@@ -31,7 +31,7 @@ class Server;
 class Channel {
 
 	private:
-		std::string							_channel;	  
+		std::string							_channelName;	  
 		std::vector<Client *>				_clients;
 		std::vector<String>					_msg;
 
@@ -45,6 +45,7 @@ class Channel {
 		size_t getSize();
 		static void join(Server *server, Client *client, String data);
 		static void part(Server *server, Client *client, String data);
+		void		sendmessage(Server *server, Client *client, String data);
 
 };
 

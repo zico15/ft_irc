@@ -51,8 +51,10 @@ class Server: public Socket {
 		static void	ping(Server *server, Client *client, String data);
 		static void	cap(Server *server, Client *client, String data);
 		static void userhost(Server *server, Client *client, String data);
+		bool 		isChannel(std::string data);
+		void		addChannel(std::string const name);
+		void		addClientToChannel(Server *server, Client *client, String data);
 
-		
 
 
 };
