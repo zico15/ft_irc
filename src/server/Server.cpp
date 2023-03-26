@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 19:57:25 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 00:37:43 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
     init(SERVER, hostname, port, 200);
 
-    on("PRIVMSG", &Server::msg_private);
     //testing bellow
     on("PING", &Server::ping);
     on("CAP", &Server::cap);
@@ -34,6 +33,21 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("USER", &Server::user);
 
     on("JOIN", &Channel::join);
+    on("PRIVMSG", &Server::msg_private);
+    
+    /*---- Leave the Channel ----
+    event: PART
+    value: #chanel1 :chanel1
+    */
+    on("PART", &Channel::leave);
+
+
+    /*---- QUIT the Channel ----
+    event: QUIT
+    value: :Konversation terminated!
+    */
+    on("QUIT", &Server::quit);
+
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/clear", &Server::clear);
@@ -90,12 +104,12 @@ void Server::user(Server *server, Client *client, String data)
 */
 void Server::leave(Server *server, Client *client, String data)
 {
-    if (client->getChannel())
+    /*if (client->getChannel())
     {    
         client->getChannel()->remove(client);
         server->send(client, client->getChannel()->getClients(), "\rUser: " + client->getNickname() + " remove room\n", RED);
         client->setChannel(NULL);
-    }
+    }*/
 }
 
 /*
@@ -103,13 +117,13 @@ void Server::leave(Server *server, Client *client, String data)
 */
 void Server::quit(Server *server, Client *client, String data)
 {
-  if (client->getChannel())
+  /*if (client->getChannel())
     server->leave(server, client, "");
   server->send(client, "com^Dman^Dd\n", "");
   close(client->getFd());
   server->setEvent(client->getIndexFd(), -1, 0, 0);
   server->removeClient(client);
-  delete client;
+  delete client;*/
 }
 
 /*
@@ -156,7 +170,8 @@ void Server::cap(Server *server, Client *client, String data)
 void Server::msg_private(Server *server, Client *client, String data)
 {
     //PRIVMSG <nick> :<mensagem>
-    //:nick!user@host PRIVMSG user
+    //:nick!user@host PRIVMSG (dest)nick
+    //:nick!user@host PRIVMSG #channel
 
     std::string user = client->getUsername();
     std::string nick = client->getNickname();
@@ -172,28 +187,29 @@ void Server::msg_private(Server *server, Client *client, String data)
     client_dest = server->getClient(dest);
     std::string message = data.substr(data.find(":"), data.size());
 
-    if (!client_dest && dest.find("#") == std::string::npos)
-        return;
-    else if (dest.find("#") == 0)
+    if (client_dest) //Dest is a Client
     {
-        message = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + client_dest->getUsername() + " " + message;
-
-        Channel *chanel = server->getChannels()[dest];
-        if (chanel)
-        {
-            std::vector<Client *> clientss = chanel->getClients();
-            std::vector<Client *>::iterator it;
-            for (it = clientss.begin(); it < clientss.end(); ++it)
-            {
-                server->send((*it), message); 
-            }
-            
-        }
+        message = PRV_MSG(nick, user, host, client_dest->getNickname(), message);
         
-        return ;
+        server->send(client_dest, message); 
     }
+    else if (dest.find("#") == 0) //Dest is a Channel
+    {
+        message = PRV_MSG(nick, user, host, dest, message);
+        
+        Channel *channel = server->getChannels()[dest];
+        
+        if (channel)
+        {
+            std::vector<Client *> clients = channel->getClients();
+            std::vector<Client *>::iterator it;
+        
+            if (channel->isInTheChannel(client) == false) //Client is not in the Server
+                return ;
 
-    server->send(client_dest, message);
+            channel->sendMsgForAll(server, client, message);
+        }
+    }
 }
 
 /*
@@ -264,7 +280,12 @@ void Server::send(Client *client, std::string data, std::string color)
 
 Channel *Server::addChannel(std::string const channelName)
 {
-    _channels[channelName] = new Channel(channelName);
+    if (!_channels[channelName])
+    {
+        std::cout << "\033[35m" << "Server:\nAdicionado o Channel: " << channelName << "\033[0m" << std::endl;
+        _channels[channelName] = new Channel(channelName);   
+    }
+    
     return _channels[channelName];
 }
 

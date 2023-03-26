@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 17:40:43 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/26 23:55:28 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ class Client {
 		bool				  _capend;
 
 		Console				  _console;
-		Channel				 *_channel;
 		std::map<std::string, Channel *> _channels;
 
 	public:
@@ -46,19 +45,15 @@ class Client {
 		void setNickname(const std::string& nickname);
 		bool	isValid();
 		void	addChannel(std::string name, Channel *channel);
-
-		void setChannel(Channel *channel)
-		{
-			_channel = channel;
-		};
+		void	removeChannel(std::string name, Channel *channel);
 
 		void setcapend(bool status){
 			_capend = status;
 		};
 
-		Channel *getChannel()
+		std::map<String, Channel *> &getChannels()
 		{
-			return _channel;
+			return _channels;
 		};
 
 		std::string &getNickname(){

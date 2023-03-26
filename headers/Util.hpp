@@ -42,6 +42,7 @@
 
 #define MSH_HELP "help /me [msg]\r\nhelp /ame [msg]\r\nhelp /join <channel> [pwd]\r\nhelp /j <channel> [pwd]\r\nhelp /leave <channel> [reason]\r\nhelp /quit\r\nhelp /notice <nick/channel> [msg]\r\nhelp /query <nick>\r\nhelp /msg <nick/channel> [msg]\r\nhelp /smsg <nick/channel> [msg]\r\nhelp /amsg <nick/channel> [msg]\r\nhelp /op <nick>\r\nhelp /op <nick>\r\nhelp /deop <nick>\r\nhelp /oper <nick>\r\nhelp /voice <nick>\r\nhelp /unvoice <nick>\r\nhelp /topic <channel> [msg]\r\nhelp /away [reason]\r\nhelp /aaway [reason]\r\nhelp /invite <nick> [channel]\r\nhelp /exec <script> [parameters]\r\nhelp /notify <nick>\r\nhelp /kick <nick> [reason]\r\nhelp /ban <channel> [user|mask]\r\nhelp /unban <channel> [pattern]\r\nhelp /ignore <nick>\r\nhelp /quote <cmd>\r\nhelp /say [msg]\r\nhelp /raw [open/close]\r\nhelp /konsole\r\nhelp /server [url:port] [pwd]\r\nhelp /ddc SEND <nick> [filename]\r\nhelp /dcc\r\nhelp /ctcp <nick/channel> [msg]\r\n"
 #define MSG_COMMAND_INVALID "Command Invalid!\n"
+#define MSG_INVALID_CHANNEL "You are in the Channel!\r\n"
 #define MSG_MSG_INVALID "\033[31mNickname Invalid!\n\033[0m"
 #define MSG_NEW_CLIENT(username, fd) "\033[33mNew client: " + username + " fd: " + fd + "\n\033[0m";
 #define MSG_CLOSE_CLIENT(username, fd) "\033[31mClose client: " + username + " fd: " + fd + "\n\033[0m";

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 19:31:07 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/26 23:56:55 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,12 @@ bool Client::isNickname(std::map<int, Client *> clients, Client *client)
 void Client::addChannel(std::string name, Channel *channel)
 {
     _channels[channel->getName()] = channel;
+    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nAdicionou o Channel: " << name << "\033[0m" << std::endl;
+}
+
+void Client::removeChannel(std::string name, Channel *channel)
+{
+    //TODO
+    _channels[channel->getName()] = channel;
+    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nRemoveu o Channel: " << name << "\033[0m" << std::endl;
 };
