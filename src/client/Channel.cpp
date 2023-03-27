@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 03:09:21 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 22:56:00 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,18 @@ Channel::~Channel()
     
 }
 
-void Channel::add(Client *client){
+void Channel::add(Client *client, Server *server){
 
     _clients.push_back(client);
     //client->setChannel(this);
 	std::cout << "Channel: " << _channel  << " add client: " << client->getNickname() << std::endl;
+
+    server->send(client, RPL_JOIN(client->getNickname(), client->getUsername(),server->getHostName(), this->_channel));
+    server->send(client, RPL_NAMREPLY(client, server, this->_channel));
+    server->send(client, RPL_ENDOFNAMES(client->getNickname(), this->_channel));
+    //TODO
+    if (!this->getClients().empty())
+        this->sendMsgForAll(server, client, "The " + client->getNickname() + " have joined the channel!\r\n");
 }
 
 void Channel::remove(Client *client){
@@ -83,6 +90,18 @@ void Channel::sendMsgForAll(Server *server, Client *client, std::string message)
     }
 }
 
+//Returns a string list of nicks inside 
+std::string Channel::nicksOnChannel(void)
+{
+    std::string nameslist;
+
+    for (int i = 0; i < _clients.size(); i++) {
+        nameslist += _clients[i]->getNickname();
+        if (i + 1 < _clients.size())
+            nameslist += " ";
+    }
+    return nameslist;
+}
 //TODO NOT WORKING
 void Channel::who(Server *server, Client *client)
 {
@@ -113,58 +132,19 @@ void Channel::list(Server *server, Client *client)
 /*join [channel]     join channel*/
 void Channel::join(Server *server, Client *client, String data)
 {
-    //JOIN #canal
-    //
-    //transformar
-    //
-    //:nick!user@host JOIN #canal
+    std::string channel = data.substr(0, data.find(' '));
+    //std::string channelpass = data.substr(data.find(' '), data.size());
 
-    std::string canal = data;
-    std::string nick = client->getNickname();
-    std::string user = client->getUsername();
+    Channel *svChannel = server->getChannels()[channel];
     
+    if (!svChannel)
+        svChannel = server->addChannel(channel);
+    
+    if (svChannel->isInTheChannel(client))
+        return ;
 
-    if (data.empty())
-        server->send(client, MSG_COMMAND_INVALID);
-    else
-    {
-        Channel *channel = server->getChannels()[data];
-        if (!channel)
-            channel = server->addChannel(data);
-        
-        std::vector<Client *> clientss = channel->getClients();
-
-        if (!clientss.empty())
-        {
-            std::string message = "The " + client->getNickname() + " have joined the channel!\r\n";
-
-            //TODO
-            //std::cout << "\n\nENVIO DE MENSAGEM\n\n" << message << std::endl;
-            
-            channel->sendMsgForAll(server, client, message);
-        }
-
-        channel->add(client);
-        //client->addChannel(data, channel);
-        
-        server->send(client, JOIN_CHANNEL(nick,user,server->getHostName(),canal), YELLOW);
-
-        // --- Notes ---
-        //:nick!user@host JOIN #canal
-        //std::string message = ":" + nick + "!" + user + "@" + server->getHostName() + " JOIN " + canal;
-        //send(client->getFd(), message.c_str(), message.size(), 0);
-
-        /* Lista de Usuarios no Server
-        //:nome_servidor 353 nick = #canal :@nick1 +nick2
-        message = ":test 353 " + nick + " = #" + canal + " :@nick1 +nick2\r\n";
-        send(client->getFd(), message.c_str(), message.size(), 0);
-        
-        //:nome_servidor 366 nick
-        message = ":test 366 " + nick + " #" + canal + " :End of /NAMES list\r\n";
-        send(client->getFd(), message.c_str(), message.size(), 0);*/
-        
-        //server->send(client, channel->getClients(), "\rUser: " + client->getNickname() + " in the room\n", YELLOW);
-    }
+    svChannel->add(client, server);
+    //client->addChannel(channel, channel);
 }
 
 /*leave [channel]     leave channel*/

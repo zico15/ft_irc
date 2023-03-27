@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 15:48:35 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 02:29:39 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 22:41:57 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@
 #define  RPL_USERHOST(data)       std::string(":" + SERVER_NAME + " 302 " + std::string(data.substr(0, data.find(' '))) + " :" + data)
 #define  RPL_ENDOFWHO(client)     std::string(":" + SERVER_NAME + " 315 " + std::string(client->getUsername()) + " :End of /WHO list.")
 
+#define  RPL_JOIN(nick, user, host, channel) std::string(":" + nick + "!" + user + "@" + host + " JOIN " + channel)
+#define  RPL_NAMREPLY(client, server, channel)  std::string(":" + SERVER_NAME + client->getNickname() + " =" + " :@" + server->getChannels()[channel]->nicksOnChannel())
+#define  RPL_ENDOFNAMES(nickname, channel)      std::string(":" + SERVER_NAME + nickname + " " + channel + " :End of /NAMES list")
+
 #define PRV_MSG(nick, user, host, dest, message) std::string(":" + nick + "!" + user + "@" + host + " PRIVMSG " + dest + " " + message)
-#define JOIN_CHANNEL(nick, user, host, canal) std::string(":" + nick + "!" + user + "@" + host + " JOIN " + canal)
 #define LEAVE_CHANNEL(canal) std::string("PART " + canal)
 
 #define LIST_START(nick, numberChannels) std::string(":" + SERVER_NAME + " 321 " + nick + " Channel " + numberChannels + " :")

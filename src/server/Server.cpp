@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 22:06:58 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 22:59:53 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void Server::userhost(Server *server, Client *client, String data)
 {
     server->send(client, RPL_USERHOST(data));
 }
-
 
 void Server::pass(Server *server, Client *client, String data)
 {
@@ -329,10 +328,10 @@ Channel *Server::addChannel(std::string const channelName)
 {
     if (!_channels[channelName])
     {
-        std::cout << "\033[35m" << "Server:\nAdicionado o Channel: " << channelName << "\033[0m" << std::endl;
+        std::cout << "\033[35m" << "Criado o Channel: " << channelName << "\033[0m" << std::endl;
         _channels[channelName] = new Channel(channelName);   
     }
-    
+
     return _channels[channelName];
 }
 

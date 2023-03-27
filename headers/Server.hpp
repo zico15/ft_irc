@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/27 02:34:12 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 22:59:20 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <string>
 #include <time.h>
 #include <cstdlib>
-#include <unistd.h>
 #include "Socket.hpp"
 #include "Channel.hpp"
 
@@ -46,16 +45,15 @@ class Server: public Socket {
 		static void quit(Server *server, Client *client, String data);
 		static void who(Server *server, Client *client, String data);
 		static void msg_private(Server *server, Client *client, String data);
-		static void list(Server *server, Client *client, String data);
 		static void clear(Server *server, Client *client, String data);
 	    static void pass(Server *server, Client *client, String data);
 		static void user(Server *server, Client *client, String data);
 		static void	ping(Server *server, Client *client, String data);
 		static void	cap(Server *server, Client *client, String data);
 		static void userhost(Server *server, Client *client, String data);
+		static void list(Server *server, Client *client, String data);
 
-		Channel *addChannel(std::string const channelName);
-
+		Channel *	addChannel(std::string const name);
 
 };
 #endif
