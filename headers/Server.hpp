@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 20:37:00 by ezequeil          #+#    #+#             */
-/*   Updated: 2023/03/25 19:28:48 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 01:19:06 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Server: public Socket {
 		static void quit(Server *server, Client *client, String data);
 		static void who(Server *server, Client *client, String data);
 		static void msg_private(Server *server, Client *client, String data);
+		static void list(Server *server, Client *client, String data);
 		static void clear(Server *server, Client *client, String data);
 	    static void pass(Server *server, Client *client, String data);
 		static void user(Server *server, Client *client, String data);

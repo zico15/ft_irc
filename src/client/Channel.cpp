@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 00:46:40 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 02:03:38 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,13 +83,14 @@ void Channel::sendMsgForAll(Server *server, Client *client, std::string message)
     }
 }
 
-std::ostream& operator<<(std::ostream& os, Channel *channel)
+//:irc.server.com 322 client_nick #channel :*no topic
+void Channel::list(Server *server, Client *client)
 {
-	/*std::vector<Client *> clients = channel->getClients();
-	for (size_t i = 0; i < clients.size(); i++)
-	{*/
-	//}
-    return os;
+    std::ostringstream stream;
+    stream << this->_clients.size();
+    std::string clientsNmbr = stream.str();
+
+    server->send(client, LIST_MID(client->getNickname(), this->getName(), clientsNmbr));
 }
 
 /*join [channel]     join channel*/
@@ -166,7 +167,6 @@ void Channel::leave(Server *server, Client *client, String data)
         return ;
     }
     
-    
     std::string canal = data.substr(0, data.find(":")-1);
 
     Channel *channel = server->getChannels()[canal];
@@ -176,8 +176,15 @@ void Channel::leave(Server *server, Client *client, String data)
     
     channel->remove(client);
     //Don't need client -> channel
-    
-    std::cout << "\033[35m" << canal << "\033[0m" << std::endl;
 
     server->send(client, LEAVE_CHANNEL(canal));
+}
+
+std::ostream& operator<<(std::ostream& os, Channel *channel)
+{
+	/*std::vector<Client *> clients = channel->getClients();
+	for (size_t i = 0; i < clients.size(); i++)
+	{*/
+	//}
+    return os;
 }

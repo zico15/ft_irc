@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 00:37:43 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 02:04:59 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,9 @@ Server::Server(std::string hostname, int port, std::string password): _password(
 
     on("JOIN", &Channel::join);
     on("PRIVMSG", &Server::msg_private);
-    
-    /*---- Leave the Channel ----
-    event: PART
-    value: #chanel1 :chanel1
-    */
     on("PART", &Channel::leave);
 
+    on("LIST", &Server::list);
 
     /*---- QUIT the Channel ----
     event: QUIT
@@ -117,13 +113,13 @@ void Server::leave(Server *server, Client *client, String data)
 */
 void Server::quit(Server *server, Client *client, String data)
 {
-  /*if (client->getChannel())
-    server->leave(server, client, "");
-  server->send(client, "com^Dman^Dd\n", "");
-  close(client->getFd());
-  server->setEvent(client->getIndexFd(), -1, 0, 0);
-  server->removeClient(client);
-  delete client;*/
+    /*if (client->getChannel())
+      server->leave(server, client, "");*/
+    server->send(client, "com^Dman^Dd\r\n", "");
+    close(client->getFd());
+    server->setEvent(client->getIndexFd(), -1, 0, 0);
+    server->removeClient(client);
+    delete client;
 }
 
 /*
@@ -210,6 +206,40 @@ void Server::msg_private(Server *server, Client *client, String data)
             channel->sendMsgForAll(server, client, message);
         }
     }
+}
+
+/* /list               list of channel */
+void Server::list(Server *server, Client *client, String data)
+{
+    /*
+    :servername 321 nick Channel (2):Users  Name
+    :servername 322 nick #teste1 (1) :Example topic
+    :servername 322 nick #teste2 (1):Another topic
+    :servername 323 nick :End of /LIST
+    */
+
+   	if (!data.empty()) //if NOT empty
+		return ;
+	
+    std::string nick = client->getNickname();
+    
+    std::map<String, Channel *> channels = server->getChannels();
+    
+    std::ostringstream stream;
+    stream << channels.size() - 1;
+    std::string channelsNmbr = stream.str();
+
+    server->send(client, LIST_START(nick, channelsNmbr));
+    
+    std::map<String, Channel *>::iterator it;
+
+	for (it = channels.begin(); it != channels.end(); ++it)
+	{
+		if ((*it).first != "public")
+			(*it).second->list(server, client);
+	}
+    
+	server->send(client, LIST_END(nick));
 }
 
 /*

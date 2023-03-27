@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 00:34:10 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 01:37:16 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Channel {
 		
 		static void join(Server *server, Client *client, String data);
 		static void leave(Server *server, Client *client, String data);
+		void list(Server *server, Client *client);
 
 };
 
