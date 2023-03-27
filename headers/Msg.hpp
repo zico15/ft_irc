@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   File.hpp                                           :+:      :+:    :+:   */
+/*   Msg.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 15:48:35 by edos-san          #+#    #+#             */
-/*   Updated: 2022/11/24 16:51:32 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/27 22:41:57 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,20 @@
 #define  ERR_UNKNOWNERROR(data)   std::string(":" + SERVER_NAME + " 421 " + std::string(data) + " :" + std::string(data))
 #define  RPL_USERHOST(data)       std::string(":" + SERVER_NAME + " 302 " + std::string(data.substr(0, data.find(' '))) + " :" + data)
 #define  RPL_ENDOFWHO(client)     std::string(":" + SERVER_NAME + " 315 " + std::string(client->getUsername()) + " :End of /WHO list.")
+
+#define  RPL_JOIN(nick, user, host, channel) std::string(":" + nick + "!" + user + "@" + host + " JOIN " + channel)
+#define  RPL_NAMREPLY(client, server, channel)  std::string(":" + SERVER_NAME + client->getNickname() + " =" + " :@" + server->getChannels()[channel]->nicksOnChannel())
+#define  RPL_ENDOFNAMES(nickname, channel)      std::string(":" + SERVER_NAME + nickname + " " + channel + " :End of /NAMES list")
+
+#define PRV_MSG(nick, user, host, dest, message) std::string(":" + nick + "!" + user + "@" + host + " PRIVMSG " + dest + " " + message)
+#define LEAVE_CHANNEL(canal) std::string("PART " + canal)
+
+#define LIST_START(nick, numberChannels) std::string(":" + SERVER_NAME + " 321 " + nick + " Channel " + numberChannels + " :")
+#define LIST_MID(nick, channel, numberClients)   std::string(":" + SERVER_NAME + " 322 " + nick + " " + channel + " " + numberClients + " :*no topic*")
+#define LIST_END(nick) std::string(":" + SERVER_NAME + " 323 " + nick + " :End of /LIST")
+
+#define RPL_WHOREPLY(nick, canal, nickA, hostA, status, nameA) std::string(":" + SERVER_NAME + " 352 " + nick + " " + canal + " " + nickA + " " + hostA + " " + SERVER_NAME + " " + nickA + "_irc" + " " + status + " :0 " + nameA)
+//: <servidor> 352 <seu-nick> <nome-do-canal> <nome-do-usuario> <endereco-ip> <servidor-origem> <nome-real-do-usuario> <status no canal>
 
 
 //352	RPL_WHOREPLY	RFC1459	<client> <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real_name>	Reply to vanilla WHO (See RFC). This format can be very different if the 'WHOX' version of the command is used (see ircu).

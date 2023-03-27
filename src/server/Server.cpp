@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 14:58:37 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 23:30:23 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     std::cout << "\x1B[2J\x1B[HServer has been created: " << port << " password: " << password << "\n";
     init(SERVER, hostname, port, 200);
 
-    on("PRIVMSG", &Server::msg_private);
     //testing bellow
     on("PING", &Server::ping);
     on("CAP", &Server::cap);
     on("WHO", &Server::who);
+    //on("who", &Server::who);
     on("connect",  &Server::connect);
     on("USERHOST", &Server::userhost);
     //CAP
@@ -34,6 +34,17 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("USER", &Server::user);
 
     on("JOIN", &Channel::join);
+    on("PRIVMSG", &Server::msg_private);
+    on("PART", &Channel::leave);
+
+    on("LIST", &Server::list);
+
+    /*---- QUIT the Channel ----
+    event: QUIT
+    value: :Konversation terminated!
+    */
+    on("QUIT", &Server::quit);
+
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/clear", &Server::clear);
@@ -43,7 +54,6 @@ void Server::userhost(Server *server, Client *client, String data)
 {
     server->send(client, RPL_USERHOST(data));
 }
-
 
 void Server::pass(Server *server, Client *client, String data)
 {
@@ -88,12 +98,12 @@ void Server::user(Server *server, Client *client, String data)
 */
 void Server::leave(Server *server, Client *client, String data)
 {
-    if (client->getChannel())
+    /*if (client->getChannel())
     {    
         client->getChannel()->remove(client);
         server->send(client, client->getChannel()->getClients(), "\rUser: " + client->getNickname() + " remove room\n", RED);
         client->setChannel(NULL);
-    }
+    }*/
 }
 
 /*
@@ -101,20 +111,37 @@ void Server::leave(Server *server, Client *client, String data)
 */
 void Server::quit(Server *server, Client *client, String data)
 {
-  if (client->getChannel())
-    server->leave(server, client, "");
-  server->send(client, "com^Dman^Dd\n", "");
-  close(client->getFd());
-  server->setEvent(client->getIndexFd(), -1, 0, 0);
-  server->removeClient(client);
-  delete client;
+    /*if (client->getChannel())
+      server->leave(server, client, "");*/
+    //server->_channels[nome].remove()
+    server->send(client, "com^Dman^Dd\r\n", "");
+    close(client->getFd());
+    server->setEvent(client->getIndexFd(), -1, 0, 0);
+    server->removeClient(client);
+    delete client;
 }
 
 /*
-/who                list of users in channel
+/who [channel]        list of users in channel
 */
 void Server::who(Server *server, Client *client, String data)
 {
+	/*if (data.empty())
+	{
+		return ;
+	}
+	
+	if (data.find("#") == std::string::npos)
+		data = "#" + data;
+
+	Channel *channel = server->getChannels()[data];
+	if (!channel)
+		return ;
+
+    std::vector<Client *> clients = channel->getClients();
+    
+    channel->who(server, client);*/
+    
     //falta criar uma funcao que faz send para o client todos os users e respetivas salas onde estão dentro, ver MSG.hpp para ver implementação
     server->send(client, RPL_ENDOFWHO(client));
 }
@@ -139,7 +166,14 @@ void Server::cap(Server *server, Client *client, String data)
     {
         client->setcapend(true);
         if (client->isValid())
+        {
             server->send(client, RPL_WELCOME(client->getNickname()));
+            usleep(100);
+            Channel *public_channel = server->addChannel("#public");
+            if (public_channel->isInTheChannel(client))
+                return ;
+            public_channel->add(client, server);
+        }
     }
 }
 
@@ -148,44 +182,81 @@ void Server::cap(Server *server, Client *client, String data)
 */
 void Server::msg_private(Server *server, Client *client, String data)
 {
-    std::string user = "";
-    int         send_fd = -1;
-    std::string message = "PRIVMSG ";
+    //PRIVMSG <nick> :<mensagem>
+    //:nick!user@host PRIVMSG (dest)nick
+    //:nick!user@host PRIVMSG #channel
 
-    user = data.substr(0, data.find_first_of(SPACES, 0));
-    
-    if (user.empty())
+    std::string user = client->getUsername();
+    std::string nick = client->getNickname();
+    std::string host = server->getHostName();
+    std::string dest;
+    Client  *client_dest;
+
+    dest = data.substr(0, data.find(' '));
+
+    if (dest.empty())
         return ;
-    
-    message = "PRIVMSG " + user + " ";
-    std::cout << "User: " << user << std::endl;
-    std::cout << "message: " << message << std::endl;
-    
-	data = &data[user.size()];
-	data = trim(data);
-    std::cout << "data: " << data << std::endl;
 
-    if (client->getChannel())
+    client_dest = server->getClient(dest);
+    std::string message = data.substr(data.find(":"), data.size());
+
+    if (client_dest) //Dest is a Client
     {
-        std::cout << "aquiii: " << data << std::endl;
-    
-        std::vector<Client *> clients = client->getChannel()->getClients();
-        for (size_t i = 0; i < clients.size(); i++)
-        {
-            if (clients[i]->getNickname() == user && client != clients[i])
-            {    
-                data = "\r" + std::string(BLUE) + "[private: " + client->getNickname()+"] " + COLOUR_END + data + "\n";
-                server->send(clients[i], data);
+        message = PRV_MSG(nick, user, host, client_dest->getNickname(), message);
         
+        server->send(client_dest, message); 
+    }
+    else if (dest.find("#") == 0) //Dest is a Channel
+    {
+        message = PRV_MSG(nick, user, host, dest, message);
+        
+        Channel *channel = server->getChannels()[dest];
+        
+        if (channel)
+        {
+            std::vector<Client *> clients = channel->getClients();
+            std::vector<Client *>::iterator it;
+        
+            if (channel->isInTheChannel(client) == false) //Client is not in the Server
                 return ;
-            }
+
+            channel->sendMsgForAll(server, client, message);
         }
     }
-    else
-    {
-        //Public Channel
-    }
-    server->send(client, MSG_MSG_INVALID);
+}
+
+/* /list               list of channel */
+void Server::list(Server *server, Client *client, String data)
+{
+    /*
+    :servername 321 nick Channel (2):Users  Name
+    :servername 322 nick #teste1 (1) :Example topic
+    :servername 322 nick #teste2 (1):Another topic
+    :servername 323 nick :End of /LIST
+    */
+
+   	if (!data.empty()) //if NOT empty
+		return ;
+	
+    std::string nick = client->getNickname();
+    
+    std::map<String, Channel *> channels = server->getChannels();
+    
+    std::ostringstream stream;
+    stream << channels.size() - 1;
+    std::string channelsNmbr = stream.str();
+
+    server->send(client, LIST_START(nick, channelsNmbr));
+    
+    std::map<String, Channel *>::iterator it;
+
+	for (it = channels.begin(); it != channels.end(); ++it)
+	{
+		if ((*it).first != "public")
+			(*it).second->list(server, client);
+	}
+    
+	server->send(client, LIST_END(nick));
 }
 
 /*
@@ -254,6 +325,17 @@ void Server::send(Client *client, std::string data, std::string color)
    emit(client->getIndexFd(), data + "\r\n");
 }
 
+Channel *Server::addChannel(std::string const channelName)
+{
+    if (!_channels[channelName])
+    {
+        std::cout << "\033[35m" << "Criado o Channel: " << channelName << "\033[0m" << std::endl;
+        _channels[channelName] = new Channel(channelName);   
+    }
+
+    return _channels[channelName];
+}
+
 std::string &Server::getPassword(){
 	return _password;
 }
@@ -265,4 +347,3 @@ Server::~Server()
 {
     std::cout << "~Server\n";
 }
-
