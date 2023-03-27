@@ -123,26 +123,27 @@ std::ostream& operator<<(std::ostream& os, Channel *channel)
 /*join [channel]     join channel*/
 void Channel::join(Server *server, Client *client, String data)
 {
-    std::string channelname = data.substr(0, data.find(' '));
+    std::string channel = data.substr(0, data.find(' '));
+    std::string nickname = client->getNickname();
     //std::string channelpass = data.substr(data.find(' '), data.size());
 
-    if (server->isChannel(data.substr(0, data.find(' ')))) {
+    if (server->isChannel(channel)) {
         //if data is a channel, just add client in channel and advice all the new user inside channel
-        server->addClientToChannel(server, client, channelname);
-        
-        server->send(client, ":" + client->getNickname() + "!"+client->getUsername()+"@" + SERVER_NAME + " JOIN " + data.substr(0, data.find(' ')));
-        server->send(client, ":Teste 353 " + client->getNickname() + " =" + " :@" + client->getNickname());
-        server->send(client, ":Teste 366 " + client->getNickname() + " " + data.substr(0, data.find(' ')) + " :End of /NAMES list");
+        server->addClientToChannel(server, client, channel);
+
+        server->send(client, RPL_JOIN(client, channel));
+        server->send(client, RPL_NAMREPLY(client, server, channel));
+        server->send(client, RPL_ENDOFNAMES(nickname, channel));
         return ;
     }
     else {
         //Create channel here
-        server->addChannel(channelname);
-        server->addClientToChannel(server, client, channelname);
+        server->addChannel(channel);
+        server->addClientToChannel(server, client, channel);
         
-        server->send(client, ":" + client->getNickname() + "!"+client->getUsername()+"@" + SERVER_NAME + " JOIN " + data.substr(0, data.find(' ')));
+        server->send(client, ":" + client->getNickname() + "!"+client->getUsername()+"@" + SERVER_NAME + " JOIN " + channel);
         server->send(client, ":Teste 353 " + client->getNickname() + " =" + " :@" + client->getNickname());
-        server->send(client, ":Teste 366 " + client->getNickname() + " " + data.substr(0, data.find(' ')) + " :End of /NAMES list");
+        server->send(client, ":Teste 366 " + client->getNickname() + " " + channel + " :End of /NAMES list");
         return ;
     }
 }
@@ -160,4 +161,17 @@ void Channel::sendmessage(Server *server, Client *client, String data)
         server->send((*it), data);
         std::cout << "Madou menssagem para: " << (*it)->getNickname() << std::endl;
     }
+}
+
+//Returns a string list of nicks inside 
+std::string Channel::nicksOnChannel()
+{
+    std::string nameslist;
+
+    for (int i = 0; i < _clients.size(); i++) {
+        nameslist += _clients[i]->getNickname();
+        if (i + 1 < _clients.size())
+            nameslist += " ";
+    }
+    return nameslist;
 }

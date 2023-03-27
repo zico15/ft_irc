@@ -46,6 +46,7 @@ class Channel {
 		static void join(Server *server, Client *client, String data);
 		static void part(Server *server, Client *client, String data);
 		void		sendmessage(Server *server, Client *client, String data);
+		std::string	nicksOnChannel();
 
 };
 
