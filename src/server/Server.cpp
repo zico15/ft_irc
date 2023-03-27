@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 03:09:50 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 22:06:58 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("/quit", &Server::quit);
     on("/clear", &Server::clear);
 
-    addChannel("public");
+    addChannel("#public");
 }
 
 void Server::userhost(Server *server, Client *client, String data)
