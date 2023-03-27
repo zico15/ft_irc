@@ -24,7 +24,14 @@ Channel::~Channel()
 }
 
 void Channel::add(Client *client){
+    std::vector<Client *>::iterator it;
 
+    for (it = _clients.begin(); it != _clients.end(); it++) {
+        if (*it == client) {
+            std::cout << "ERRR o cliente ja foi adicionado ao channel!\n";
+            return;
+        }
+    }
     _clients.push_back(client);
     client->setChannel(this);
     std::cout << "Adicionado: " << client->getNickname() << std::endl;
@@ -151,6 +158,6 @@ void Channel::sendmessage(Server *server, Client *client, String data)
 
     for (it = _clients.begin(); it != _clients.end(); it++) {
         server->send((*it), data);
-        std::cout << "Madou menssagem para: " << client->getNickname() << std::endl;
+        std::cout << "Madou menssagem para: " << (*it)->getNickname() << std::endl;
     }
 }

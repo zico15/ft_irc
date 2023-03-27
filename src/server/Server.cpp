@@ -184,15 +184,16 @@ void Server::cap(Server *server, Client *client, String data)
 void Server::msg_private(Server *server, Client *client, String data)
 {
     std::string dest = data.substr(0, data.find(' '));
-    std::string message = data;
+    std::string message = data.substr(data.find(":") + 1);
 
+    std::cout << "A messagem enviada e pega no evento: " << data << "\n";
     if (dest[0] == '#') {
         std::map<std::string, Channel *>::iterator it;
 
         it = server->getChannels().begin();
         for (it; it != server->getChannels().end(); it++) {
             if (it->second->getName() == dest) {
-                it->second->sendmessage(server, client, message);
+                it->second->sendmessage(server, client, ":" + client->getNickname() + "!" + client->getUsername() + "@" + "example.com" + " PRIVMSG " + dest + " :" + message);
                 break ;
             }
         }
