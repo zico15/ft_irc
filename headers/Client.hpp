@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/26 23:55:28 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 02:57:52 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Client {
 		std::string			  _realname;
 		std::string			  _password;
 		bool 				  _isConnect;
-		bool				  _capend;
+		//bool				  _capend;
 
 		Console				  _console;
 		std::map<std::string, Channel *> _channels;
@@ -47,8 +47,8 @@ class Client {
 		void	addChannel(std::string name, Channel *channel);
 		void	removeChannel(std::string name, Channel *channel);
 
-		void setcapend(bool status){
-			_capend = status;
+		void setConnect(bool status){
+			_isConnect = status;
 		};
 
 		std::map<String, Channel *> &getChannels()
@@ -58,6 +58,10 @@ class Client {
 
 		std::string &getNickname(){
 			return _nickname;
+		};
+
+		std::string &getRealname(){
+			return _realname;
 		};
 
 		std::string &getPassword(){
@@ -86,6 +90,10 @@ class Client {
 
 		int getIndexFd(){
 			return _index_fd;
+		};
+
+		bool isConnect(){
+			return _isConnect;
 		};
 
 		static bool isNickname(std::map<int, Client *> clients, Client *client);

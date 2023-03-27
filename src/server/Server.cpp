@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 02:04:59 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 03:09:50 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("PING", &Server::ping);
     on("CAP", &Server::cap);
     on("WHO", &Server::who);
+    //on("who", &Server::who);
     on("connect",  &Server::connect);
     on("USERHOST", &Server::userhost);
     //CAP
@@ -123,10 +124,26 @@ void Server::quit(Server *server, Client *client, String data)
 }
 
 /*
-/who                list of users in channel
+/who [channel]        list of users in channel
 */
 void Server::who(Server *server, Client *client, String data)
 {
+	/*if (data.empty())
+	{
+		return ;
+	}
+	
+	if (data.find("#") == std::string::npos)
+		data = "#" + data;
+
+	Channel *channel = server->getChannels()[data];
+	if (!channel)
+		return ;
+
+    std::vector<Client *> clients = channel->getClients();
+    
+    channel->who(server, client);*/
+    
     //falta criar uma funcao que faz send para o client todos os users e respetivas salas onde estão dentro, ver MSG.hpp para ver implementação
     server->send(client, RPL_ENDOFWHO(client));
 }
@@ -149,7 +166,7 @@ void Server::cap(Server *server, Client *client, String data)
         server->send(client, "CAP * ACK :multi-prefix");
     else if (data == "END")
     {
-        client->setcapend(true);
+        client->setConnect(true);
         if (client->isValid())
         {
             server->send(client, RPL_WELCOME(client->getNickname()));

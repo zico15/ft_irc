@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 02:03:38 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 03:09:21 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,23 @@ void Channel::sendMsgForAll(Server *server, Client *client, std::string message)
     {
         if (client != *it)
             server->send((*it), message);
+    }
+}
+
+//TODO NOT WORKING
+void Channel::who(Server *server, Client *client)
+{
+    std::vector<Client *>::iterator it;
+    std::string                     message;
+    std::string                     status;
+
+    for (it = _clients.begin(); it < _clients.end(); ++it)
+    {
+        status = (*it)->isConnect() ? "H" : "*";
+        
+        message = RPL_WHOREPLY(client->getNickname(), this->_channel, (*it)->getNickname(), server->getHostName(), status, (*it)->getRealname());
+        std::cout << message << std::endl;
+        server->send((*it), message);
     }
 }
 

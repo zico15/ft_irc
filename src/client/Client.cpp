@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/26 23:56:55 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 02:57:38 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Client::Client(int fd, int index): _isConnect(false)
     _username = "";
     _nickname = "";
     _password = "";
-    _capend = false;
+    _isConnect = false;
     std::cout << MSG_NEW_CLIENT(std::string(""), std::to_string(fd));
 }
 
@@ -37,7 +37,7 @@ Client::~Client()
 
 bool Client::isValid()
 {
-    return !(_username.empty() || _nickname.empty() || _password.empty() || !_capend);
+    return !(_username.empty() || _nickname.empty() || _password.empty() || !_isConnect);
 }
 void Client::setNickname(const std::string& nickname){
 	_nickname = trim(nickname);

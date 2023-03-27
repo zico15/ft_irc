@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 15:48:35 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 01:33:08 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 02:29:39 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,10 @@
 #define LIST_START(nick, numberChannels) std::string(":" + SERVER_NAME + " 321 " + nick + " Channel " + numberChannels + " :")
 #define LIST_MID(nick, channel, numberClients)   std::string(":" + SERVER_NAME + " 322 " + nick + " " + channel + " " + numberClients + " :*no topic*")
 #define LIST_END(nick) std::string(":" + SERVER_NAME + " 323 " + nick + " :End of /LIST")
+
+#define RPL_WHOREPLY(nick, canal, nickA, hostA, status, nameA) std::string(":" + SERVER_NAME + " 352 " + nick + " " + canal + " " + nickA + " " + hostA + " " + SERVER_NAME + " " + nickA + "_irc" + " " + status + " :0 " + nameA)
+//: <servidor> 352 <seu-nick> <nome-do-canal> <nome-do-usuario> <endereco-ip> <servidor-origem> <nome-real-do-usuario> <status no canal>
+
 
 //352	RPL_WHOREPLY	RFC1459	<client> <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real_name>	Reply to vanilla WHO (See RFC). This format can be very different if the 'WHOX' version of the command is used (see ircu).
 //315	RPL_ENDOFWHO	RFC1459	<client> <name> :<info>	Used to terminate a list of RPL_WHOREPLY replies
