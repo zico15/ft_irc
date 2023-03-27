@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 22:59:53 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 23:30:23 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("/leave", &Server::leave);
     on("/quit", &Server::quit);
     on("/clear", &Server::clear);
-
-    addChannel("#public");
 }
 
 void Server::userhost(Server *server, Client *client, String data)
@@ -115,6 +113,7 @@ void Server::quit(Server *server, Client *client, String data)
 {
     /*if (client->getChannel())
       server->leave(server, client, "");*/
+    //server->_channels[nome].remove()
     server->send(client, "com^Dman^Dd\r\n", "");
     close(client->getFd());
     server->setEvent(client->getIndexFd(), -1, 0, 0);
@@ -165,13 +164,15 @@ void Server::cap(Server *server, Client *client, String data)
         server->send(client, "CAP * ACK :multi-prefix");
     else if (data == "END")
     {
-        client->setConnect(true);
+        client->setcapend(true);
         if (client->isValid())
         {
             server->send(client, RPL_WELCOME(client->getNickname()));
-            //Channel *public_channel = this->_channels["public"];
-            //client->setChannel(_channels["public"]);
-            //client->addChannel(_channels["public"])
+            usleep(100);
+            Channel *public_channel = server->addChannel("#public");
+            if (public_channel->isInTheChannel(client))
+                return ;
+            public_channel->add(client, server);
         }
     }
 }

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 02:57:52 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/27 23:02:52 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Client {
 		std::string			  _realname;
 		std::string			  _password;
 		bool 				  _isConnect;
-		//bool				  _capend;
+		bool				  _capend;
 
 		Console				  _console;
 		std::map<std::string, Channel *> _channels;
@@ -49,6 +49,10 @@ class Client {
 
 		void setConnect(bool status){
 			_isConnect = status;
+		};
+
+		void setcapend(bool status){
+			_capend = status;
 		};
 
 		std::map<String, Channel *> &getChannels()
