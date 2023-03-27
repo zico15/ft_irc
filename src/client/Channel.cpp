@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/10 10:13:17 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/27 22:19:48 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,25 +127,13 @@ void Channel::join(Server *server, Client *client, String data)
     std::string nickname = client->getNickname();
     //std::string channelpass = data.substr(data.find(' '), data.size());
 
-    if (server->isChannel(channel)) {
-        //if data is a channel, just add client in channel and advice all the new user inside channel
-        server->addClientToChannel(server, client, channel);
-
-        server->send(client, RPL_JOIN(client, channel));
-        server->send(client, RPL_NAMREPLY(client, server, channel));
-        server->send(client, RPL_ENDOFNAMES(nickname, channel));
-        return ;
-    }
-    else {
-        //Create channel here
+    if (!server->isChannel(channel))
         server->addChannel(channel);
-        server->addClientToChannel(server, client, channel);
-        
-        server->send(client, ":" + client->getNickname() + "!"+client->getUsername()+"@" + SERVER_NAME + " JOIN " + channel);
-        server->send(client, ":Teste 353 " + client->getNickname() + " =" + " :@" + client->getNickname());
-        server->send(client, ":Teste 366 " + client->getNickname() + " " + channel + " :End of /NAMES list");
-        return ;
-    }
+    server->addClientToChannel(server, client, channel);
+
+    server->send(client, RPL_JOIN(client, channel));
+    server->send(client, RPL_NAMREPLY(client, server, channel));
+    server->send(client, RPL_ENDOFNAMES(nickname, channel));
 }
 
 void Channel::part(Server *server, Client *client, String data)
