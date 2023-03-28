@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/28 08:52:49 by rteles            #+#    #+#             */
+/*   Updated: 2023/03/28 08:52:50 by rteles           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Server.hpp"
 #include "Util.hpp"
 #include "Client.hpp"
@@ -14,6 +26,7 @@ int exit_error(std::string msg)
 
 void signal_handler(int signal)
 {
+	(void)signal;
 	if (s != nullptr)
 		s->emitAll("com^Dman^Dd\n");//comando enviado para todos
 	delete s;

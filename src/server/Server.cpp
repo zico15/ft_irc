@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 23:30:23 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/28 08:54:59 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ void Server::list(Server *server, Client *client, String data)
     std::map<String, Channel *> channels = server->getChannels();
     
     std::ostringstream stream;
-    stream << channels.size() - 1;
+    stream << channels.size();
     std::string channelsNmbr = stream.str();
 
     server->send(client, LIST_START(nick, channelsNmbr));
@@ -252,8 +252,7 @@ void Server::list(Server *server, Client *client, String data)
 
 	for (it = channels.begin(); it != channels.end(); ++it)
 	{
-		if ((*it).first != "public")
-			(*it).second->list(server, client);
+		(*it).second->list(server, client);
 	}
     
 	server->send(client, LIST_END(nick));
@@ -328,10 +327,7 @@ void Server::send(Client *client, std::string data, std::string color)
 Channel *Server::addChannel(std::string const channelName)
 {
     if (!_channels[channelName])
-    {
-        std::cout << "\033[35m" << "Criado o Channel: " << channelName << "\033[0m" << std::endl;
         _channels[channelName] = new Channel(channelName);   
-    }
 
     return _channels[channelName];
 }
