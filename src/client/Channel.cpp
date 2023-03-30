@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/28 08:55:20 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/28 09:48:23 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ void Channel::add(Client *client, Server *server){
     server->send(client, RPL_JOIN(client->getNickname(), client->getUsername(),server->getHostName(), this->_channel));
     server->send(client, RPL_NAMREPLY(client, server, this->_channel));
     server->send(client, RPL_ENDOFNAMES(client->getNickname(), this->_channel));
-    //TODO
+
     if (!this->getClients().empty())
-        this->sendMsgForAll(server, client, "The " + client->getNickname() + " have joined the channel!\r\n");
+        this->sendMsgForAll(server, client, "JOIN " + client->getNickname() + " have joined the channel!\r\n");
 }
 
 void Channel::remove(Client *client){
