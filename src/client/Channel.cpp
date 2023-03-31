@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/28 09:48:23 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/30 21:47:09 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,11 +111,11 @@ void Channel::who(Server *server, Client *client)
 
     for (it = _clients.begin(); it < _clients.end(); ++it)
     {
-        status = (*it)->isConnect() ? "H" : "*";
+        status = "G";
         
         message = RPL_WHOREPLY(client->getNickname(), this->_channel, (*it)->getNickname(), server->getHostName(), status, (*it)->getRealname());
         std::cout << message << std::endl;
-        server->send((*it), message);
+        server->send(client, message);
     }
 }
 

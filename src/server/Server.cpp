@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/28 08:54:59 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/31 17:15:25 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,24 +126,39 @@ void Server::quit(Server *server, Client *client, String data)
 */
 void Server::who(Server *server, Client *client, String data)
 {
-	/*if (data.empty())
+    //WHO rteles
+	if (data.empty())
 	{
 		return ;
 	}
 	
-	if (data.find("#") == std::string::npos)
-		data = "#" + data;
+	/*if (data.find("#") == std::string::npos)
+		data = "#" + data;*/
 
-	Channel *channel = server->getChannels()[data];
-	if (!channel)
-		return ;
+    std::map<String, Channel *> channels = server->getChannels();
 
-    std::vector<Client *> clients = channel->getClients();
+
+
+    server->send(client, ":test 352 rteles #public rteles localhost irc.example.com rteles_irc H :0 ruben");
+
+    /*std::map<String, Channel *>::iterator it;
+    for (it = channels.begin(); it != channels.end(); ++it)
+    {
+        (*it).second->who(server, client);
+    }*/
     
-    channel->who(server, client);*/
+    
+    
+	/*Channel *channel = server->getChannels()[data];
+	if (!channel)
+		return ;*/
+
+    //std::vector<Client *> clients = channel->getClients();
+    
+    //channel->who(server, client);
     
     //falta criar uma funcao que faz send para o client todos os users e respetivas salas onde estão dentro, ver MSG.hpp para ver implementação
-    server->send(client, RPL_ENDOFWHO(client));
+    //server->send(client, RPL_ENDOFWHO(client));
 }
 
 //The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 23:07:01 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/31 17:10:02 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,3 +72,15 @@ void Client::removeChannel(std::string name, Channel *channel)
     _channels[channel->getName()] = channel;
     std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nRemoveu o Channel: " << name << "\033[0m" << std::endl;
 };
+
+
+/*
+CAP LS 302
+PASS :abc
+NICK rteles
+USER rteles 8 * :Ruben
+CAP REQ :multi-prefix
+CAP END
+
+
+*/
