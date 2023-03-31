@@ -52,6 +52,9 @@ class Channel {
 		static void leave(Server *server, Client *client, String data);
 		void 		list(Server *server, Client *client);
 		void 		who(Server *server, Client *client);
+		static void 		mode(Server *server, Client *client, String data);
+		static void 		kick(Server *server, Client *client, String data);
+
 
 };
 

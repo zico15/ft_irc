@@ -119,6 +119,23 @@ void Channel::who(Server *server, Client *client)
     }
 }
 
+void Channel::mode(Server *server, Client *client, String data)
+{
+    server->send(client, ":teste MODE " + data + " " + client->getNickname());
+}
+
+void Channel::kick(Server *server, Client *client, String data)
+{
+    std::string final = data.substr(0, data.find(" :"));
+
+    final = "KICK " + final + " :PORQUE EU QUERO!";
+    
+    std::cout << final << std::endl;
+
+    server->getChannels()["#public"]->sendMsgForAll(server, NULL, final);
+
+}
+
 //:irc.server.com 322 client_nick #channel :*no topic
 void Channel::list(Server *server, Client *client)
 {

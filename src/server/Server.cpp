@@ -38,6 +38,9 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("PART", &Channel::leave);
 
     on("LIST", &Server::list);
+    on("MODE", &Channel::mode);
+    on("KICK", &Channel::kick);
+
 
     /*---- QUIT the Channel ----
     event: QUIT
@@ -168,7 +171,7 @@ void Server::cap(Server *server, Client *client, String data)
         if (client->isValid())
         {
             server->send(client, RPL_WELCOME(client->getNickname()));
-            usleep(100);
+            //usleep(100);
             Channel *public_channel = server->addChannel("#public");
             if (public_channel->isInTheChannel(client))
                 return ;
