@@ -68,7 +68,7 @@ void Server::pass(Server *server, Client *client, String data)
     else
         server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
     if (client->isValid())
-        server->send(client, RPL_WELCOME(client->getNickname()));
+        acceptNewConnection(server, client);
 }
 
 void Server::clear(Server *server, Client *client, String data)
@@ -85,7 +85,7 @@ void Server::nick(Server *server, Client *client, String data)
         client->setNickname("");
     }
     else if (client->isValid())
-        server->send(client, RPL_WELCOME(client->getNickname()));
+        acceptNewConnection(server, client);
 }
 
 void Server::user(Server *server, Client *client, String data)
@@ -93,7 +93,7 @@ void Server::user(Server *server, Client *client, String data)
     client->setUsername(data.substr(0, data.find(' ')));
     client->setRealname(data.substr(data.find(':') + 1));
     if (client->isValid())
-        server->send(client, RPL_WELCOME(client->getNickname()));
+        acceptNewConnection(server, client);
 }
 
 /*
@@ -169,14 +169,7 @@ void Server::cap(Server *server, Client *client, String data)
     {
         client->setcapend(true);
         if (client->isValid())
-        {
-            server->send(client, RPL_WELCOME(client->getNickname()));
-            //usleep(100);
-            Channel *public_channel = server->addChannel("#public");
-            if (public_channel->isInTheChannel(client))
-                return ;
-            public_channel->add(client, server);
-        }
+            acceptNewConnection(server, client);
     }
 }
 
@@ -327,10 +320,10 @@ void Server::send(Client *client, std::string data, std::string color)
    emit(client->getIndexFd(), data + "\r\n");
 }
 
-Channel *Server::addChannel(std::string const channelName)
+Channel *Server::addChannel(std::string const channelName, const std::string channelpass)
 {
     if (!_channels[channelName])
-        _channels[channelName] = new Channel(channelName);   
+        _channels[channelName] = new Channel(channelName, channelpass);   
 
     return _channels[channelName];
 }
@@ -340,6 +333,14 @@ std::string &Server::getPassword(){
 }
 std::map<String, Channel *> &Server::getChannels(){
     return _channels;
+}
+void Server::acceptNewConnection(Server *server, Client *client)
+{
+    server->send(client, RPL_WELCOME(client->getNickname()));
+    Channel *public_channel = server->addChannel("#public", "");
+    if (public_channel->isInTheChannel(client))
+        return ;
+    public_channel->add(client, server);
 };
 
 Server::~Server()

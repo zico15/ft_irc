@@ -13,7 +13,12 @@
 #include "Channel.hpp"
 #include "Server.hpp"
 
-Channel::Channel(std::string	channel): _channel(channel)
+Channel::Channel(std::string	channel): _channel(channel), _pass("")
+{
+    std::cout << "\033[35mNew Channel: " << channel << "\033[0m" << std::endl;
+}
+
+Channel::Channel(std::string channel, std::string channelpass): _channel(channel), _pass(channelpass)
 {
     std::cout << "\033[35mNew Channel: " << channel << "\033[0m" << std::endl;
 }
@@ -23,18 +28,17 @@ Channel::~Channel()
     
 }
 
-void Channel::add(Client *client, Server *server){
+void Channel::add(Client *client, Server *server) {
 
+    std::string nickname = client->getNickname();
     _clients.push_back(client);
-    //client->setChannel(this);
-	std::cout << "\033[35mChannel: " << _channel  << " add client: " << client->getNickname() << "\033[0m" << std::endl;
+	std::cout << "\033[35mChannel: " << _channel  << " add client: " << nickname << "\033[0m" << std::endl;
 
-    server->send(client, RPL_JOIN(client->getNickname(), client->getUsername(),server->getHostName(), this->_channel));
-    server->send(client, RPL_NAMREPLY(client, server, this->_channel));
-    server->send(client, RPL_ENDOFNAMES(client->getNickname(), this->_channel));
-
+    server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
+    server->send(client, RPL_NAMREPLY(client, server, this));
+    server->send(client, RPL_ENDOFNAMES(nickname, this));
     if (!this->getClients().empty())
-        this->sendMsgForAll(server, client, "JOIN " + client->getNickname() + " have joined the channel!\r\n");
+        this->sendMsgForAll(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
 }
 
 void Channel::remove(Client *client){
@@ -65,6 +69,11 @@ std::vector<Client *> Channel::getClients()
 size_t Channel::getSize()
 {
     return (_clients.size());
+}
+
+std::string Channel::getpass()
+{
+    return _pass;
 }
 
 bool Channel::isInTheChannel(Client *client)
@@ -149,19 +158,40 @@ void Channel::list(Server *server, Client *client)
 /*join [channel]     join channel*/
 void Channel::join(Server *server, Client *client, String data)
 {
-    std::string channel = data.substr(0, data.find(' '));
-    //std::string channelpass = data.substr(data.find(' '), data.size());
+    std::string channelname;
+    std::string channelpass = "";
 
-    Channel *svChannel = server->getChannels()[channel];
+    if (data.empty()){
+        server->send(client, RPL_SYNTAXERROR("Missing arguments."));
+        return ;
+    }
+    channelname = data.substr(0, data.find(' '));
+    if (channelname[0] != '#') {
+        server->send(client, RPL_SYNTAXERROR("Channels name must start with '#'."));
+        return ;
+    }
+    std::cout << "Teste 1\n";
+
+    if (data.find(' ') != data.npos)
+        channelpass = data.substr(data.find(' '), data.size());
+
+    std::cout << "Teste 2\n";
+
+    Channel *svChannel = server->getChannels()[channelname];
+    std::cout << "Teste 3\n";
     
     if (!svChannel)
-        svChannel = server->addChannel(channel);
+        svChannel = server->addChannel(channelname, channelpass);
+    std::cout << "Teste 4\n";
     
     if (svChannel->isInTheChannel(client))
         return ;
+    std::cout << "Teste 5\n";
 
-    svChannel->add(client, server);
-    //client->addChannel(channel, channel);
+    if (server->getChannels()[channelname]->getpass().empty() || server->getChannels()[channelname]->getpass() == channelpass)
+        svChannel->add(client, server);
+    else
+        server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
 }
 
 /*leave [channel]     leave channel*/

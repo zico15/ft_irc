@@ -115,7 +115,9 @@ void	Socket::recive(int i)
 	event = value.substr(0, value.find_first_of(SPACES, 0));
 	value = &value[event.size()];
 	value = trim(value);
-	if (1)// && event != "CAP") //<<<----  Ignoring this functions events!   just to see event remain....
+	for (int j = 0; j < event.size(); j++)//Convert any input from USER to EVENT STYLE (UPPERCASE)
+		event[j] = std::toupper(event[j]);
+	if (event != "CAP" && event != "PASS" && event != "NICK" && event != "USER" && event != "PING" && event != "PRIVMSG")// && event != "CAP") //<<<----  Ignoring this functions events!   just to see event remain....
 		std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;

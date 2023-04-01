@@ -52,8 +52,9 @@ class Server: public Socket {
 		static void	cap(Server *server, Client *client, String data);
 		static void userhost(Server *server, Client *client, String data);
 		static void list(Server *server, Client *client, String data);
+		static void	acceptNewConnection(Server *server, Client *client);
 
-		Channel *	addChannel(std::string const name);
+		Channel *	addChannel(std::string const name, const std::string channelpass);
 
 };
 #endif

@@ -31,18 +31,21 @@ class Server;
 class Channel {
 
 	private:
-		std::string							_channel;	  
+		std::string							_channel;
+		std::string							_pass;
 		std::vector<Client *>				_clients;
 		std::vector<String>					_msg;
 
 	public:	
 		Channel(std::string	channel);
+		Channel(std::string	channel, std::string channelpass);
 		~Channel();
 		void add(Client *client, Server *server);
 		void remove(Client *client);
 		std::string getName();
 		std::vector<Client *> getClients();
 		size_t getSize();
+		std::string getpass();
 
 		bool 		isInTheChannel(Client *client);
 		void 		sendMsgForAll(Server *server, Client *client, std::string message);
