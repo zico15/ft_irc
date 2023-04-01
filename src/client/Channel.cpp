@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 21:56:02 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/01 22:09:16 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void Channel::add(Client *client, Server *server) {
     std::string nickname = client->getNickname();
     _clients.push_back(client);
 	std::cout << "\033[35mChannel: " << _channel  << " add client: " << nickname << "\033[0m" << std::endl;
-
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
     server->send(client, RPL_NAMREPLY(client, server, this));
     server->send(client, RPL_ENDOFNAMES(nickname, this));

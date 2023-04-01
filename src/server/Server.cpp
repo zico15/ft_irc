@@ -6,7 +6,7 @@
 /*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 21:59:20 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/01 22:07:51 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("LIST", &Channel::list);
     on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
+
 }
 
 
@@ -195,7 +196,6 @@ Channel *Server::addChannel(std::string const channelName, const std::string cha
 {
     if (!_channels[channelName])
         _channels[channelName] = new Channel(channelName, channelpass);   
-
     return _channels[channelName];
 }
 
@@ -208,10 +208,7 @@ std::map<std::string, Channel *> &Server::getChannels(){
 void Server::acceptNewConnection(Server *server, Client *client)
 {
     server->send(client, RPL_WELCOME(client->getNickname()));
-    Channel *public_channel = server->addChannel("#public", "");
-    if (public_channel->isInTheChannel(client))
-        return ;
-    public_channel->add(client, server);
+    server->addChannel("#public", "")->add(client, server);
 };
 
 Server::~Server()
