@@ -58,44 +58,15 @@ void Server::userhost(Server *server, Client *client, String data)
     server->send(client, RPL_USERHOST(data));
 }
 
-bool Server::isChannel(std::string data) {
-    std::map<std::string, Channel *>::iterator it;
-
-    it = _channels.begin();
-    for (it; it != _channels.end(); it++)
-    {
-        if (it->second->getName() == data.substr(0, data.find(' ')))
-            return (true);
-    }
-    return (false);
-}
-
-void Server::addChannel(std::string const name)
-{
-    _channels[name] = new Channel(name);
-}
-
-void Server::addClientToChannel(Server *server, Client *client, String channelname)
-{
-    std::map<std::string, Channel *>::iterator it;
-
-    it = _channels.begin();
-    for (it; it != _channels.end(); it++)
-    {
-        if (it->second->getName() == channelname)
-        {
-            it->second->add(client);
-            break ;
-        }
-    }
-}
-
 void Server::pass(Server *server, Client *client, String data)
 {
     data = data.substr(1);
 
 
-    client->setPassword(data);
+    if (server->getPassword() == data)
+        client->setPassword(data);
+    else
+        server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
     if (client->isValid())
         acceptNewConnection(server, client);
 }
@@ -121,12 +92,6 @@ void Server::user(Server *server, Client *client, String data)
 {
     client->setUsername(data.substr(0, data.find(' ')));
     client->setRealname(data.substr(data.find(':') + 1));
-    if (server->getPassword() != client->getPassword())
-    {
-        std::cout << "A senha esta incorreta!\n";
-        server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
-        client->setPassword("");
-    }
     if (client->isValid())
         acceptNewConnection(server, client);
 }

@@ -29,15 +29,8 @@ Channel::~Channel()
 }
 
 void Channel::add(Client *client, Server *server) {
-    std::vector<Client *>::iterator it;
 
     std::string nickname = client->getNickname();
-    for (it = _clients.begin(); it != _clients.end(); it++) {
-        if (*it == client) {
-            std::cout << "ERRR o cliente ja foi adicionado ao channel!\n";
-            return;
-        }
-    }
     _clients.push_back(client);
 	std::cout << "\033[35mChannel: " << _channel  << " add client: " << nickname << "\033[0m" << std::endl;
 
@@ -57,7 +50,7 @@ void Channel::remove(Client *client){
         if (client == *it)
         {
             _clients.erase(it);
-            std::cout << "Channel: " << _channelName  << " remove client: " << client->getNickname() << std::endl;
+            std::cout << "Channel: " << _channel  << " remove client: " << client->getNickname() << std::endl;
             return ;
         }
     }
@@ -65,7 +58,7 @@ void Channel::remove(Client *client){
 
 std::string Channel::getName()
 {
-  return (_channelName);
+  return (_channel);
 }
 
 std::vector<Client *> Channel::getClients()
