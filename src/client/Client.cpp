@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2022/12/11 15:33:29 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/03/27 23:07:01 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ Client::Client(int fd, int index): _isConnect(false)
     _nickname = "";
     _password = "";
     _capend = false;
+    _isConnect = false;
     std::cout << MSG_NEW_CLIENT(std::string(""), std::to_string(fd));
 }
 
@@ -37,7 +38,9 @@ Client::~Client()
 
 bool Client::isValid()
 {
-    return !(_username.empty() || _nickname.empty() || _password.empty() || !_capend);
+    this->_isConnect = !(_username.empty() || _nickname.empty() || _password.empty() || !_capend);
+
+    return _isConnect;
 }
 void Client::setNickname(const std::string& nickname){
 	_nickname = trim(nickname);
@@ -57,4 +60,15 @@ bool Client::isNickname(std::map<int, Client *> clients, Client *client)
     return (false);
 }
 
+void Client::addChannel(std::string name, Channel *channel)
+{
+    _channels[channel->getName()] = channel;
+    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nAdicionou o Channel: " << name << "\033[0m" << std::endl;
+}
 
+void Client::removeChannel(std::string name, Channel *channel)
+{
+    //TODO
+    _channels[channel->getName()] = channel;
+    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nRemoveu o Channel: " << name << "\033[0m" << std::endl;
+};

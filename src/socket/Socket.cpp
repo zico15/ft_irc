@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/20 23:18:57 by rteles           ###   ########.fr       */
+/*   Updated: 2023/03/25 18:40:31 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,9 @@ void	Socket::recive(int i)
 	event = value.substr(0, value.find_first_of(SPACES, 0));
 	value = &value[event.size()];
 	value = trim(value);
-	if (1)// && event != "CAP") //<<<----  Ignoring this functions events!   just to see event remain....
+	for (int j = 0; j < event.size(); j++)//Convert any input from USER to EVENT STYLE (UPPERCASE)
+		event[j] = std::toupper(event[j]);
+	if (event != "CAP" && event != "PASS" && event != "NICK" && event != "USER" && event != "PING" && event != "PRIVMSG")// && event != "CAP") //<<<----  Ignoring this functions events!   just to see event remain....
 		std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
@@ -158,6 +160,20 @@ void Socket::execute(Client *client, std::string event, String data)
 std::map<int, Client *> &Socket::getClients()
 {
     return this->_clients; 
+}
+
+Client *Socket::getClient(std::string nickname)
+{
+    Client *client;
+
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+    	client = it->second;
+		
+		if (client->getNickname() == nickname)
+			return client;
+	}
+	return NULL;
 }
 
 void Socket::removeClient(Client *client)

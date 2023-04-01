@@ -5,45 +5,49 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/28 08:52:49 by rteles            #+#    #+#             */
-/*   Updated: 2023/03/28 08:52:50 by rteles           ###   ########.fr       */
+/*   Created: 2023/02/03 23:46:08 by rteles            #+#    #+#             */
+/*   Updated: 2023/03/28 09:00:28 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "Util.hpp"
-#include "Client.hpp"
+#include "Bot.hpp"
+#include <csignal>
 
-Server *s = NULL;
-
-int exit_error(std::string msg)
-{
-	std::cerr << "Error: " << msg << std::endl;
-	delete s;
-	exit(0);
-	return (1);
-}
+Bot *b = NULL;
 
 void signal_handler(int signal)
 {
 	(void)signal;
-	if (s != nullptr)
-		s->emitAll("com^Dman^Dd\n");//comando enviado para todos
-	delete s;
-  	exit(1);
+	if (b != NULL)
+	{
+		b->quit();
+		delete b;	
+	}
+	exit(1);
 }
 
 int main(int argc, char **argv)
 {
-	(void) argv;
 	std::signal(SIGINT, signal_handler);
-	if (argc < 3 || !argv[2])
-		std::cout << "ARGS: porta,  password\n";
-	else
+	try
 	{
-			s = new Server("localhost", 1234, argv[2]);
-	s->run();
+	    if (argc < 3)
+		{
+        	throw std::invalid_argument("Error: the bot don't have nothing to connect.");
+			return (0);
+		}
+
+		b = new Bot(argv[1], argv[2], argc > 3 ? argv[3] : "", argc > 4 ? argv[4] : "Marvin");
+		
+		b->run();
+		
+		delete b;
+	}
+	catch(const std::exception& e) {
+	    std::cerr << e.what() << std::endl;
 	}
 
-    return  (1);
+	return 0;
 }
+
+//./bot <host> <port> <password>
