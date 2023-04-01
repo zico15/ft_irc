@@ -57,7 +57,7 @@ Socket::~Socket()
 
 int Socket::socketListen(void)
 {
-	return (poll(_fds, getMaxConnecting(), -1));
+	return (poll(_fds, getMaxConnecting(), 1));
 }
 
 int		Socket::getMaxConnecting()

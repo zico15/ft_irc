@@ -82,25 +82,15 @@ void Server::quit(Server *server, Client *client, std::string data)
 /who [channel]        list of users in channel
 */
 void Server::who(Server *server, Client *client, std::string data)
-{
-	/*if (data.empty())
-	{
-		return ;
-	}
-	
-	if (data.find("#") == std::string::npos)
-		data = "#" + data;
+{//falta corrigir esta funcao
+    Channel *channel = server->getChannels()[data];
+    if (channel)
+    {
+       server->send(client, RPL_NAMREPLY(client, server, channel));
+       server->send(client, RPL_ENDOFNAMES(client->getNickname(), channel));
+    }
+    //server->send(client, RPL_ENDOFWHO(client));
 
-	Channel *channel = server->getChannels()[data];
-	if (!channel)
-		return ;
-
-    std::vector<Client *> clients = channel->getClients();
-    
-    channel->who(server, client);*/
-    
-    //falta criar uma funcao que faz send para o client todos os users e respetivas salas onde estão dentro, ver MSG.hpp para ver implementação
-    server->send(client, RPL_ENDOFWHO(client));
 }
 
 //The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message

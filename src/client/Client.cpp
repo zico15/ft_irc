@@ -89,25 +89,16 @@ bool Client::isNickname(std::map<int, Client *> clients, Client *client)
     return (false);
 }
 
-void Client::addChannel(std::string name, Channel *channel)
+void Client::addChannel(Channel *channel)
 {
     _channels[channel->getName()] = channel;
-    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nAdicionou o Channel: " << name << "\033[0m" << std::endl;
+    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nAdicionou o Channel: " << channel->getName() << "\033[0m" << std::endl;
 }
 
 void Client::removeChannel(Channel *channel)
 {
     //TODO
-    std::map<std::string, Channel *>::iterator it;
-    
-    for (it = _channels.begin(); it != _channels.end(); it++)
-    {
-        if (it->second ==  channel)
-        {
-            _channels.erase(it);
-            break;
-        }
-    }
+    _channels.erase(channel->getName());
     std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nRemoveu o Channel: " << channel->getName() << "\033[0m" << std::endl;
 };
 

@@ -38,6 +38,7 @@ void Channel::add(Client *client, Server *server) {
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
     server->send(client, RPL_NAMREPLY(client, server, this));
     server->send(client, RPL_ENDOFNAMES(nickname, this));
+    client->addChannel(this);
     if (!this->getClients().empty())
         this->send(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
 }
@@ -79,17 +80,20 @@ void Channel::join(Server *server, Client *client, std::string data)
 void Channel::remove(Client *client){
     std::vector<Client *>::iterator it;
     
+
+    std::cout << " TES: " << " client: " << client->getNickname() << "\n";
     // Printing the Vector
     for (it = _clients.begin(); it != _clients.end(); ++it)
     {
         if (client == *it)
         {
-            client->removeChannel(this);
+
             _clients.erase(it);
             std::cout << "Channel: " << _channel  << " remove client: " << client->getNickname() << std::endl;
             return ;
         }
     }
+  
 }
 
 std::string Channel::getName()
@@ -184,8 +188,7 @@ void Channel::kick(Server *server, Client *client, std::string data)
 //:irc.server.com 322 client_nick #channel :*no topic
 void Channel::list(Server *server, Client *client, std::string data)
 {
-    if (!data.empty())
-		return ;
+    return ;
     std::ostringstream stream;
     stream << server->getChannels().size();
     server->send(client, LIST_START(client->getNickname(), stream.str()));
@@ -194,7 +197,7 @@ void Channel::list(Server *server, Client *client, std::string data)
 	{
         std::ostringstream stream;
         stream << it->second->getClients().size();
-        server->send(client, LIST_MID(client->getNickname(), it->second->getName(), stream.str()));
+        server->send(client, LIST_MID(client->getNickname(), it->second, stream.str()));
 	}
 	server->send(client, LIST_END(client->getNickname()));
 }

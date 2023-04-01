@@ -42,7 +42,7 @@ class Client {
 		bool run();
 		void setNickname(const std::string& nickname);
 		bool	isValid();
-		void	addChannel(std::string name, Channel *channel);
+		void	addChannel(Channel *channel);
 		void	removeChannel(Channel *channel);
 
 		void setConnect(bool status){
