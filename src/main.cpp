@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 08:52:49 by rteles            #+#    #+#             */
-/*   Updated: 2023/03/28 08:52:50 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 21:41:13 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void signal_handler(int signal)
 	if (s != nullptr)
 		s->emitAll("com^Dman^Dd\n");//comando enviado para todos
 	delete s;
-  	exit(1);
+  	exit(0);
 }
 
 int main(int argc, char **argv)
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
 		std::cout << "ARGS: porta,  password\n";
 	else
 	{
-			s = new Server("localhost", 1234, argv[2]);
-	s->run();
+		s = new Server("localhost", 1234, argv[2]);
+		s->run();
 	}
 
     return  (1);

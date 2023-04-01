@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 22:45:17 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 21:31:38 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,7 @@
 #include <arpa/inet.h>
 #include <map>
 #include <sys/poll.h>
-
-# include "File.hpp"
-# include "Console.hpp"
-
-typedef std::string String;
+#include <vector>
 
 typedef struct pollfd t_socket;
 
@@ -34,7 +30,7 @@ class Channel {
 		std::string							_channel;
 		std::string							_pass;
 		std::vector<Client *>				_clients;
-		std::vector<String>					_msg;
+		std::vector<std::string>			_msg;
 
 	public:	
 		Channel(std::string	channel);
@@ -48,20 +44,22 @@ class Channel {
 		std::string getpass();
 
 		bool 		isInTheChannel(Client *client);
-		void 		sendMsgForAll(Server *server, Client *client, std::string message);
+		void 		send(Server *server, Client *client, std::string message);
 		std::string nicksOnChannel(void);
 		
-		static void join(Server *server, Client *client, String data);
-		static void leave(Server *server, Client *client, String data);
-		void 		list(Server *server, Client *client);
 		void 		who(Server *server, Client *client);
-		static void 		mode(Server *server, Client *client, String data);
-		static void 		kick(Server *server, Client *client, String data);
+		
+
+		static void join(Server *server, Client *client, std::string data);
+		static void leave(Server *server, Client *client, std::string data);
+		static void list(Server *server, Client *client, std::string data);
+		static void 		mode(Server *server, Client *client, std::string data);
+		static void 		kick(Server *server, Client *client, std::string data);
 
 
 };
 
-#include "Client.hpp"
+
 
 std::ostream& operator<<(std::ostream& os, Channel *channel);
 

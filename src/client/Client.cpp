@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 23:07:01 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 21:58:18 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include "Server.hpp"
+#include "Msg.hpp"
 
 static	int		id_clinet = 1;	
 
@@ -34,6 +36,13 @@ Client::Client(int fd, int index): _isConnect(false)
 Client::~Client() 
 {
     std::cout << MSG_CLOSE_CLIENT(_username, std::to_string(_fd));
+    std::map<std::string, Channel *>::iterator it;
+    
+    for (it = _channels.begin(); it != _channels.end(); it++)
+    {
+        it->second->remove(this);
+    }
+    
 }
 
 bool Client::isValid()
@@ -42,17 +51,37 @@ bool Client::isValid()
 
     return _isConnect;
 }
+
 void Client::setNickname(const std::string& nickname){
 	_nickname = trim(nickname);
 	//std::cout << "Client: " << _username << " set nickname: " << _nickname << std::endl;
+}
+
+void Client::nick(Server *server, Client *client, std::string data)
+{
+    client->setNickname (data);
+    if (Client::isNickname(server->getClients(), client))
+    {   
+        server->send(client, NICKNAME_ERROR(client->getNickname()));
+        client->setNickname("");
+    }
+    else if (client->isValid())
+        server->acceptNewConnection(server, client);
+}
+
+void Client::user(Server *server, Client *client, std::string data)
+{
+    client->setUsername(data.substr(0, data.find(' ')));
+    client->setRealname(data.substr(data.find(':') + 1));
+    if (client->isValid())
+        server->acceptNewConnection(server, client);
 }
 
 bool Client::isNickname(std::map<int, Client *> clients, Client *client)
 {
     std::map<int, Client *>::iterator it;
 
-    it = clients.begin();
-    for (it; it != clients.end(); it++)
+    for (it = clients.begin(); it != clients.end(); it++)
     {
         if (client != it->second && client->getNickname().compare(it->second->getNickname()) == 0)
             return (true);
@@ -66,9 +95,68 @@ void Client::addChannel(std::string name, Channel *channel)
     std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nAdicionou o Channel: " << name << "\033[0m" << std::endl;
 }
 
-void Client::removeChannel(std::string name, Channel *channel)
+void Client::removeChannel(Channel *channel)
 {
     //TODO
-    _channels[channel->getName()] = channel;
-    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nRemoveu o Channel: " << name << "\033[0m" << std::endl;
+    std::map<std::string, Channel *>::iterator it;
+    
+    for (it = _channels.begin(); it != _channels.end(); it++)
+    {
+        if (it->second ==  channel)
+        {
+            _channels.erase(it);
+            break;
+        }
+    }
+    std::cout << "\033[34m" << "Cliente: " << this->_nickname << "\nRemoveu o Channel: " << channel->getName() << "\033[0m" << std::endl;
 };
+
+
+void Client::msgPrivate(Server *server, Client *client, std::string data)
+{
+    //PRIVMSG <nick> :<mensagem>
+    //:nick!user@host PRIVMSG (dest)nick
+    //:nick!user@host PRIVMSG #channel
+
+    std::string user = client->getUsername();
+    std::string nick = client->getNickname();
+    std::string host = server->getHostName();
+    std::string dest;
+    Client  *client_dest;
+
+    dest = data.substr(0, data.find(' '));
+
+    if (dest.empty())
+        return ;
+
+    client_dest = server->getClient(dest);
+    std::string message = data.substr(data.find(":"), data.size());
+
+    if (client_dest) //Dest is a Client
+    {
+        message = PRV_MSG(nick, user, host, client_dest->getNickname(), message);
+        
+        server->send(client_dest, message); 
+    }
+    else if (dest.find("#") == 0) //Dest is a Channel
+    {
+        message = PRV_MSG(nick, user, host, dest, message);
+        
+        Channel *channel = server->getChannels()[dest];
+        
+        if (channel)
+        {
+            std::vector<Client *> clients = channel->getClients();
+            std::vector<Client *>::iterator it;
+        
+            if (channel->isInTheChannel(client) == false) //Client is not in the Server
+                return ;
+            channel->send(server, client, message);
+        }
+    }
+}
+
+void Client::userHost(Server *server, Client *client, std::string data)
+{
+    server->send(client, RPL_USERHOST(data));
+}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Msg.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 15:48:35 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/28 09:21:00 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 21:07:14 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@
 #define  RPL_NAMREPLY(client, server, channel)  std::string(":" + SERVER_NAME + " 353 " + client->getNickname() + " = " + channel->getName() + " :@" + server->getChannels()[channel->getName()]->nicksOnChannel())
 #define  RPL_ENDOFNAMES(nickname, channel)      std::string(":" + SERVER_NAME + " 366 " + nickname + " " + channel->getName() + " :End of NAMES list")
 #define  ERR_BADCHANNELKEY(nickname, channelname)   std::string(":" + SERVER_NAME + " 475 " + nickname + " " + channelname + " :Cannot join channel (+k)")
-#define PRV_MSG(nick, user, host, dest, message) std::string(":" + nick + "!" + user + "@" + host + " PRIVMSG " + dest + " " + message)
-#define LEAVE_CHANNEL(canal) std::string("PART " + canal)
+#define  PRV_MSG(nick, user, host, dest, message) std::string(":" + nick + "!" + user + "@" + host + " PRIVMSG " + dest + " " + message)
+#define  LEAVE_CHANNEL(canal) std::string("PART " + canal)
 
 #define LIST_START(nick, numberChannels) std::string(":" + SERVER_NAME + " 321 " + nick + " Channel " + numberChannels + " :")
 #define LIST_MID(nick, channel, numberClients)   std::string(":" + SERVER_NAME + " 322 " + nick + " " + channel + " " + numberClients + " :*no topic*")
-#define LIST_END(nick) std::string(":" + SERVER_NAME + " 323 " + nick + " :End of /LIST")
+#define LIST_END(nick) std::string(":" + SERVER_NAME + " 323 " + nick + " :End of LIST")
 
 #define RPL_WHOREPLY(nick, canal, nickA, hostA, status, nameA) std::string(":" + SERVER_NAME + " 352 " + nick + " " + canal + " " + nickA + " " + hostA + " " + SERVER_NAME + " " + nickA + "_irc" + " " + status + " :0 " + nameA)
 #define RPL_SYNTAXERROR(message) std::string("ERROR Invalid command syntax. " + std::string(message))

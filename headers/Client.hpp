@@ -3,23 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/27 23:02:52 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 21:49:16 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include "File.hpp"
-#include "Console.hpp"
+#include "Util.hpp"
 #include "Channel.hpp"
 
-typedef std::string String;
-
 typedef struct pollfd t_socket;
+
+class Server;
 
 class Client {
 
@@ -33,7 +32,6 @@ class Client {
 		bool 				  _isConnect;
 		bool				  _capend;
 
-		Console				  _console;
 		std::map<std::string, Channel *> _channels;
 
 	public:
@@ -45,7 +43,7 @@ class Client {
 		void setNickname(const std::string& nickname);
 		bool	isValid();
 		void	addChannel(std::string name, Channel *channel);
-		void	removeChannel(std::string name, Channel *channel);
+		void	removeChannel(Channel *channel);
 
 		void setConnect(bool status){
 			_isConnect = status;
@@ -55,7 +53,7 @@ class Client {
 			_capend = status;
 		};
 
-		std::map<String, Channel *> &getChannels()
+		std::map<std::string, Channel *> &getChannels()
 		{
 			return _channels;
 		};
@@ -101,5 +99,11 @@ class Client {
 		};
 
 		static bool isNickname(std::map<int, Client *> clients, Client *client);
-};
+		static void msgPrivate(Server *server, Client *client, std::string data);
+		static void userHost(Server *server, Client *client, std::string data);
+		static void nick(Server *server, Client *client, std::string data);
+		static void user(Server *server, Client *client, std::string data);
+};	
+
+
 #endif

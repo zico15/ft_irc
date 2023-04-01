@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/25 18:40:31 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 20:36:55 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
+
 
 Socket::Socket(){}
 
@@ -98,8 +99,8 @@ t_socket	*Socket::getSockets(){
 
 void	Socket::recive(int i)
 {
-	String 		event;
-	String 		value;
+	std::string 		event;
+	std::string 		value;
 	char		buffer[BUFFER_SIZE + 1];
 	int 		size;
 
@@ -115,8 +116,7 @@ void	Socket::recive(int i)
 	event = uppcase(value.substr(0, value.find_first_of(SPACES, 0)));
 	value = &value[event.size()];
 	value = trim(value);
-	// if (!_events[event])
-		std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
+	std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
@@ -150,10 +150,8 @@ void Socket::on(std::string event, function fun)
 	_events.insert(std::pair<std::string, function>(event, fun));
 }
 
-void Socket::execute(Client *client, std::string event, String data)
-{
-	return ;
-}
+
+
 
 std::map<int, Client *> &Socket::getClients()
 {
@@ -204,11 +202,9 @@ void Socket::run()
 					continue;
 				}
                 if (_fds[i].fd == getFd())
-	    		    execute(NULL, "connect");
+					connect();
                 else if (_fds[i].revents & POLLIN)
-                {
 					recive(i);
-				}
 				else if (!(_fds[i].revents & POLLOUT))
 					  std::cout << "POLL: " << _fds[i].revents << "\n";
 	    	}

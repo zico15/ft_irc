@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/03/28 09:48:23 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/01 21:56:02 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 #include "Server.hpp"
+#include "Msg.hpp"
+#include "Client.hpp"
 
 Channel::Channel(std::string	channel): _channel(channel), _pass("")
 {
@@ -38,7 +40,41 @@ void Channel::add(Client *client, Server *server) {
     server->send(client, RPL_NAMREPLY(client, server, this));
     server->send(client, RPL_ENDOFNAMES(nickname, this));
     if (!this->getClients().empty())
-        this->sendMsgForAll(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
+        this->send(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
+}
+
+
+/*join [channel]     join channel*/
+void Channel::join(Server *server, Client *client, std::string data)
+{
+    std::string channelname;
+    std::string channelpass = "";
+
+    if (data.empty()){
+        server->send(client, RPL_SYNTAXERROR("Missing arguments."));
+        return ;
+    }
+    channelname = data.substr(0, data.find(' '));
+    if (channelname[0] != '#') {
+        server->send(client, RPL_SYNTAXERROR("Channels name must start with '#'."));
+        return ;
+    }
+    
+    if (data.find(' ') != data.npos)
+        channelpass = data.substr(data.find(' '), data.size());
+
+    Channel *svChannel = server->getChannels()[channelname];
+    
+    if (!svChannel)
+        svChannel = server->addChannel(channelname, channelpass);
+    
+    if (svChannel->isInTheChannel(client))
+        return ;
+
+    if (server->getChannels()[channelname]->getpass().empty() || server->getChannels()[channelname]->getpass() == channelpass)
+        svChannel->add(client, server);
+    else
+        server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
 }
 
 void Channel::remove(Client *client){
@@ -49,6 +85,7 @@ void Channel::remove(Client *client){
     {
         if (client == *it)
         {
+            client->removeChannel(this);
             _clients.erase(it);
             std::cout << "Channel: " << _channel  << " remove client: " << client->getNickname() << std::endl;
             return ;
@@ -88,7 +125,7 @@ bool Channel::isInTheChannel(Client *client)
     return false;
 }
 
-void Channel::sendMsgForAll(Server *server, Client *client, std::string message)
+void Channel::send(Server *server, Client *client, std::string message)
 {
     std::vector<Client *>::iterator it;
     
@@ -128,12 +165,12 @@ void Channel::who(Server *server, Client *client)
     }
 }
 
-void Channel::mode(Server *server, Client *client, String data)
+void Channel::mode(Server *server, Client *client, std::string data)
 {
     server->send(client, ":teste MODE " + data + " " + client->getNickname());
 }
 
-void Channel::kick(Server *server, Client *client, String data)
+void Channel::kick(Server *server, Client *client, std::string data)
 {
     std::string final = data.substr(0, data.find(" :"));
 
@@ -141,55 +178,31 @@ void Channel::kick(Server *server, Client *client, String data)
     
     std::cout << final << std::endl;
 
-    server->getChannels()["#public"]->sendMsgForAll(server, NULL, final);
+    server->getChannels()["#public"]->send(server, NULL, final);
 
 }
 
 //:irc.server.com 322 client_nick #channel :*no topic
-void Channel::list(Server *server, Client *client)
+void Channel::list(Server *server, Client *client, std::string data)
 {
+    if (!data.empty())
+		return ;
     std::ostringstream stream;
-    stream << this->_clients.size();
-    std::string clientsNmbr = stream.str();
-
-    server->send(client, LIST_MID(client->getNickname(), this->getName(), clientsNmbr));
+    stream << server->getChannels().size();
+    server->send(client, LIST_START(client->getNickname(), stream.str()));
+    std::map<std::string, Channel *>::iterator it;
+	for (it = server->getChannels().begin(); it != server->getChannels().end(); ++it)
+	{
+        std::ostringstream stream;
+        stream << it->second->getClients().size();
+        server->send(client, LIST_MID(client->getNickname(), it->second->getName(), stream.str()));
+	}
+	server->send(client, LIST_END(client->getNickname()));
 }
 
-/*join [channel]     join channel*/
-void Channel::join(Server *server, Client *client, String data)
-{
-    std::string channelname;
-    std::string channelpass = "";
-
-    if (data.empty()){
-        server->send(client, RPL_SYNTAXERROR("Missing arguments."));
-        return ;
-    }
-    channelname = data.substr(0, data.find(' '));
-    if (channelname[0] != '#') {
-        server->send(client, RPL_SYNTAXERROR("Channels name must start with '#'."));
-        return ;
-    }
-
-    if (data.find(' ') != data.npos)
-        channelpass = data.substr(data.find(' '), data.size());
-
-    Channel *svChannel = server->getChannels()[channelname];
-    
-    if (!svChannel)
-        svChannel = server->addChannel(channelname, channelpass);
-    
-    if (svChannel->isInTheChannel(client))
-        return ;
-
-    if (server->getChannels()[channelname]->getpass().empty() || server->getChannels()[channelname]->getpass() == channelpass)
-        svChannel->add(client, server);
-    else
-        server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
-}
 
 /*leave [channel]     leave channel*/
-void Channel::leave(Server *server, Client *client, String data)
+void Channel::leave(Server *server, Client *client, std::string data)
 {
     /*
         data: #chanel1 :chanel1 or #chanel1 :Konversation terminated!
