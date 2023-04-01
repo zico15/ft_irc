@@ -48,3 +48,10 @@ std::string trim(std::string str)
     for (length = (str.length() - 1); length >= 0 && isspace(str[length]); length--);
     return str.substr(0, length + 1);
 }
+
+std::string uppcase(std::string str)
+{
+    for (int j = 0; j < str.size(); j++)
+		str[j] = std::toupper(str[j]);
+    return str; 
+}

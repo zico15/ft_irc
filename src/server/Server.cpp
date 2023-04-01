@@ -23,10 +23,10 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("PING", &Server::ping);
     on("CAP", &Server::cap);
     on("WHO", &Server::who);
-    //on("who", &Server::who);
+
     on("connect",  &Server::connect);
     on("USERHOST", &Server::userhost);
-    //CAP
+
     on("PASS",  &Server::pass);
     _function_default =  &Server::errorcommand;
     on("/help", &Server::help);

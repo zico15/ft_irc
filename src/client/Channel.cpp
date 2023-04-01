@@ -170,23 +170,17 @@ void Channel::join(Server *server, Client *client, String data)
         server->send(client, RPL_SYNTAXERROR("Channels name must start with '#'."));
         return ;
     }
-    std::cout << "Teste 1\n";
 
     if (data.find(' ') != data.npos)
         channelpass = data.substr(data.find(' '), data.size());
 
-    std::cout << "Teste 2\n";
-
     Channel *svChannel = server->getChannels()[channelname];
-    std::cout << "Teste 3\n";
     
     if (!svChannel)
         svChannel = server->addChannel(channelname, channelpass);
-    std::cout << "Teste 4\n";
     
     if (svChannel->isInTheChannel(client))
         return ;
-    std::cout << "Teste 5\n";
 
     if (server->getChannels()[channelname]->getpass().empty() || server->getChannels()[channelname]->getpass() == channelpass)
         svChannel->add(client, server);
