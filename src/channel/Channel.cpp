@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 22:09:16 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 00:00:28 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,13 +190,14 @@ void Channel::kick(Server *server, Client *client, std::string data)
 //:irc.server.com 322 client_nick #channel :*no topic
 void Channel::list(Server *server, Client *client, std::string data)
 {
-    return ;
     std::ostringstream stream;
     stream << server->getChannels().size();
     server->send(client, LIST_START(client->getNickname(), stream.str()));
     std::map<std::string, Channel *>::iterator it;
 	for (it = server->getChannels().begin(); it != server->getChannels().end(); ++it)
 	{
+        if (!it->second)
+            continue;
         std::ostringstream stream;
         stream << it->second->getClients().size();
         server->send(client, LIST_MID(client->getNickname(), it->second, stream.str()));
