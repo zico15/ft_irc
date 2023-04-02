@@ -13,24 +13,9 @@
 #ifndef SOCKET_HPP
 # define SOCKET_HPP
 
-#include <map>
-#include <fcntl.h>
-#include <cstring>
-#include <sstream>
-#include <csignal>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include "Util.hpp"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <poll.h>
+#include <iostream>
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/time.h>
-
-
+#include <map>
 
 #define TIME_OUT 3 * 60 * 1000
 #define BUFFER_SIZE 1024
@@ -38,7 +23,7 @@
 typedef struct pollfd t_socket;
 
 class Server;
-#include "Client.hpp"
+class Client;
 
 typedef void (*function)(Server *server, Client *client, std::string data);
 

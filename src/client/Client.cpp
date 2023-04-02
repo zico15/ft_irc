@@ -13,6 +13,7 @@
 #include "Client.hpp"
 #include "Server.hpp"
 #include "Msg.hpp"
+#include "Util.hpp"
 
 static	int		id_clinet = 1;	
 

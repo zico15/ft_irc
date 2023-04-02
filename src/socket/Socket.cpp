@@ -10,7 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <string.h>
+#include <fcntl.h>
+#include <sys/poll.h>
+#include <arpa/inet.h>
 #include "Socket.hpp"
+#include "Util.hpp"
+#include "Client.hpp"
 
 
 Socket::Socket(){}

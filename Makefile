@@ -10,28 +10,28 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = ircserv
+NAME		= ircserv
+OBJ_PATH	= obj
 
-SRCS 			= $(shell find src/ -name '*.cpp')
-OBJS 			= $(addsuffix .o, $(basename $(SRCS)))
-INCLUDES 		= $(addprefix -I, $(shell find headers -type d))
+SRCS		= $(shell find src/ -name '*.cpp')
+OBJS		= $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(basename $(SRCS))))
+INCLUDES	= $(addprefix -I, $(shell find headers -type d))
 
-CXX 			= c++
-CXXFLAGS		= -O0 #-pedantic #-Wall -Wextra -Werror -std=c++98 -Wshadow #-fsanitize=address -g
-RM				= rm -f
-
-
+CXX			= c++
+CXXFLAGS	= -O0 #-pedantic #-Wall -Wextra -Werror -std=c++98 -Wshadow #-fsanitize=address -g
+RM			= rm -f
 
 all: $(NAME)
 
-%.o:%.cpp
+$(OBJ_PATH)/%.o:%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@  $^
 
 clean:
-	rm -rf $(OBJS)
+	rm -rf $(OBJ_PATH)
 
 fclean: clean
 	rm -rf $(NAME)
@@ -42,6 +42,6 @@ r: re
 	clear && ./$(NAME) 1234 abc
 
 m:
-	make fclean && make clean && clear
+	make fclean && clear
 
 .PHONY: all clean fclean re r m

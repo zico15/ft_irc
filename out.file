@@ -1,1 +1,0 @@
-/nick [login]       change your login\n/join [channel]     join channel\n/leave              leave current channel\n/quit               quit irc\n/who                list of users in channel\n/msg [login] [msg]  submit msg at login\n/list               list of channel\n/me                 defined an action\n[msg]               send msg in channel\n

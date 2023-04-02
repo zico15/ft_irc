@@ -10,8 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/poll.h>
 #include "Server.hpp"
+#include "Client.hpp"
 #include "Msg.hpp"
+#include "Util.hpp"
 
 Server::Server(){
     

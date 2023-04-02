@@ -10,10 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sstream>
 #include "Channel.hpp"
 #include "Server.hpp"
 #include "Msg.hpp"
 #include "Client.hpp"
+#include "Util.hpp"
 
 Channel::Channel(std::string	channel): _channel(channel), _pass("")
 {

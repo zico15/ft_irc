@@ -14,9 +14,7 @@
 # define Channel_HPP
 
 #include <iostream>
-#include <arpa/inet.h>
 #include <map>
-#include <sys/poll.h>
 #include <vector>
 
 typedef struct pollfd t_socket;

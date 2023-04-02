@@ -13,7 +13,6 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include "Util.hpp"
 #include "Channel.hpp"
 
 typedef struct pollfd t_socket;

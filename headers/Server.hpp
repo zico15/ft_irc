@@ -14,14 +14,12 @@
 #define SERVER_HPP
 
 #include <iostream>
-#include <string>
 #include <time.h>
-#include <cstdlib>
-
-#include "Channel.hpp"
 #include <unistd.h>
+#include <vector>
 #include "Socket.hpp"
 
+class Channel;
 
 class Server: public Socket {
 

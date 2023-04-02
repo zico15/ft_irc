@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <csignal>
+
 #include "Server.hpp"
 #include "Util.hpp"
 #include "Client.hpp"
