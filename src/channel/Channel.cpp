@@ -65,7 +65,7 @@ void Channel::join(Server *server, Client *client, std::string data)
     if (data.find(' ') != data.npos)
         channelpass = data.substr(data.find(' '), data.size());
 
-    Channel *svChannel = server->getChannels()[channelname];
+    Channel *svChannel = server->getChannel(channelname);
     
     if (!svChannel)
         svChannel = server->addChannel(channelname, channelpass);
@@ -73,7 +73,7 @@ void Channel::join(Server *server, Client *client, std::string data)
     if (svChannel->isInTheChannel(client))
         return ;
 
-    if (server->getChannels()[channelname]->getpass().empty() || server->getChannels()[channelname]->getpass() == channelpass)
+    if (server->getChannel(channelname)->getpass().empty() || server->getChannel(channelname)->getpass() == channelpass)
         svChannel->add(client, server);
     else
         server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
@@ -183,7 +183,7 @@ void Channel::kick(Server *server, Client *client, std::string data)
     
     std::cout << final << std::endl;
 
-    server->getChannels()["#public"]->send(server, NULL, final);
+    server->getChannel("#public")->send(server, NULL, final);
 
 }
 
@@ -214,7 +214,6 @@ void Channel::leave(Server *server, Client *client, std::string data)
                 transform
         PART #test\r\n
     */
-
     std::cout << "\033[35mLEAVE: " << client->getNickname() << "\033[0m" << std::endl;
 
     if (data.empty())
@@ -225,14 +224,12 @@ void Channel::leave(Server *server, Client *client, std::string data)
     
     std::string canal = data.substr(0, data.find(":")-1);
 
-    Channel *channel = server->getChannels()[canal];
+    Channel *channel = server->getChannel(canal);
     
     if (!channel || !channel->isInTheChannel(client)) //Is not in the channel or the channel dont exist
         return ;
-    
     channel->remove(client);
-    //Don't need client -> channel
-
+    client->removeChannel(channel);
     server->send(client, LEAVE_CHANNEL(canal));
 }
 

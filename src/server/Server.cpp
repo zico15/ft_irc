@@ -167,14 +167,14 @@ void Server::execute(Client *client, std::string event, std::string data)
         (fun)(this, client, data);
 }
 
-
-
-void Server::send(Client *client, std::vector<Client *> clients, std::string data)
+void Server::sendAll(Client *client,  std::string data)
 {
-    for (size_t i = 0; i < clients.size(); i++)
+    std::map<int, Client *>::iterator it;
+
+    for (it = _clients.begin(); it != _clients.end(); it++)
     {
-        if (clients[i] != client)
-            send(clients[i], data);
+        if ((*it).second != client)
+            send((*it).second, data);
     }
 }
 
@@ -185,19 +185,35 @@ void Server::send(Client *client, std::string data)
    emit(client->getIndexFd(), data + "\r\n");
 }
 
-Channel *Server::addChannel(std::string const channelName, const std::string channelpass)
-{
-    if (!_channels[channelName])
-        _channels[channelName] = new Channel(channelName, channelpass);   
-    return _channels[channelName];
-}
-
 std::string &Server::getPassword(){
 	return _password;
 }
+
+Channel *Server::addChannel(std::string const channelName, const std::string channelpass)
+{
+    Channel *channels = getChannel(channelName);
+    if (!channels)
+        channels = new Channel(channelName, channelpass);
+    return channels;
+}
+
 std::map<std::string, Channel *> &Server::getChannels(){
     return _channels;
 }
+
+Channel *Server::getChannel(std::string name){
+
+    std::map<std::string, Channel *>::iterator it;
+
+    it = _channels.begin();
+    for (it = _channels.begin(); it != _channels.end(); it++)
+    {
+        if(it->first == name)
+            return (it->second);
+    }
+    return NULL;
+}
+
 void Server::acceptNewConnection(Server *server, Client *client)
 {
     server->send(client, RPL_WELCOME(client->getNickname()));

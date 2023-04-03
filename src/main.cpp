@@ -30,7 +30,7 @@ void signal_handler(int signal)
 {
 	(void)signal;
 	if (s != nullptr)
-		s->emitAll("com^Dman^Dd\n");//comando enviado para todos
+		s->sendAll(nullptr, "com^Dman^Dd");//comando enviado para todos
 	delete s;
   	exit(0);
 }

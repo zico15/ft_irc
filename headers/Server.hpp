@@ -32,11 +32,12 @@ class Server: public Socket {
 		Server(std::string name, int port, std::string password);
 		~Server();
 		void send(Client *client, std::string data);
-		void send(Client *client, std::vector<Client *> clients, std::string data);
+		void sendAll(Client *clientIgnore, std::string data);
 		void execute(Client *client, std::string event, std::string data = "");
 		void connect();
 		std::string &getPassword();
 		std::map<std::string, Channel *> &getChannels();
+		Channel *getChannel(std::string name);
 	
 		
 		static void errorcommand(Server *server, Client *client, std::string data);

@@ -132,5 +132,5 @@ Establishing a server to client connection
 
    SOURCE: https://www.rfc-editor.org/rfc/rfc1459#section-4.5.1   https://ircv3.net/irc/
    https://docs.kde.org/trunk5/en/konversation/konversation/irc-cmds.html
-https://defs.ircdocs.horse/defs/numerics.html
-https://dd.ircdocs.horse/refs/numerics/001.html
+   https://defs.ircdocs.horse/defs/numerics.html
+   https://dd.ircdocs.horse/refs/numerics/001.html

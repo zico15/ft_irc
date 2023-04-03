@@ -134,7 +134,7 @@ void Client::msgPrivate(Server *server, Client *client, std::string data)
     {
         message = PRV_MSG(nick, user, host, dest, message);
         
-        Channel *channel = server->getChannels()[dest];
+        Channel *channel = server->getChannel(dest);
         
         if (channel)
         {
