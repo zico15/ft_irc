@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 00:00:28 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/03 20:48:50 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ void Channel::add(Client *client, Server *server) {
     std::string nickname = client->getNickname();
     _clients.push_back(client);
 	std::cout << "\033[35mChannel: " << _channel  << " add client: " << nickname << "\033[0m" << std::endl;
+    //TODO 
+    //server->send(client, client->getPrefix() + " JOIN " + this->_channel);
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
     server->send(client, RPL_NAMREPLY(client, server, this));
     server->send(client, RPL_ENDOFNAMES(nickname, this));
@@ -74,10 +76,7 @@ void Channel::join(Server *server, Client *client, std::string data)
         return ;
 
     if (server->getChannel(channelname)->getpass().empty() || server->getChannel(channelname)->getpass() == channelpass)
-    {    
         svChannel->add(client, server);
-        svChannel->send(server, client, RPL_JOIN_NEWUSER(client->getNickname()));
-    }
     else
         server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
 }

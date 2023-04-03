@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 08:52:49 by rteles            #+#    #+#             */
-/*   Updated: 2023/04/01 21:41:13 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 18:56:56 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 		std::cout << "ARGS: porta,  password\n";
 	else
 	{
-		s = new Server("localhost", 1234, argv[2]);
+		s = new Server(argv[1], 1234, argv[2]);
 		s->run();
 	}
 

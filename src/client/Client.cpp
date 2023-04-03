@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 21:58:18 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 20:40:49 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Client::Client(): _isConnect(false)
     return ;
 }
 
-Client::Client(int fd, int index): _isConnect(false)
+Client::Client(int fd, int index, std::string hostname): _isConnect(false), _hostname(hostname)
 {
     _fd = fd;
     _index_fd = index;
@@ -44,6 +44,11 @@ Client::~Client()
         it->second->remove(this);
     }
     
+}
+
+std::string Client::getPrefix() const 
+{
+	return _nickname + (_username.empty() ? "" : "!" + _username) + (_hostname.empty() ? "" : "@" + _hostname);
 }
 
 bool Client::isValid()

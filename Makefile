@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+         #
+#    By: rteles <rteles@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/21 23:30:53 by rteles            #+#    #+#              #
-#    Updated: 2023/04/01 21:00:34 by edos-san         ###   ########.fr        #
+#    Updated: 2023/04/03 20:34:50 by rteles           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ fclean: clean
 re: fclean all
 
 r: re
-	clear && ./$(NAME) 1234 abc
+	clear && ./$(NAME) localhost abc
 
 m:
 	make fclean && clear

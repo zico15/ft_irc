@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 21:49:16 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 20:40:18 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ class Client {
 	private:		  
 		int					  _fd;
 		int					  _index_fd;
+		std::string 		  _hostname;
+
 		std::string 		  _nickname;
 		std::string			  _username;
 		std::string			  _realname;
@@ -35,7 +37,7 @@ class Client {
 
 	public:
 		Client();
-		Client(int fd, int index);
+		Client(int fd, int index, std::string hostname);
 		~Client();
 		void receiver();
 		bool run();
@@ -43,6 +45,7 @@ class Client {
 		bool	isValid();
 		void	addChannel(Channel *channel);
 		void	removeChannel(Channel *channel);
+		std::string getPrefix() const;
 
 		void setConnect(bool status){
 			_isConnect = status;

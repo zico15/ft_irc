@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:39:47 by rteles            #+#    #+#             */
-/*   Updated: 2023/03/30 16:11:49 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/03 17:34:05 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@ Bot::Bot(void)
 Bot::Bot(std::string host, char * port, std::string password, std::string name) : 
 _name(name), _hostname(host), _port(port), _password(password) 
 {
+	struct hostent *server = gethostbyname(host.c_str());
+	if (server == NULL)
+	    throw std::runtime_error("Erro: Isn't possible to resolve Hostname");
+
     struct sockaddr_in   target;
     
     _socket = socket(AF_INET, SOCK_STREAM, 0);//IPV 4, TCP
@@ -31,7 +35,7 @@ _name(name), _hostname(host), _port(port), _password(password)
 
     target.sin_family = AF_INET;
     target.sin_port = htons(atof(port));
-    target.sin_addr.s_addr = INADDR_ANY;
+	bcopy((char *)server->h_addr, (char *)&target.sin_addr.s_addr, server->h_length);
 
 	int	host_connect = connect(_socket, (struct sockaddr *)&target, sizeof(target));
     if (host_connect < 0)
@@ -86,6 +90,9 @@ void Bot::sendMessage(std::string const command, std::string const message)
 	std::string	message_for_send = command + message + "\r\n";
 
 	send(this->_socket, message_for_send.c_str(), message_for_send.size(), 0);
+
+	pollEvents[0].revents = 0;
+	pollEvents[0].events = POLLIN | POLLOUT | POLLHUP;
 }
 
 void Bot::debug(std::string message, std::string callBack, std::string user, std::string channel)
@@ -173,6 +180,9 @@ int	Bot::recive(void)
 	if (message.empty())
 		return 0;
 
+	pollEvents[0].events = POLLIN | POLLHUP;
+	pollEvents[0].revents = 0;
+
 	return this->response(message);
 }
 
@@ -221,9 +231,9 @@ rteles!rteles@localhost PRIVMSG #general meu_bot :!game
 	if (callBack.find("Hello") != std::string::npos ||
 		callBack.find("hello") != std::string::npos)
 		callBack = BOT_HELLO(user);
-	else if (callBack.find("!help game") != std::string::npos ||
-			callBack.find("!Help Game") != std::string::npos ||
-			callBack.find("!HELP GAME") != std::string::npos)
+	else if (callBack.find("!helpgame") != std::string::npos ||
+			callBack.find("!HelpGame") != std::string::npos ||
+			callBack.find("!HELPGAME") != std::string::npos)
 		callBack = BOT_HELP_GAME();
 	else if (callBack.find("!help") != std::string::npos ||
 			callBack.find("!Help") != std::string::npos ||
@@ -240,6 +250,11 @@ rteles!rteles@localhost PRIVMSG #general meu_bot :!game
 	{
 		callBack = showLeaderBoard();
 		channel = "";
+	}
+	else if (callBack.find("!invite") != std::string::npos && !callBack.empty())
+	{
+		invite(callBack.substr(callBack.find("!invite")+8));
+		return ;
 	}
 	else
 		return ;
@@ -269,7 +284,7 @@ int	Bot::response(std::string message)
 			this->privateMessage(message);
 		else
 		{
-			if (message == "com^Dman^Dd") //TODO
+			if (message.find("com^Dman^Dd") == 0)
 			{
 				return 1;
 			}
@@ -288,7 +303,12 @@ int	Bot::response(std::string message)
 				std::cout << "\033[32mConnected!\033[0m" << std::endl;
 				return 0;
 			}
-			std::cout << message << std::endl;
+			if (message.find(":"+this->_name+"!"+this->_name+"@"+this->_hostname+" JOIN #") != std::string::npos)
+			{
+				welcomeChannel(message);
+				return 0;
+			}
+			//std::cout << message << std::endl;
 		}
 	}
 	return 0;
@@ -364,4 +384,31 @@ std::string	Bot::showLeaderBoard(void)
 		i++;
 	}
 	return leaderBoard;
+}
+
+void	Bot::invite(std::string message)
+{
+	sendMessage("JOIN #", message);
+}
+
+std::string trim(std::string str) 
+{
+    int length;
+    while (!str.empty()  && isspace(*str.begin()))
+        str.erase(str.begin());
+    for (length = (str.length() - 1); length >= 0 && isspace(str[length]); length--);
+    return str.substr(0, length + 1);
+}
+
+void	Bot::welcomeChannel(std::string message)
+{
+	std::string channel = "";
+		
+	if (message.find("#") == std::string::npos)
+		return ;
+	
+	channel = message.substr(message.find("#"), message.find(":test")).c_str();
+	channel = trim(channel);
+
+	sendMessage("PRIVMSG " + channel + " :", BOT_HELLO_CHANNEL(channel, this->_name));
 }

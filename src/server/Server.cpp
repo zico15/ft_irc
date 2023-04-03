@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 22:07:51 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 20:39:38 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,15 +158,21 @@ void Server::help(Server *server, Client *client, std::string data)
 
 void Server::connect()
 {
-    int fd_client = socketAccept();
-	if (fd_client < 0)
+    struct sockaddr_in clientAddr;
+	socklen_t clientAddrLen = sizeof(clientAddr);
+	
+	int fd_client = accept(_fd,  (struct sockaddr *) &clientAddr, &clientAddrLen);
+    if (fd_client < 0)
 		return ;
+	std::string hostname = inet_ntoa(clientAddr.sin_addr);
+	std::cout << "IP: " << hostname << std::endl;
+	
 	for (size_t i = 1; i < getMaxConnecting(); i++)
     {
         if (getSocket(i).fd == -1)
 		{
 			setEvent(i, fd_client, POLLIN | POLLHUP);
-            addClient(i, new Client(getSocket(i).fd, i));
+            addClient(i, new Client(getSocket(i).fd, i, hostname));
 			break;
 		}
     }

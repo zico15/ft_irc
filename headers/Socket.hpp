@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 20:40:34 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 19:25:37 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,12 @@
 # define SOCKET_HPP
 
 #include <iostream>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/poll.h>
+#include <arpa/inet.h>
 #include <map>
 
 #define TIME_OUT 3 * 60 * 1000
@@ -70,7 +75,7 @@ class Socket
 		t_socket				*getSockets();
 		t_socket				&getSocket(int i);
 		std::string	const		&getHostName() const;
-		int						socketAccept(void);
+		// int						socketAccept(void);
 		void					setEvent(int i, int fd, short event, int revents = 0);
 		void					recive(int i);
 		void 					run();

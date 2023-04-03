@@ -3,17 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 20:36:55 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/03 20:31:35 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <string.h>
-#include <fcntl.h>
-#include <sys/poll.h>
-#include <arpa/inet.h>
 #include "Socket.hpp"
 #include "Util.hpp"
 #include "Client.hpp"
@@ -23,6 +19,10 @@ Socket::Socket(){}
 
 void Socket::init(t_type type, std::string hostname, int port, size_t maxConnecting)
 {
+	struct hostent *server = gethostbyname(hostname.c_str());
+	if (server == NULL)
+	    throw std::runtime_error("Erro: Isn't possible to resolve Hostname");
+
 	_type = type;
 	_hostname  = hostname;
 	_port = port;
@@ -30,7 +30,7 @@ void Socket::init(t_type type, std::string hostname, int port, size_t maxConnect
 	bzero((char *) &_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_port = htons(port);
-	_addr.sin_addr.s_addr = INADDR_ANY;	
+	bcopy((char *)server->h_addr, (char *)&_addr.sin_addr.s_addr, server->h_length);
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	_fds = new t_socket[_maxConnecting];
 	//====================================
@@ -76,11 +76,19 @@ int		Socket::getFd()
 	return (_fd);
 }
 
-int	Socket::socketAccept(void)
-{
+// int	Socket::socketAccept(void)
+// {
+// 	struct sockaddr_in clientAddr;
+// 	socklen_t clientAddrLen = sizeof(clientAddr);
 	
-	return (accept(_fd, NULL, NULL));
-}
+// 	int clientSocket = accept(_fd,  (struct sockaddr *) &clientAddr, &clientAddrLen);
+
+// 	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
+
+// 	std::cout << "IP: " << clientIP << std::endl;
+
+// 	return clientSocket;
+// }
 
 
 void	Socket::setEvent(int i, int fd, short event, int revents)

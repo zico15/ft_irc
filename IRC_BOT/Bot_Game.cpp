@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:39:47 by rteles            #+#    #+#             */
-/*   Updated: 2023/03/30 16:03:03 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/03 15:38:03 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,14 +91,14 @@ void Bot::gamePlay(std::string user, std::string channel, std::string message, s
 		
 		room_game->setVitory("You default a " + convertInput(room_game->getResult()) + "!");
 	}
-	else if (game.find("guessnumber") != std::string::npos)
+	else if (game.find("guess") != std::string::npos)
 	{
 		if (!channel.empty())
 			room_game = addGame(channel, GUESS, 10, 1000, 1 + (std::rand() % 10));
 		else
 			room_game = addGame(user, GUESS, 0, 1000, 1 + (std::rand() % 10));
 
-		guessNumber(user, game.substr(game.find("guessnumber")+11, game.size()).c_str(), room_game);
+		guessNumber(user, game.substr(game.find("guess")+6, game.size()).c_str(), room_game);
 		
 		room_game->setVitory("The Number is: " + convertToString(room_game->getResult()));
 	}
@@ -110,8 +110,14 @@ Game	*Bot::addGame(std::string room, int game, int time, int reward, int result)
 {
     if (!_games[room])
 	{
+		std::string gameMessage = "";
 		_games[room] = new Game(room, game, time, reward, result);
 		std::cout << "\033[35mNEW GAME ROOM: " << room << "\033[0m" << std::endl;
+		if (game == GUESS)
+			gameMessage = "Guess the Number! I'm thinking a number from 1 to 10! Using !game guess 1-10";
+		else if (game == JANKENPO)
+			gameMessage = "JanKenPo! Try too beat me! Using !game jankenpo rock/paper/scissors!";
+		debug("", BOT_GAME(gameMessage, convertToString(_games[room]->getTimeLimit())), "", room);
 	}
 
 	return _games[room];
