@@ -43,11 +43,26 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("JOIN", &Channel::join);
     on("PART", &Channel::leave);
     on("LIST", &Channel::list);
-    on("MODE", &Channel::mode);
+   // on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
+
+
+    //test
+    on("TEST", &Server::test);
+
 
 }
 
+
+void Server::test(Server *server, Client *client, std::string data)
+{
+    Channel *channel =  server->getChannel(data);
+
+    if (channel)
+    {
+        server->send(client, channel->nicksOnChannel());
+    }
+}
 
 
 void Server::pass(Server *server, Client *client, std::string data)
@@ -191,10 +206,11 @@ std::string &Server::getPassword(){
 
 Channel *Server::addChannel(std::string const channelName, const std::string channelpass)
 {
-    Channel *channels = getChannel(channelName);
-    if (!channels)
-        channels = new Channel(channelName, channelpass);
-    return channels;
+    Channel *channel = getChannel(channelName);
+    if (!channel)
+        channel = new Channel(channelName, channelpass);
+    _channels[channelName] = channel;
+    return channel;
 }
 
 std::map<std::string, Channel *> &Server::getChannels(){
@@ -217,7 +233,7 @@ Channel *Server::getChannel(std::string name){
 void Server::acceptNewConnection(Server *server, Client *client)
 {
     server->send(client, RPL_WELCOME(client->getNickname()));
-    server->addChannel("#public", "")->add(client, server);
+    Channel::join(server, client, "#public");
 };
 
 Server::~Server()

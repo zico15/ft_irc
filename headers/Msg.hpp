@@ -24,6 +24,8 @@
 #define  RPL_ENDOFWHO(client)     std::string(":" + SERVER_NAME + " 315 " + std::string(client->getUsername()) + " :End of /WHO list.")
 
 #define  RPL_JOIN(nick, user, host, channel) std::string(":" + nick + "!" + user + "@" + host + " JOIN " + channel)
+#define  RPL_JOIN_NEWUSER(nick) std::string("[" + nick + "] juntou-se ao canal")
+
 #define  RPL_NAMREPLY(client, server, channel)  std::string(":" + SERVER_NAME + " 353 " + client->getNickname() + " = " + channel->getName() + " :@" + channel->nicksOnChannel())
 #define  RPL_ENDOFNAMES(nickname, channel)      std::string(":" + SERVER_NAME + " 366 " + nickname + " " + channel->getName() + " :End of NAMES list")
 #define  ERR_BADCHANNELKEY(nickname, channelname)   std::string(":" + SERVER_NAME + " 475 " + nickname + " " + channelname + " :Cannot join channel (+k)")

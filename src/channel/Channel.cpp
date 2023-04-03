@@ -74,7 +74,10 @@ void Channel::join(Server *server, Client *client, std::string data)
         return ;
 
     if (server->getChannel(channelname)->getpass().empty() || server->getChannel(channelname)->getpass() == channelpass)
+    {    
         svChannel->add(client, server);
+        svChannel->send(server, client, RPL_JOIN_NEWUSER(client->getNickname()));
+    }
     else
         server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
 }

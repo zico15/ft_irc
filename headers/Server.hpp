@@ -39,7 +39,7 @@ class Server: public Socket {
 		std::map<std::string, Channel *> &getChannels();
 		Channel *getChannel(std::string name);
 	
-		
+		static void	acceptNewConnection(Server *server, Client *client);
 		static void errorcommand(Server *server, Client *client, std::string data);
 		static void help(Server *server, Client *client, std::string data);
 		
@@ -49,7 +49,8 @@ class Server: public Socket {
 	    static void pass(Server *server, Client *client, std::string data);
 		static void	ping(Server *server, Client *client, std::string data);
 		static void	cap(Server *server, Client *client, std::string data);
-		static void	acceptNewConnection(Server *server, Client *client);
+		static void	test(Server *server, Client *client, std::string data);
+
 
 		Channel *	addChannel(std::string const name, const std::string channelpass);
 

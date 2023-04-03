@@ -78,6 +78,7 @@ int		Socket::getFd()
 
 int	Socket::socketAccept(void)
 {
+	
 	return (accept(_fd, NULL, NULL));
 }
 
