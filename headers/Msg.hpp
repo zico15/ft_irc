@@ -28,7 +28,7 @@
 #define  RPL_ENDOFNAMES(nickname, channel)      std::string(":" + SERVER_NAME + " 366 " + nickname + " " + channel->getName() + " :End of NAMES list")
 #define  ERR_BADCHANNELKEY(nickname, channelname)   std::string(":" + SERVER_NAME + " 475 " + nickname + " " + channelname + " :Cannot join channel (+k)")
 #define  PRV_MSG(nick, user, host, dest, message) std::string(":" + nick + "!" + user + "@" + host + " PRIVMSG " + dest + " " + message)
-#define  LEAVE_CHANNEL(canal) std::string("PART " + canal)
+#define  LEAVE_CHANNEL(canal, client) std::string(":" + client->getNickname() + "!" + client->getUsername() + "@host" + " PART " + canal + " :Leaving the channel")
 
 #define LIST_START(nick, numberChannels) std::string(":" + SERVER_NAME + " 321 " + nick + " Channel " + numberChannels + " :")
 #define LIST_MID(nick, channel, numberClients)   std::string(":" + SERVER_NAME + " 322 " + nick + " " + channel->getName() + " " + numberClients + " :*no topic*")
