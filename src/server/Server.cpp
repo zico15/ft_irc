@@ -85,15 +85,21 @@ void Server::quit(Server *server, Client *client, std::string data)
 /who [channel]        list of users in channel
 */
 void Server::who(Server *server, Client *client, std::string data)
-{//falta corrigir esta funcao
-    Channel *channel = server->getChannels()[data];
-    if (channel)
+{
+    if (!data.empty() && data[0] != '#')
     {
-       server->send(client, RPL_NAMREPLY(client, server, channel));
-       server->send(client, RPL_ENDOFNAMES(client->getNickname(), channel));
+        //:irc.example.com 352 yournick myusername example.com irc.example.com myusername + :0 Real Name
+        //:irc.example.com 315 yournick myusername :End of /WHO list.
+        server->send(client, ":Teste 352 " + client->getNickname() + " " + client->getUsername() + " " + server->getHostName() + " Teste " + client->getNickname() + " + :0 " + client->getRealname());
+        server->send(client, ":Teste 315 " + client->getNickname() + " " + client->getUsername() + " :End of /WHO list.");
     }
-    //server->send(client, RPL_ENDOFWHO(client));
-
+    else if (!data.empty() && data[0] == '#')
+    {
+        for (int i = 0; i != server->_channels[data]->getClients().size(); i++){
+            server->send(client, ":Teste 352 " + client->getNickname() + " " + data + " " + server->_channels[data]->getClients()[i]->getUsername() + " " + "example.com" + " " + "Teste" + " " + server->_channels[data]->getClients()[i]->getUsername() + " " + "+" + " :0 " + server->_channels[data]->getClients()[i]->getRealname());
+        }
+        server->send(client, ":Teste 315 " + client->getNickname() + " " + data + " :" + "End of /WHO list.");
+    }
 }
 
 //The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message

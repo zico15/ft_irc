@@ -38,8 +38,10 @@ void Channel::add(Client *client, Server *server) {
     _clients.push_back(client);
 	std::cout << "\033[35mChannel: " << _channel  << " add client: " << nickname << "\033[0m" << std::endl;
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
-    server->send(client, RPL_NAMREPLY(client, server, this));
-    server->send(client, RPL_ENDOFNAMES(nickname, this));
+    for (int i = 0; i != this->getClients().size(); i++) {
+        server->send(getClients()[i], RPL_NAMREPLY(getClients()[i], server, this));
+        server->send(getClients()[i], RPL_ENDOFNAMES(getClients()[i]->getNickname(), this));
+    }
     client->addChannel(this);
     if (!this->getClients().empty())
         this->send(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
@@ -177,14 +179,21 @@ void Channel::mode(Server *server, Client *client, std::string data)
 
 void Channel::kick(Server *server, Client *client, std::string data)
 {
-    std::string final = data.substr(0, data.find(" :"));
-
-    final = "KICK " + final + " :PORQUE EU QUERO!";
-    
-    std::cout << final << std::endl;
-
-    server->getChannels()["#public"]->send(server, NULL, final);
-
+    //value:       #public Nickname_edu :User terminated!
+    //:Nickname_op KICK #public Nickname_edu :User terminated!
+    std::string     channel = data.substr(0, data.find(' '));
+    std::string     nickban = data.substr(data.find(' ') + 1, data.find(':') - data.find(' ') - 1);
+    nickban = nickban.substr(0, nickban.find_last_not_of(' ') + 1);
+    std::string     reasons = data.substr(data.find(":"), data.size());
+    for (int i = 0; i != server->getChannels()[channel]->getClients().size(); i++) {
+        if (nickban == server->getChannels()[channel]->getClients()[i]->getNickname()) {
+            std::cout << "Entrou aqui para fazer o PART command: \n";
+            //server->getChannels()[channel]->remove(server->getClient(nickban));// Esta a dar algum problema
+            //:Nickname_edu PART #public :User terminated!
+            server->send(server->getChannels()[channel]->getClients()[i], ":" + nickban + " PART " + channel + " " + reasons);
+        }
+        server->send(server->getChannels()[channel]->getClients()[i], ":" + server->getChannels()[channel]->getClients()[i]->getNickname() + " KICK " + channel + " " + nickban + " " + reasons);
+    }
 }
 
 //:irc.server.com 322 client_nick #channel :*no topic
