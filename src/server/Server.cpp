@@ -32,6 +32,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("PASS",  &Server::pass);
     on("HELP", &Server::help);
     on("QUIT", &Server::quit);
+    on("NOTICE", &Server::notice);
 
     //Client
     on("PRIVMSG", &Client::msgPrivate);
@@ -46,7 +47,6 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
     on("TOPIC", &Channel::topic);
-
 
 }
 
@@ -128,7 +128,17 @@ void Server::cap(Server *server, Client *client, std::string data)
     }
 }
 
-
+void Server::notice(Server *server, Client *client, std::string data)
+{
+    std::string target = data.substr(0, (data.find(" ")));
+    std::string message = ":test NOTICE " + target;
+    message += data.substr(data.find(" "), data.size());
+    std::cout << "O valor-------->" << message << "\n";
+    if (server->getChannels()[target])
+        server->getChannels()[target]->send(server, NULL, message);
+    else if (server->getClient(target))
+        server->send(server->getClient(target), message);
+}
 
 /*
 /nick [login]       change your login
