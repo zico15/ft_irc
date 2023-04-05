@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 20:48:50 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 20:55:17 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,10 @@ void Channel::add(Client *client, Server *server) {
     std::string nickname = client->getNickname();
     _clients.push_back(client);
 	std::cout << "\033[35mChannel: " << _channel  << " add client: " << nickname << "\033[0m" << std::endl;
+    
     //TODO 
     //server->send(client, client->getPrefix() + " JOIN " + this->_channel);
+    
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
     for (int i = 0; i != this->getClients().size(); i++) {
         server->send(getClients()[i], RPL_NAMREPLY(getClients()[i], server, this));
@@ -48,7 +50,6 @@ void Channel::add(Client *client, Server *server) {
     if (!this->getClients().empty())
         this->send(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
 }
-
 
 /*join [channel]     join channel*/
 void Channel::join(Server *server, Client *client, std::string data)
@@ -86,7 +87,6 @@ void Channel::join(Server *server, Client *client, std::string data)
 void Channel::remove(Client *client){
     std::vector<Client *>::iterator it;
     
-
     std::cout << " TES: " << " client: " << client->getNickname() << "\n";
     // Printing the Vector
     for (it = _clients.begin(); it != _clients.end(); ++it)
@@ -99,7 +99,6 @@ void Channel::remove(Client *client){
             return ;
         }
     }
-  
 }
 
 std::string Channel::getName()
@@ -107,7 +106,7 @@ std::string Channel::getName()
   return (_channel);
 }
 
-std::vector<Client *> Channel::getClients()
+std::vector<Client *> &Channel::getClients()
 {
     return _clients;
 }
@@ -167,6 +166,7 @@ std::string Channel::nicksOnChannel(void)
     }
     return nameslist;
 }
+
 //TODO NOT WORKING
 void Channel::who(Server *server, Client *client)
 {
@@ -193,21 +193,38 @@ void Channel::kick(Server *server, Client *client, std::string data)
 {
     //value:       #public Nickname_edu :User terminated!
     //:Nickname_op KICK #public Nickname_edu :User terminated!
-    std::string     channel = data.substr(0, data.find(' '));
-    if (client->getNickname() != server->getChannels()[channel]->getClients()[0]->getNickname()) {
+    
+    std::string     channelName = data.substr(0, data.find(' '));
+       
+    Channel *channel = server->getChannel(channelName);
+
+    if (!channel || !channel->getClients().size())
+        return ;
+
+    if (client->getNickname() != channel->getClients()[0]->getNickname())
+    {
         //:yourserver 482 clientnickname #public :You're not channel operator
-        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channel + " :You're not channel operator");
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :You're not channel operator");
         return ;
     }
+
     std::string     nickban = data.substr(data.find(' ') + 1, data.find(':') - data.find(' ') - 1);
     nickban = nickban.substr(0, nickban.find_last_not_of(' ') + 1);
     std::string     reasons = data.substr(data.find(":"), data.size());
-    for (int i = 0; i < server->getChannels()[channel]->getClients().size(); i++) {
-        server->send(server->getChannels()[channel]->getClients()[i], ":" + server->getChannels()[channel]->getClients()[i]->getNickname() + " KICK " + channel + " " + nickban + " " + reasons);
-        if (nickban == server->getChannels()[channel]->getClients()[i]->getNickname()) {
-            server->getChannels()[channel]->remove(server->getClient(nickban));
-        }
+        
+    std::vector<Client *>::iterator it;
+    Client * banClient = NULL;
+    
+    for (it = channel->getClients().begin(); it != channel->getClients().end(); ++it)
+    {
+        server->send((*it), ":" + (*it)->getNickname() + " KICK " + channelName + " " + nickban + " " + reasons);
+        
+        if (nickban == (*it)->getNickname())
+            banClient = *it;
     }
+    
+    if (banClient)
+        channel->remove(banClient);
 }
 
 void Channel::topic(Server *server, Client *client, std::string data)
@@ -215,7 +232,13 @@ void Channel::topic(Server *server, Client *client, std::string data)
     std::string     channelname = data.substr(0, data.find(' '));
         std::cout << "Vai ser enviado um topic\n";
 
-    if (client->getNickname() != server->getChannels()[channelname]->getClients()[0]->getNickname()) {
+    Channel *channel = server->getChannel(channelname);
+
+    if (!channel)
+        return ;
+
+    if (client->getNickname() != channel->getClients()[0]->getNickname())
+    {
         server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelname + " :You're not channel operator");
         return ;
     }
@@ -247,15 +270,9 @@ void Channel::list(Server *server, Client *client, std::string data)
 	server->send(client, LIST_END(client->getNickname()));
 }
 
-
 /*leave [channel]     leave channel*/
 void Channel::leave(Server *server, Client *client, std::string data)
 {
-    /*
-        data: #chanel1 :chanel1 or #chanel1 :Konversation terminated!
-                transform
-        PART #test\r\n
-    */
     std::cout << "\033[35mLEAVE: " << client->getNickname() << "\033[0m" << std::endl;
 
     if (data.empty())
@@ -270,20 +287,9 @@ void Channel::leave(Server *server, Client *client, std::string data)
     
     if (!channel || !channel->isInTheChannel(client)) //Is not in the channel or the channel dont exist
         return ;
+
+    channel->send(server, NULL, LEAVE_CHANNEL(canal, client));
     
-    for (int i = 0; i < server->getChannels()[canal]->getClients().size(); i++) {
-        server->send(server->getChannels()[canal]->getClients()[i], LEAVE_CHANNEL(canal, client));
-    }
     channel->remove(client);
     client->removeChannel(channel);
-    //server->send(client, LEAVE_CHANNEL(canal));
-}
-
-std::ostream& operator<<(std::ostream& os, Channel *channel)
-{
-	/*std::vector<Client *> clients = channel->getClients();
-	for (size_t i = 0; i < clients.size(); i++)
-	{*/
-	//}
-    return os;
 }

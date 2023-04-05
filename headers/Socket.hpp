@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 19:25:37 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 20:19:31 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ class Socket
 		t_socket				*getSockets();
 		t_socket				&getSocket(int i);
 		std::string	const		&getHostName() const;
-		// int						socketAccept(void);
 		void					setEvent(int i, int fd, short event, int revents = 0);
 		void					recive(int i);
 		void 					run();

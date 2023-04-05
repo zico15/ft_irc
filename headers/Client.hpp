@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 20:40:18 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 20:17:51 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ class Server;
 
 class Client {
 
-	private:		  
+	private:
 		int					  _fd;
 		int					  _index_fd;
 		std::string 		  _hostname;

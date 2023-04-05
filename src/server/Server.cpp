@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 20:39:38 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 21:01:02 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ Server::Server(std::string hostname, int port, std::string password): _password(
 
 }
 
-
-
 void Server::pass(Server *server, Client *client, std::string data)
 {
     data = data.substr(1);
@@ -65,14 +63,6 @@ void Server::pass(Server *server, Client *client, std::string data)
         server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
     if (client->isValid())
         acceptNewConnection(server, client);
-}
-
-/*
-/leave              leave current channel
-*/
-void Server::leave(Server *server, Client *client, std::string data)
-{
-
 }
 
 /*
@@ -100,9 +90,19 @@ void Server::who(Server *server, Client *client, std::string data)
     }
     else if (!data.empty() && data[0] == '#')
     {
-        for (int i = 0; i != server->_channels[data]->getClients().size(); i++){
-            server->send(client, ":Teste 352 " + client->getNickname() + " " + data + " " + server->_channels[data]->getClients()[i]->getUsername() + " " + "example.com" + " " + "Teste" + " " + server->_channels[data]->getClients()[i]->getUsername() + " " + "+" + " :0 " + server->_channels[data]->getClients()[i]->getRealname());
+        Channel *channel = server->getChannel(data);
+
+        if (!channel)
+            return ;
+
+        std::vector<Client *>::iterator it;
+        Client * banClient = NULL;
+        
+        for (it = channel->getClients().begin(); it != channel->getClients().end(); ++it)
+        {
+            server->send((*it), ":Teste 352 " + (*it)->getNickname() + " " + data + " " + (*it)->getUsername() + " " + "example.com" + " " + "Teste" + " " + (*it)->getUsername() + " " + "+" + " :0 " + (*it)->getRealname());
         }
+        
         server->send(client, ":Teste 315 " + client->getNickname() + " " + data + " :" + "End of /WHO list.");
     }
 }

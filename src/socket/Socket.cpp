@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 20:31:35 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 21:01:57 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,21 +76,6 @@ int		Socket::getFd()
 	return (_fd);
 }
 
-// int	Socket::socketAccept(void)
-// {
-// 	struct sockaddr_in clientAddr;
-// 	socklen_t clientAddrLen = sizeof(clientAddr);
-	
-// 	int clientSocket = accept(_fd,  (struct sockaddr *) &clientAddr, &clientAddrLen);
-
-// 	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
-
-// 	std::cout << "IP: " << clientIP << std::endl;
-
-// 	return clientSocket;
-// }
-
-
 void	Socket::setEvent(int i, int fd, short event, int revents)
 {
 	_fds[i].fd = fd;
@@ -159,14 +144,10 @@ void	Socket::emitAll(const std::string &data)
 	}
 }
 
-
 void Socket::on(std::string event, function fun)
 {
 	_events.insert(std::pair<std::string, function>(event, fun));
 }
-
-
-
 
 std::map<int, Client *> &Socket::getClients()
 {
@@ -230,18 +211,3 @@ void Socket::run()
         }
     }
 }
-
-/*
-ezequiel - authenticate/nick/username 
-Join/ (help) - eduardo
-send recibe private messages chanel - eduardo
-
-◦ You must have operators and regular users. - PESQUISA
-◦ Then, you have to implement the commands that are specific to operators. - PESQUISA
-
-ctrl+D - REVIEW
- 
-• Handle file transfer. - VERIFICAR
-• A bot - Ruben
-
-*/

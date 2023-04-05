@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 15:48:35 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 20:45:06 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 20:18:51 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,5 @@
 
 #define RPL_WHOREPLY(nick, canal, nickA, hostA, status, nameA) std::string(":" + SERVER_NAME + " 352 " + nick + " " + canal + " " + nickA + " " + hostA + " " + SERVER_NAME + " " + nickA + "_irc" + " " + status + " :0 " + nameA)
 #define RPL_SYNTAXERROR(message) std::string("ERROR Invalid command syntax. " + std::string(message))
-//: <servidor> 352 <seu-nick> <nome-do-canal> <nome-do-usuario> <endereco-ip> <servidor-origem> <nome-real-do-usuario> <status no canal>
 
-
-//352	RPL_WHOREPLY	RFC1459	<client> <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real_name>	Reply to vanilla WHO (See RFC). This format can be very different if the 'WHOX' version of the command is used (see ircu).
-//315	RPL_ENDOFWHO	RFC1459	<client> <name> :<info>	Used to terminate a list of RPL_WHOREPLY replies
-/*
-:irc.example.com 352 user1 #channel username hostname irc.example.com nick G*@ :0 Real Name
-:irc.example.com 352 user1 #channel username2 hostname2 irc.example.com nick2 H@ :1 Another Real Name
-:irc.example.com 315 user1 #channel :End of /WHO list.
-*/
 #endif

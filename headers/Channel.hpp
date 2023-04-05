@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/01 21:31:38 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/05 20:52:24 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class Channel {
 		void add(Client *client, Server *server);
 		void remove(Client *client);
 		std::string getName();
-		std::vector<Client *> getClients();
+		std::vector<Client *> &getClients();
 		size_t getSize();
 		std::string getpass();
 		std::string	getTopic() const;
@@ -49,7 +49,6 @@ class Channel {
 		std::string nicksOnChannel(void);
 		
 		void 		who(Server *server, Client *client);
-		
 
 		static void join(Server *server, Client *client, std::string data);
 		static void leave(Server *server, Client *client, std::string data);

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/03 20:40:49 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 20:20:59 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ bool Client::isValid()
 
 void Client::setNickname(const std::string& nickname){
 	_nickname = trim(nickname);
-	//std::cout << "Client: " << _username << " set nickname: " << _nickname << std::endl;
 }
 
 void Client::nick(Server *server, Client *client, std::string data)
