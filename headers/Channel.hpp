@@ -29,6 +29,7 @@ class Channel {
 		std::string							_pass;
 		std::vector<Client *>				_clients;
 		std::vector<std::string>			_msg;
+		std::string							_topic;
 
 	public:	
 		Channel(std::string	channel);
@@ -40,6 +41,8 @@ class Channel {
 		std::vector<Client *> getClients();
 		size_t getSize();
 		std::string getpass();
+		std::string	getTopic() const;
+		void		setTopic(std::string topic);
 
 		bool 		isInTheChannel(Client *client);
 		void 		send(Server *server, Client *client, std::string message);
@@ -51,9 +54,9 @@ class Channel {
 		static void join(Server *server, Client *client, std::string data);
 		static void leave(Server *server, Client *client, std::string data);
 		static void list(Server *server, Client *client, std::string data);
-		static void 		mode(Server *server, Client *client, std::string data);
-		static void 		kick(Server *server, Client *client, std::string data);
-
+		static void mode(Server *server, Client *client, std::string data);
+		static void kick(Server *server, Client *client, std::string data);
+		static void	topic(Server *server, Client *client, std::string data);
 
 };
 

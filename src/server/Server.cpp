@@ -45,6 +45,8 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("LIST", &Channel::list);
     on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
+    on("TOPIC", &Channel::topic);
+
 
 }
 

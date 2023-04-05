@@ -31,7 +31,7 @@
 #define  LEAVE_CHANNEL(canal, client) std::string(":" + client->getNickname() + "!" + client->getUsername() + "@host" + " PART " + canal + " :Leaving the channel")
 
 #define LIST_START(nick, numberChannels) std::string(":" + SERVER_NAME + " 321 " + nick + " Channel " + numberChannels + " :")
-#define LIST_MID(nick, channel, numberClients)   std::string(":" + SERVER_NAME + " 322 " + nick + " " + channel->getName() + " " + numberClients + " :*no topic*")
+#define LIST_MID(nick, channel, numberClients)   std::string(":" + SERVER_NAME + " 322 " + nick + " " + channel->getName() + " " + numberClients + " :" + channel->getTopic())
 #define LIST_END(nick) std::string(":" + SERVER_NAME + " 323 " + nick + " :End of LIST")
 
 #define RPL_WHOREPLY(nick, canal, nickA, hostA, status, nameA) std::string(":" + SERVER_NAME + " 352 " + nick + " " + canal + " " + nickA + " " + hostA + " " + SERVER_NAME + " " + nickA + "_irc" + " " + status + " :0 " + nameA)

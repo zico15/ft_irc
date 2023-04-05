@@ -120,6 +120,16 @@ std::string Channel::getpass()
     return _pass;
 }
 
+std::string Channel::getTopic() const
+{
+    return this->_topic;
+}
+
+void Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
+
 bool Channel::isInTheChannel(Client *client)
 {
     std::vector<Client *>::iterator it;
@@ -193,9 +203,28 @@ void Channel::kick(Server *server, Client *client, std::string data)
     for (int i = 0; i < server->getChannels()[channel]->getClients().size(); i++) {
         server->send(server->getChannels()[channel]->getClients()[i], ":" + server->getChannels()[channel]->getClients()[i]->getNickname() + " KICK " + channel + " " + nickban + " " + reasons);
         if (nickban == server->getChannels()[channel]->getClients()[i]->getNickname()) {
-            server->getChannels()[channel]->remove(server->getClient(nickban));// Esta a dar algum problema
+            server->getChannels()[channel]->remove(server->getClient(nickban));
         }
     }
+}
+
+void Channel::topic(Server *server, Client *client, std::string data)
+{
+    std::string     channelname = data.substr(0, data.find(' '));
+        std::cout << "Vai ser enviado um topic\n";
+
+    if (client->getNickname() != server->getChannels()[channelname]->getClients()[0]->getNickname()) {
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelname + " :You're not channel operator");
+        return ;
+    }
+        std::cout << "Vai ser enviado um topic\n";
+
+    if (data.find(":") == data.npos) {
+        server->send(client, RPL_SYNTAXERROR("/TOPIC you have to add a channel topic as a parameter!"));
+        return ;
+    }
+    std::string topic = data.substr(data.find(":") + 1);
+    server->getChannels()[channelname]->setTopic(topic);
 }
 
 //:irc.server.com 322 client_nick #channel :*no topic
