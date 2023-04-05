@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:39:47 by rteles            #+#    #+#             */
-/*   Updated: 2023/04/03 17:34:05 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 21:35:57 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,7 +308,7 @@ int	Bot::response(std::string message)
 				welcomeChannel(message);
 				return 0;
 			}
-			//std::cout << message << std::endl;
+			std::cout << message << std::endl;
 		}
 	}
 	return 0;

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 08:52:49 by rteles            #+#    #+#             */
-/*   Updated: 2023/04/03 18:56:56 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 21:51:52 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,17 @@ int main(int argc, char **argv)
 {
 	(void) argv;
 	std::signal(SIGINT, signal_handler);
-	if (argc < 3 || !argv[2])
-		std::cout << "ARGS: porta,  password\n";
+	if (argc != 4 || !argv[2] || !argv[3])
+		std::cout << "ARGS: Port, Password." << std::endl;
 	else
 	{
-		s = new Server(argv[1], 1234, argv[2]);
+		if (!isNumber(argv[2]))
+		{
+			std::cerr << "The Port need to be all Number!" << std::endl;
+			return (1);
+		}
+		s = new Server(argv[1], atof(argv[2]), argv[3]);
 		s->run();
 	}
-
     return  (1);
 }

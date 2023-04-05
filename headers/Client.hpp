@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 20:17:51 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 21:51:28 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ class Client {
 		bool				  _capend;
 
 		std::map<std::string, Channel *> _channels;
+		Client();
 
 	public:
-		Client();
 		Client(int fd, int index, std::string hostname);
 		~Client();
 		void receiver();
@@ -53,6 +53,11 @@ class Client {
 
 		void setcapend(bool status){
 			_capend = status;
+		};
+
+		std::string &getHostname()
+		{
+			return _hostname;
 		};
 
 		std::map<std::string, Channel *> &getChannels()

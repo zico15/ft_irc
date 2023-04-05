@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 15:48:35 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 20:18:51 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 22:02:30 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #define SERVER_NAME  std::string("test")
 
 #define  RPL_WELCOME(nickname)          std::string(":"+SERVER_NAME+" 001 "+nickname+" :Welcome to server, "+nickname)
-#define  ERR_PASSWDMISMATCH(nickname)   std::string(":"+SERVER_NAME+" 464 " + nickname + " :Password incorrect\r\n")
+#define  ERR_PASSWDMISMATCH(nickname)   std::string(":"+SERVER_NAME+" ERR_PASSWDMISMATCH " + nickname + " :Password incorrect")
 #define  NICKNAME_ERROR(nickname)       std::string("433 *"+nickname+"* :Nickname incorreta.")
 #define  ERR_UNKNOWNERROR(data)         std::string(":" + SERVER_NAME + " 421 " + std::string(data) + " :" + std::string(data))
 #define  RPL_USERHOST(data)             std::string(":" + SERVER_NAME + " 302 " + std::string(data.substr(0, data.find(' '))) + " :" + data)

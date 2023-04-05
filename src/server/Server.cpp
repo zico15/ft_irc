@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 21:01:02 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 21:56:32 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,10 @@ void Server::pass(Server *server, Client *client, std::string data)
     if (server->getPassword() == data)
         client->setPassword(data);
     else
+    {
         server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
+        Server::quit(server, client, "");
+    }
     if (client->isValid())
         acceptNewConnection(server, client);
 }
@@ -70,6 +73,7 @@ void Server::pass(Server *server, Client *client, std::string data)
 */
 void Server::quit(Server *server, Client *client, std::string data)
 {
+    (void)data;
     server->removeClient(client);
     close(client->getFd());
     server->setEvent(client->getIndexFd(), -1, 0, 0);
@@ -171,6 +175,7 @@ void Server::connect()
     if (fd_client < 0)
 		return ;
 	std::string hostname = inet_ntoa(clientAddr.sin_addr);
+    
 	std::cout << "IP: " << hostname << std::endl;
 	
 	for (size_t i = 1; i < getMaxConnecting(); i++)
