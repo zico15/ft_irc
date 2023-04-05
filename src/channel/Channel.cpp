@@ -276,7 +276,7 @@ void Channel::leave(Server *server, Client *client, std::string data)
     }
     channel->remove(client);
     client->removeChannel(channel);
-    server->send(client, LEAVE_CHANNEL(canal));
+    //server->send(client, LEAVE_CHANNEL(canal));
 }
 
 std::ostream& operator<<(std::ostream& os, Channel *channel)

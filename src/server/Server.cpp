@@ -49,22 +49,10 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("TOPIC", &Channel::topic);
 
 
-    //test
-    on("TEST", &Server::test);
 
 
 }
 
-
-void Server::test(Server *server, Client *client, std::string data)
-{
-    Channel *channel =  server->getChannel(data);
-
-    if (channel)
-    {
-        server->send(client, channel->nicksOnChannel());
-    }
-}
 
 
 void Server::pass(Server *server, Client *client, std::string data)

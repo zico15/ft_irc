@@ -52,7 +52,6 @@ class Server: public Socket {
 		static void	ping(Server *server, Client *client, std::string data);
 		static void	cap(Server *server, Client *client, std::string data);
 		static void	notice(Server *server, Client *client, std::string data);
-		static void	acceptNewConnection(Server *server, Client *client);
 
 
 		Channel *	addChannel(std::string const name, const std::string channelpass);
