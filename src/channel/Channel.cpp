@@ -40,8 +40,10 @@ void Channel::add(Client *client, Server *server) {
     //TODO 
     //server->send(client, client->getPrefix() + " JOIN " + this->_channel);
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
-    server->send(client, RPL_NAMREPLY(client, server, this));
-    server->send(client, RPL_ENDOFNAMES(nickname, this));
+    for (int i = 0; i != this->getClients().size(); i++) {
+        server->send(getClients()[i], RPL_NAMREPLY(getClients()[i], server, this));
+        server->send(getClients()[i], RPL_ENDOFNAMES(getClients()[i]->getNickname(), this));
+    }
     client->addChannel(this);
     if (!this->getClients().empty())
         this->send(server, client, "JOIN " + nickname + " have joined the channel!\r\n");
@@ -120,6 +122,16 @@ std::string Channel::getpass()
     return _pass;
 }
 
+std::string Channel::getTopic() const
+{
+    return this->_topic;
+}
+
+void Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
+
 bool Channel::isInTheChannel(Client *client)
 {
     std::vector<Client *>::iterator it;
@@ -174,19 +186,47 @@ void Channel::who(Server *server, Client *client)
 
 void Channel::mode(Server *server, Client *client, std::string data)
 {
-    server->send(client, ":teste MODE " + data + " " + client->getNickname());
+    //server->send(client, ":teste MODE " + data + " " + client->getNickname());
 }
 
 void Channel::kick(Server *server, Client *client, std::string data)
 {
-    std::string final = data.substr(0, data.find(" :"));
+    //value:       #public Nickname_edu :User terminated!
+    //:Nickname_op KICK #public Nickname_edu :User terminated!
+    std::string     channel = data.substr(0, data.find(' '));
+    if (client->getNickname() != server->getChannels()[channel]->getClients()[0]->getNickname()) {
+        //:yourserver 482 clientnickname #public :You're not channel operator
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channel + " :You're not channel operator");
+        return ;
+    }
+    std::string     nickban = data.substr(data.find(' ') + 1, data.find(':') - data.find(' ') - 1);
+    nickban = nickban.substr(0, nickban.find_last_not_of(' ') + 1);
+    std::string     reasons = data.substr(data.find(":"), data.size());
+    for (int i = 0; i < server->getChannels()[channel]->getClients().size(); i++) {
+        server->send(server->getChannels()[channel]->getClients()[i], ":" + server->getChannels()[channel]->getClients()[i]->getNickname() + " KICK " + channel + " " + nickban + " " + reasons);
+        if (nickban == server->getChannels()[channel]->getClients()[i]->getNickname()) {
+            server->getChannels()[channel]->remove(server->getClient(nickban));
+        }
+    }
+}
 
-    final = "KICK " + final + " :PORQUE EU QUERO!";
-    
-    std::cout << final << std::endl;
+void Channel::topic(Server *server, Client *client, std::string data)
+{
+    std::string     channelname = data.substr(0, data.find(' '));
+        std::cout << "Vai ser enviado um topic\n";
 
-    server->getChannel("#public")->send(server, NULL, final);
+    if (client->getNickname() != server->getChannels()[channelname]->getClients()[0]->getNickname()) {
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelname + " :You're not channel operator");
+        return ;
+    }
+        std::cout << "Vai ser enviado um topic\n";
 
+    if (data.find(":") == data.npos) {
+        server->send(client, RPL_SYNTAXERROR("/TOPIC you have to add a channel topic as a parameter!"));
+        return ;
+    }
+    std::string topic = data.substr(data.find(":") + 1);
+    server->getChannels()[channelname]->setTopic(topic);
 }
 
 //:irc.server.com 322 client_nick #channel :*no topic
@@ -230,6 +270,10 @@ void Channel::leave(Server *server, Client *client, std::string data)
     
     if (!channel || !channel->isInTheChannel(client)) //Is not in the channel or the channel dont exist
         return ;
+    
+    for (int i = 0; i < server->getChannels()[canal]->getClients().size(); i++) {
+        server->send(server->getChannels()[canal]->getClients()[i], LEAVE_CHANNEL(canal, client));
+    }
     channel->remove(client);
     client->removeChannel(channel);
     server->send(client, LEAVE_CHANNEL(canal));

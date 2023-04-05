@@ -32,6 +32,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("PASS",  &Server::pass);
     on("HELP", &Server::help);
     on("QUIT", &Server::quit);
+    on("NOTICE", &Server::notice);
 
     //Client
     on("PRIVMSG", &Client::msgPrivate);
@@ -45,6 +46,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("LIST", &Channel::list);
    // on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
+    on("TOPIC", &Channel::topic);
 
 
     //test
@@ -100,15 +102,21 @@ void Server::quit(Server *server, Client *client, std::string data)
 /who [channel]        list of users in channel
 */
 void Server::who(Server *server, Client *client, std::string data)
-{//falta corrigir esta funcao
-    Channel *channel = server->getChannels()[data];
-    if (channel)
+{
+    if (!data.empty() && data[0] != '#')
     {
-       server->send(client, RPL_NAMREPLY(client, server, channel));
-       server->send(client, RPL_ENDOFNAMES(client->getNickname(), channel));
+        //:irc.example.com 352 yournick myusername example.com irc.example.com myusername + :0 Real Name
+        //:irc.example.com 315 yournick myusername :End of /WHO list.
+        server->send(client, ":Teste 352 " + client->getNickname() + " " + client->getUsername() + " " + server->getHostName() + " Teste " + client->getNickname() + " + :0 " + client->getRealname());
+        server->send(client, ":Teste 315 " + client->getNickname() + " " + client->getUsername() + " :End of /WHO list.");
     }
-    //server->send(client, RPL_ENDOFWHO(client));
-
+    else if (!data.empty() && data[0] == '#')
+    {
+        for (int i = 0; i != server->_channels[data]->getClients().size(); i++){
+            server->send(client, ":Teste 352 " + client->getNickname() + " " + data + " " + server->_channels[data]->getClients()[i]->getUsername() + " " + "example.com" + " " + "Teste" + " " + server->_channels[data]->getClients()[i]->getUsername() + " " + "+" + " :0 " + server->_channels[data]->getClients()[i]->getRealname());
+        }
+        server->send(client, ":Teste 315 " + client->getNickname() + " " + data + " :" + "End of /WHO list.");
+    }
 }
 
 //The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message
@@ -135,7 +143,17 @@ void Server::cap(Server *server, Client *client, std::string data)
     }
 }
 
-
+void Server::notice(Server *server, Client *client, std::string data)
+{
+    std::string target = data.substr(0, (data.find(" ")));
+    std::string message = ":test NOTICE " + target;
+    message += data.substr(data.find(" "), data.size());
+    std::cout << "O valor-------->" << message << "\n";
+    if (server->getChannels()[target])
+        server->getChannels()[target]->send(server, NULL, message);
+    else if (server->getClient(target))
+        server->send(server->getClient(target), message);
+}
 
 /*
 /nick [login]       change your login
