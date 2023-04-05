@@ -6,14 +6,14 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 21:01:57 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 22:20:09 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 #include "Util.hpp"
 #include "Client.hpp"
-
+#include <cerrno>
 
 Socket::Socket(){}
 
@@ -123,18 +123,15 @@ void	Socket::recive(int i)
 }
 
 void	Socket::emit(int i, const std::string &data)
-{
-	int size;
-
-	size = send(_fds[i].fd, data.c_str(), data.length(), 0);
+{ 
+	send(_fds[i].fd, data.c_str(), data.length(), 0);
 	_fds[i].revents = 0;
 	_fds[i].events = POLLIN | POLLOUT | POLLHUP;
 }
 
-
 void	Socket::emitAll(const std::string &data)
 {
-	for (size_t i = 1; i < getMaxConnecting(); i++)
+	for (int i = 1; i < getMaxConnecting(); i++)
 	{
 		if (_fds[i].fd > 0)
 		{	
@@ -180,7 +177,6 @@ void Socket::addClient(int fd, Client *client)
 
 void Socket::run()
 {
-	size_t i = 0;
     while (true)
     {
         try
@@ -191,7 +187,9 @@ void Socket::run()
             for (int i = 0; i < getMaxConnecting(); i++)
         	{
         		if(_fds[i].revents == 0)
-        			continue;
+				{
+        			continue ;
+				}
 				if(_fds[i].revents == POLLHUP)
         		{	
 					std::cout << "close\n";

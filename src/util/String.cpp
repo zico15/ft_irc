@@ -51,14 +51,14 @@ std::string trim(std::string str)
 
 std::string uppcase(std::string str)
 {
-    for (int j = 0; j < str.size(); j++)
+    for (long unsigned int j = 0; j < str.size(); j++)
 		str[j] = std::toupper(str[j]);
     return str; 
 }
 
 bool isNumber(std::string str)
 {
-    for (int j = 0; j < str.size(); j++)
+    for (long unsigned int j = 0; j < str.size(); j++)
         if (!std::isdigit(str[j]))
             return false;
     return true; 

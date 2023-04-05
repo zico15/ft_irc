@@ -6,15 +6,15 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 08:52:49 by rteles            #+#    #+#             */
-/*   Updated: 2023/04/05 21:51:52 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 22:07:40 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <csignal>
-
 #include "Server.hpp"
 #include "Util.hpp"
 #include "Client.hpp"
+#include <cstdlib>
 
 Server *s = NULL;
 
@@ -29,8 +29,8 @@ int exit_error(std::string msg)
 void signal_handler(int signal)
 {
 	(void)signal;
-	if (s != nullptr)
-		s->sendAll(nullptr, "com^Dman^Dd");//comando enviado para todos
+	if (s != NULL)
+		s->sendAll(NULL, "com^Dman^Dd");//comando enviado para todos
 	delete s;
   	exit(0);
 }

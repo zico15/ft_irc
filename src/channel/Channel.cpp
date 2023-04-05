@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 20:55:17 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 22:09:25 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,9 @@ void Channel::add(Client *client, Server *server) {
     //server->send(client, client->getPrefix() + " JOIN " + this->_channel);
     
     server->send(client, RPL_JOIN(nickname, client->getUsername(),server->getHostName(), this->_channel));
-    for (int i = 0; i != this->getClients().size(); i++) {
+    
+    for (long unsigned int i = 0; i != this->getClients().size(); i++)
+    {
         server->send(getClients()[i], RPL_NAMREPLY(getClients()[i], server, this));
         server->send(getClients()[i], RPL_ENDOFNAMES(getClients()[i]->getNickname(), this));
     }
@@ -159,7 +161,8 @@ std::string Channel::nicksOnChannel(void)
 {
     std::string nameslist;
 
-    for (int i = 0; i < _clients.size(); i++) {
+    for (long unsigned int i = 0; i < _clients.size(); i++)
+    {
         nameslist += _clients[i]->getNickname();
         if (i + 1 < _clients.size())
             nameslist += " ";
@@ -184,10 +187,10 @@ void Channel::who(Server *server, Client *client)
     }
 }
 
-void Channel::mode(Server *server, Client *client, std::string data)
+/*void Channel::mode(Server *server, Client *client, std::string data)
 {
     //server->send(client, ":teste MODE " + data + " " + client->getNickname());
-}
+}*/
 
 void Channel::kick(Server *server, Client *client, std::string data)
 {
@@ -255,6 +258,7 @@ void Channel::topic(Server *server, Client *client, std::string data)
 //:irc.server.com 322 client_nick #channel :*no topic
 void Channel::list(Server *server, Client *client, std::string data)
 {
+    (void)data;
     std::ostringstream stream;
     stream << server->getChannels().size();
     server->send(client, LIST_START(client->getNickname(), stream.str()));

@@ -6,7 +6,7 @@
 #    By: rteles <rteles@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/21 23:30:53 by rteles            #+#    #+#              #
-#    Updated: 2023/04/03 20:34:50 by rteles           ###   ########.fr        #
+#    Updated: 2023/04/05 22:04:41 by rteles           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OBJS		= $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(basename $(SRCS))))
 INCLUDES	= $(addprefix -I, $(shell find headers -type d))
 
 CXX			= c++
-CXXFLAGS	= -O0 #-pedantic #-Wall -Wextra -Werror -std=c++98 -Wshadow #-fsanitize=address -g
+CXXFLAGS	= -O0 -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
 RM			= rm -f
 
 all: $(NAME)

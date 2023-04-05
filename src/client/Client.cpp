@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 20:20:59 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 22:12:02 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,28 @@
 #include "Msg.hpp"
 #include "Util.hpp"
 
-static	int		id_clinet = 1;	
+//static	int		id_clinet = 1;	
 
 Client::Client(): _isConnect(false)
 {
     return ;
 }
 
-Client::Client(int fd, int index, std::string hostname): _isConnect(false), _hostname(hostname)
+Client::Client(int fd, int index, std::string hostname): _hostname(hostname)
 {
     _fd = fd;
     _index_fd = index;
     _username = "";
     _nickname = "";
     _password = "";
-    _capend = false;
     _isConnect = false;
-    std::cout << MSG_NEW_CLIENT(std::string(""), std::to_string(fd));
+    _capend = false;
+    //std::cout << MSG_NEW_CLIENT(std::string(""), std::to_string(fd));
 }
 
 Client::~Client() 
 {
-    std::cout << MSG_CLOSE_CLIENT(_username, std::to_string(_fd));
+    //std::cout << MSG_CLOSE_CLIENT(_username, std::to_string(_fd));
     std::map<std::string, Channel *>::iterator it;
     
     for (it = _channels.begin(); it != _channels.end(); it++)

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 21:56:32 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/05 22:13:51 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,10 @@ void Server::who(Server *server, Client *client, std::string data)
             return ;
 
         std::vector<Client *>::iterator it;
-        Client * banClient = NULL;
         
         for (it = channel->getClients().begin(); it != channel->getClients().end(); ++it)
-        {
             server->send((*it), ":Teste 352 " + (*it)->getNickname() + " " + data + " " + (*it)->getUsername() + " " + "example.com" + " " + "Teste" + " " + (*it)->getUsername() + " " + "+" + " :0 " + (*it)->getRealname());
-        }
-        
+
         server->send(client, ":Teste 315 " + client->getNickname() + " " + data + " :" + "End of /WHO list.");
     }
 }
@@ -137,6 +134,8 @@ void Server::cap(Server *server, Client *client, std::string data)
 
 void Server::notice(Server *server, Client *client, std::string data)
 {
+    (void)client;
+
     std::string target = data.substr(0, (data.find(" ")));
     std::string message = ":test NOTICE " + target;
     message += data.substr(data.find(" "), data.size());
@@ -178,7 +177,7 @@ void Server::connect()
     
 	std::cout << "IP: " << hostname << std::endl;
 	
-	for (size_t i = 1; i < getMaxConnecting(); i++)
+	for (int i = 1; i < getMaxConnecting(); i++)
     {
         if (getSocket(i).fd == -1)
 		{
