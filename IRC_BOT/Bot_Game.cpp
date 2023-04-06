@@ -6,10 +6,20 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:39:47 by rteles            #+#    #+#             */
-/*   Updated: 2023/04/03 15:38:03 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/06 15:09:21 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/*
+This code creates a game that has 2 modes: a game of rock-paper-scissors and a guessing game.
+The rock-paper-scissors game has the computer choose a random number from 1 to 3.
+If the number the player chooses is the same as the computer's number, the player draws.
+If the number the player chooses is 1 greater than the computer's number or 2 less than the computer's number, the player wins.
+If the number the player chooses is 1 less than the computer's number or 2 greater than the computer's number, the player loses.
+The guessing game has the computer choose a random number from 1 to 10.
+If the number the player chooses is the same as the computer's number, the player wins.
+If the number the player chooses is not the same as the computer's number, the player loses.
+*/
 #include "Bot.hpp"
 
 std::string convertInput(int input)
@@ -74,7 +84,7 @@ void Bot::guessNumber(std::string nick, std::string choise, Game *game)
 		game->setWinnerOrLosser(nick, 0);
 }
 
-void Bot::gamePlay(std::string user, std::string channel, std::string message, std::string game)
+void Bot::gamePlay(std::string user, std::string channel, std::string game)
 {
 	std::string callBack = "";
 	Game		*room_game;
@@ -102,8 +112,6 @@ void Bot::gamePlay(std::string user, std::string channel, std::string message, s
 		
 		room_game->setVitory("The Number is: " + convertToString(room_game->getResult()));
 	}
-
-	(void)message;
 }
 
 Game	*Bot::addGame(std::string room, int game, int time, int reward, int result)
@@ -116,7 +124,7 @@ Game	*Bot::addGame(std::string room, int game, int time, int reward, int result)
 		if (game == GUESS)
 			gameMessage = "Guess the Number! I'm thinking a number from 1 to 10! Using !game guess 1-10";
 		else if (game == JANKENPO)
-			gameMessage = "JanKenPo! Try too beat me! Using !game jankenpo rock/paper/scissors!";
+			gameMessage = "JanKenPo! Try too beat me! Using !game jankenpo rock/paper/scissor!";
 		debug("", BOT_GAME(gameMessage, convertToString(_games[room]->getTimeLimit())), "", room);
 	}
 

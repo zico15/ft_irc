@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:39:44 by rteles            #+#    #+#             */
-/*   Updated: 2023/04/03 17:30:32 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/04 23:32:13 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ class Bot
         void    	invite(std::string message);
 
         //Games
-        void        gamePlay(std::string user, std::string channel, std::string message, std::string game);
+        void        gamePlay(std::string user, std::string channel, std::string game);
         void	    gameTime(void);
         void	    rockPapperScissors(std::string nick, std::string choise, Game *game);
         void        guessNumber(std::string nick, std::string choise, Game *game);

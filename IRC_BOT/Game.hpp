@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 01:00:29 by rteles            #+#    #+#             */
-/*   Updated: 2023/03/30 16:08:03 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/06 15:12:42 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ class Game
     private:
         std::string                 _room;
         int                         _game;
-        clock_t                     _start;
         int                         _time;
         std::vector<std::string>    _winners;
         std::vector<std::string>    _draws;
@@ -36,7 +35,6 @@ class Game
         std::string                 getRoom(void) const{ return _room; }
         int                         getResult(void) const{ return _result; }
         int                         getReward(void) const{ return _reward; }
-        clock_t                     getStartTime(void) const{ return _start; }
         int                         getTimeLimit(void) const{ return _time; }
         std::vector<std::string>    getWinners(void) const{ return _winners; }
         std::vector<std::string>    getDraws(void) const{ return _draws; }

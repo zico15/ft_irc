@@ -6,7 +6,7 @@
 #    By: rteles <rteles@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/21 23:30:53 by rteles            #+#    #+#              #
-#    Updated: 2023/04/05 22:04:41 by rteles           ###   ########.fr        #
+#    Updated: 2023/04/06 15:15:50 by rteles           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ fclean: clean
 re: fclean all
 
 r: re
-	clear && ./$(NAME) localhost abc
+	clear && ./$(NAME) localhost 1234 abc
 
 m:
 	make fclean && clear
