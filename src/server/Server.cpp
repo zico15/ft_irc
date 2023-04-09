@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 22:13:51 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/09 13:11:34 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,6 @@ Server::Server(std::string hostname, int port, std::string password): _password(
    // on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
     on("TOPIC", &Channel::topic);
-
-
-
-
 }
 
 void Server::pass(Server *server, Client *client, std::string data)
@@ -74,10 +70,7 @@ void Server::pass(Server *server, Client *client, std::string data)
 void Server::quit(Server *server, Client *client, std::string data)
 {
     (void)data;
-    server->removeClient(client);
-    close(client->getFd());
-    server->setEvent(client->getIndexFd(), -1, 0, 0);
-    delete client;
+    server->deleteClient(client);
 }
 
 /*
@@ -191,6 +184,13 @@ void Server::connect()
 
 void Server::execute(Client *client, std::string event, std::string data)
 {
+    if (!client->isConnect() && event != "USER" && event != "NICK" && event != "PASS" && 
+    event != "WHO" && event !="CAP" && event != "PING" && event != "USERHOST")
+    {
+        deleteClient(client);
+        return ;
+    }
+    
 	function fun = _events[event];
 	if (!fun)  
         send(client, ERR_UNKNOWNERROR(data));
@@ -254,5 +254,18 @@ void Server::acceptNewConnection(Server *server, Client *client)
 
 Server::~Server()
 {
+    _is_run = false;
+    { 
+        std::map<int, Client *>::iterator it;
+        for (it = _clients.begin(); it != _clients.end(); it++){
+            deleteClient((*it).second);
+        }
+    }
+    {
+        std::map<std::string, Channel *>::iterator it;
+        for (it = _channels.begin(); it != _channels.end(); it++){
+            delete (*it).second;
+        }
+    }
     std::cout << "~Server\n";
 }

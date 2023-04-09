@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:54:58 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 20:19:31 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/09 13:08:33 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Socket
 		t_socket							*_fds;
 		std::map<std::string, function>		_events;
 		std::map<int, Client *>				_clients;
+		bool								_is_run;
 
 	public:
 		Socket();
@@ -86,6 +87,7 @@ class Socket
 		std::map<int, Client *> &getClients();
 		void					addClient(int fd, Client *client);
 		void					removeClient(Client *client);
+		void 					deleteClient(Client *client);
 		Client *				getClient(std::string nickname);
 
 };	

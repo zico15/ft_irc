@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 22:20:09 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/09 13:10:03 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "Util.hpp"
 #include "Client.hpp"
 #include <cerrno>
+#include <unistd.h>
 
 Socket::Socket(){}
 
@@ -52,6 +53,7 @@ void Socket::init(t_type type, std::string hostname, int port, size_t maxConnect
 	_size_clinets = 1;
 	_fds[0].fd = _fd;
   	_fds[0].events = POLLIN;	
+	_is_run = true;
 }
 
 
@@ -170,6 +172,14 @@ void Socket::removeClient(Client *client)
 	_clients.erase(client->getIndexFd());
 }
 
+void Socket::deleteClient(Client *client)
+{
+	removeClient(client);
+    close(client->getFd());
+    setEvent(client->getIndexFd(), -1, 0, 0);
+    delete client;
+}
+
 void Socket::addClient(int fd, Client *client)
 {
 	_clients[fd] = client;
@@ -177,12 +187,12 @@ void Socket::addClient(int fd, Client *client)
 
 void Socket::run()
 {
-    while (true)
+    while (_is_run)
     {
         try
         {
             int s = socketListen();
-            if(s <= 0)
+            if(s <= 0 || !_is_run)
                 continue ;
             for (int i = 0; i < getMaxConnecting(); i++)
         	{
