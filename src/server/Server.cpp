@@ -44,7 +44,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     on("JOIN", &Channel::join);
     on("PART", &Channel::leave);
     on("LIST", &Channel::list);
-   // on("MODE", &Channel::mode);
+    on("MODE", &Channel::mode);
     on("KICK", &Channel::kick);
     on("TOPIC", &Channel::topic);
 }
@@ -59,6 +59,7 @@ void Server::pass(Server *server, Client *client, std::string data)
     {
         server->send(client, ERR_PASSWDMISMATCH(client->getNickname()));
         Server::quit(server, client, "");
+        return ;
     }
     if (client->isValid())
         acceptNewConnection(server, client);
@@ -258,7 +259,9 @@ Server::~Server()
     { 
         std::map<int, Client *>::iterator it;
         for (it = _clients.begin(); it != _clients.end(); it++){
-            deleteClient((*it).second);
+            close((*it).second->getFd());
+            setEvent((*it).second->getIndexFd(), -1, 0, 0);
+            delete (*it).second;
         }
     }
     {

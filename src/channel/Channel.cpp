@@ -187,10 +187,14 @@ void Channel::who(Server *server, Client *client)
     }
 }
 
-/*void Channel::mode(Server *server, Client *client, std::string data)
+void Channel::mode(Server *server, Client *client, std::string data)
 {
     //server->send(client, ":teste MODE " + data + " " + client->getNickname());
-}*/
+    (void)server;
+    (void)client;
+    (void)data;
+    return ;
+}
 
 void Channel::kick(Server *server, Client *client, std::string data)
 {
