@@ -74,8 +74,10 @@ void Channel::join(Server *server, Client *client, std::string data)
 
     Channel *svChannel = server->getChannel(channelname);
     
-    if (!svChannel)
+    if (!svChannel) {
         svChannel = server->addChannel(channelname, channelpass);
+        svChannel->_op.push_back(client->getNickname());
+    }
     
     if (svChannel->isInTheChannel(client))
         return ;
@@ -97,6 +99,7 @@ void Channel::remove(Client *client){
         {
 
             _clients.erase(it);
+            rmOp(*it);
             std::cout << "Channel: " << _channel  << " remove client: " << client->getNickname() << std::endl;
             return ;
         }
@@ -145,6 +148,18 @@ bool Channel::isInTheChannel(Client *client)
     return false;
 }
 
+bool Channel::isOp(std::string nickname)
+{
+    std::vector<std::string>::iterator it;
+
+    for (it = _op.begin(); it != _op.end(); it++) {
+        if (nickname == (*it)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Channel::send(Server *server, Client *client, std::string message)
 {
     std::vector<Client *>::iterator it;
@@ -153,6 +168,17 @@ void Channel::send(Server *server, Client *client, std::string message)
     {
         if (client != *it)
             server->send((*it), message);
+    }
+}
+
+void Channel::rmOp(Client *client) {
+    std::vector<std::string>::iterator  it;
+
+    for (it = _op.begin(); it != _op.end(); it++) {
+        if ((*it) == client->getNickname()) {
+            (*it).erase();
+            return ;
+        }
     }
 }
 
@@ -193,6 +219,12 @@ void Channel::mode(Server *server, Client *client, std::string data)
     (void)server;
     (void)client;
     (void)data;
+    if (data.empty())
+        return ;
+    if (data.find("+o")) {
+        std::cout << "Channel operator added: " + data.substr(data.find("+") + 3) + "\n";
+        server->getChannel(data.substr(0, data.find(' ') - 1))->_op.push_back(data.substr(data.find("+") + 3));
+    }
     return ;
 }
 
@@ -208,7 +240,7 @@ void Channel::kick(Server *server, Client *client, std::string data)
     if (!channel || !channel->getClients().size())
         return ;
 
-    if (client->getNickname() != channel->getClients()[0]->getNickname())
+    if (!channel->isOp(client->getNickname()))
     {
         //:yourserver 482 clientnickname #public :You're not channel operator
         server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :You're not channel operator");
@@ -222,6 +254,11 @@ void Channel::kick(Server *server, Client *client, std::string data)
     std::vector<Client *>::iterator it;
     Client * banClient = NULL;
     
+    if (channel->isOp(nickban)) {
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :You cannot kick a channel Operator.");
+        return ;
+    }
+
     for (it = channel->getClients().begin(); it != channel->getClients().end(); ++it)
     {
         server->send((*it), ":" + (*it)->getNickname() + " KICK " + channelName + " " + nickban + " " + reasons);

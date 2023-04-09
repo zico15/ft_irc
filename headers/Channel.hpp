@@ -30,6 +30,7 @@ class Channel {
 		std::vector<Client *>				_clients;
 		std::vector<std::string>			_msg;
 		std::string							_topic;
+		std::vector<std::string>			_op;
 
 	public:	
 		Channel(std::string	channel);
@@ -45,7 +46,9 @@ class Channel {
 		void		setTopic(std::string topic);
 
 		bool 		isInTheChannel(Client *client);
+		bool		isOp(std::string nickname);
 		void 		send(Server *server, Client *client, std::string message);
+		void		rmOp(Client *client);
 		std::string nicksOnChannel(void);
 		
 		void 		who(Server *server, Client *client);
