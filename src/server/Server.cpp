@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/09 13:11:34 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/10 23:30:56 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,17 @@ void Server::pass(Server *server, Client *client, std::string data)
 void Server::quit(Server *server, Client *client, std::string data)
 {
     (void)data;
-    server->deleteClient(client);
+    (void)server;
+    
+    while (!client->getChannels().empty())
+    {
+        std::cout << client->getChannels().begin()->second->getName() << " :Konversation terminated!" << client->getNickname() << std::endl;
+        
+        client->getChannels().begin()->second->leave(server, client, client->getChannels().begin()->second->getName() + " :Konversation terminated!");
+       //client->getChannels().erase(client->getChannels().begin());
+    }
+    
+   // server->deleteClient(client);
 }
 
 /*

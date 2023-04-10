@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 20:52:24 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/10 23:37:13 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,23 +30,23 @@ class Channel {
 		std::vector<Client *>				_clients;
 		std::vector<std::string>			_msg;
 		std::string							_topic;
-		std::vector<std::string>			_op;
+		std::vector<Client *>				_op;
 
 	public:	
 		Channel(std::string	channel);
 		Channel(std::string	channel, std::string channelpass);
 		~Channel();
-		void add(Client *client, Server *server);
-		void remove(Client *client);
-		std::string getName();
+		void 				   add(Client *client, Server *server);
+		void 				  remove(Client *client);
+		std::string 		  getName();
 		std::vector<Client *> &getClients();
-		size_t getSize();
-		std::string getpass();
-		std::string	getTopic() const;
-		void		setTopic(std::string topic);
+		size_t 					getSize();
+		std::string 			getpass();
+		std::string				getTopic() const;
+		void					setTopic(std::string topic);
 
 		bool 		isInTheChannel(Client *client);
-		bool		isOp(std::string nickname);
+		bool		isOp(Client * client);
 		void 		send(Server *server, Client *client, std::string message);
 		void		rmOp(Client *client);
 		std::string nicksOnChannel(void);
