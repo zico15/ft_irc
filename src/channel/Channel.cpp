@@ -221,9 +221,13 @@ void Channel::mode(Server *server, Client *client, std::string data)
     (void)data;
     if (data.empty())
         return ;
-    if (data.find("+o")) {
-        std::cout << "Channel operator added: " + data.substr(data.find("+") + 3) + "\n";
-        server->getChannel(data.substr(0, data.find(' ') - 1))->_op.push_back(data.substr(data.find("+") + 3));
+    if (data.find("+o") != std::string::npos) {
+
+       std::string na =  data.substr(0, data.find(' '));
+        std::cout << " Channel: " <<   na << " operator added: " + data.substr(data.find("+") + 3) + "\n";
+        Channel *channel = server->getChannel(na);
+        if (channel)
+            channel->_op.push_back(data.substr(data.find("+") + 3));
     }
     return ;
 }
