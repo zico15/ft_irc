@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/11 17:21:48 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 19:28:54 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ void Channel::who(Server *server, Client *client)
         status = (*it)->isConnect() ? "H" : "*";
         
         message = RPL_WHOREPLY(client->getNickname(), this->_channel, (*it)->getNickname(), server->getHostName(), status, (*it)->getRealname());
-        std::cout << message << std::endl;
+        //std::cout << message << std::endl;
         server->send((*it), message);
     }
 }
@@ -317,7 +317,6 @@ void Channel::kick(Server *server, Client *client, std::string data)
 void Channel::topic(Server *server, Client *client, std::string data)
 {
     std::string     channelname = data.substr(0, data.find(' '));
-        std::cout << "Vai ser enviado um topic\n";
 
     Channel *channel = server->getChannel(channelname);
 
@@ -329,7 +328,6 @@ void Channel::topic(Server *server, Client *client, std::string data)
         server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelname + " :You're not channel operator");
         return ;
     }
-        std::cout << "Vai ser enviado um topic\n";
 
     if (data.find(":") == data.npos) {
         server->send(client, RPL_SYNTAXERROR("/TOPIC you have to add a channel topic as a parameter!"));

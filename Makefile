@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+         #
+#    By: rteles <rteles@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/21 23:30:53 by rteles            #+#    #+#              #
-#    Updated: 2023/04/09 12:38:18 by edos-san         ###   ########.fr        #
+#    Updated: 2023/04/11 19:06:22 by rteles           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OBJS		= $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(basename $(SRCS))))
 INCLUDES	= $(addprefix -I, $(shell find headers -type d))
 
 CXX			= c++
-CXXFLAGS	= -O0 -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
+CXXFLAGS	= -O0 -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
 RM			= rm -f
 
 all: $(NAME)

@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/11 17:22:26 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 19:27:53 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void Server::notice(Server *server, Client *client, std::string data)
     std::string target = data.substr(0, (data.find(" ")));
     std::string message = ":test NOTICE " + target;
     message += data.substr(data.find(" "), data.size());
-    std::cout << "O valor-------->" << message << "\n";
+    //std::cout << "O valor-------->" << message << "\n";
     if (server->getChannels()[target])
         server->getChannels()[target]->send(server, NULL, message);
     else if (server->getClient(target))
