@@ -18,7 +18,7 @@ OBJS		= $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(basename $(SRCS))))
 INCLUDES	= $(addprefix -I, $(shell find headers -type d))
 
 CXX			= c++
-CXXFLAGS	= -O0 -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
+CXXFLAGS	= -O0 -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
 RM			= rm -f
 
 all: $(NAME)

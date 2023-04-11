@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 22:09:25 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 17:21:48 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,10 @@ void Channel::join(Server *server, Client *client, std::string data)
 
     Channel *svChannel = server->getChannel(channelname);
     
-    if (!svChannel)
+    if (!svChannel) {
         svChannel = server->addChannel(channelname, channelpass);
+        svChannel->_op.push_back(client);
+    }
     
     if (svChannel->isInTheChannel(client))
         return ;
@@ -86,21 +88,23 @@ void Channel::join(Server *server, Client *client, std::string data)
         server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
 }
 
-void Channel::remove(Client *client){
+void Channel::remove(Server *server, Client *client){
     std::vector<Client *>::iterator it;
     
-    std::cout << " TES: " << " client: " << client->getNickname() << "\n";
+    //std::cout << " TES: " << " client: " << client->getNickname() << "\n";
     // Printing the Vector
     for (it = _clients.begin(); it != _clients.end(); ++it)
     {
         if (client == *it)
         {
-
+            rmOp(server, *it);
             _clients.erase(it);
             std::cout << "Channel: " << _channel  << " remove client: " << client->getNickname() << std::endl;
-            return ;
+            break ;
         }
     }
+    if (this->isOp(client))
+        this->rmOp(server, client);
 }
 
 std::string Channel::getName()
@@ -145,14 +149,49 @@ bool Channel::isInTheChannel(Client *client)
     return false;
 }
 
+bool Channel::isOp(Client * client)
+{
+    std::vector<Client *>::iterator it;
+
+    for (it = _op.begin(); it != _op.end(); it++) {
+        if (client == (*it)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Channel::send(Server *server, Client *client, std::string message)
 {
     std::vector<Client *>::iterator it;
     
     for (it = _clients.begin(); it < _clients.end(); ++it)
     {
-        if (client != *it)
-            server->send((*it), message);
+        if (!*it || client == (*it))
+            continue ;
+        server->send((*it), message);
+    }
+}
+
+void Channel::rmOp(Server *server, Client *client)
+{
+    std::vector<Client *>::iterator  it;
+
+    for (it = _op.begin(); it != _op.end(); it++)
+    {
+        if ((*it) == client)
+        {
+            _op.erase(it);
+            break; ;
+        }
+    }
+    if (_op.empty() && !this->getClients().empty())
+    {
+        Client *op = *this->getClients().begin();
+        this->_op.push_back(op);
+
+        std::string message = ":teste MODE " + this->getName() + " +o " + op->getNickname();
+        this->send(server, client, message);
     }
 }
 
@@ -191,8 +230,37 @@ void Channel::mode(Server *server, Client *client, std::string data)
 {
     //server->send(client, ":teste MODE " + data + " " + client->getNickname());
     (void)server;
-    (void)client;
     (void)data;
+    if (data.empty())
+        return ;
+    if (data.find("+o") != std::string::npos)
+    {
+        std::string channelName =  data.substr(0, data.find(' '));
+        Channel *channel = server->getChannel(channelName);
+        
+        if (!channel || !channel->isOp(client))
+            return ;
+        
+        std::string clientName = data.substr(data.find("+") + 3);
+        Client *clientOp = server->getClient(clientName);
+        if (!clientOp || !channel->isInTheChannel(clientOp))
+        {
+            server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :Client Not Found.");
+            return ; 
+        }
+        if (channel->isOp(clientOp))
+        {
+            server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :Is Already an Operator.");
+            return ; 
+        }
+
+       //std::cout << " Channel: " << channelName << " operator added: " + clientOp->getNickname() << std::endl;
+        
+        channel->_op.push_back(clientOp);
+
+        std::string message = ":teste MODE " + channel->getName() + " +o " + clientOp->getNickname();
+        channel->send(server, NULL, message);
+    }
     return ;
 }
 
@@ -208,7 +276,7 @@ void Channel::kick(Server *server, Client *client, std::string data)
     if (!channel || !channel->getClients().size())
         return ;
 
-    if (client->getNickname() != channel->getClients()[0]->getNickname())
+    if (!channel->isOp(client))
     {
         //:yourserver 482 clientnickname #public :You're not channel operator
         server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :You're not channel operator");
@@ -220,18 +288,30 @@ void Channel::kick(Server *server, Client *client, std::string data)
     std::string     reasons = data.substr(data.find(":"), data.size());
         
     std::vector<Client *>::iterator it;
-    Client * banClient = NULL;
     
+    Client *kickClient = server->getClient(nickban);
+    if (!kickClient || !channel->isInTheChannel(kickClient))
+    {
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :Client Not Found.");
+        return ; 
+    }
+    
+    if (channel->isOp(kickClient))
+    {
+        server->send(client, ":TESTE 482 " + client->getNickname() + " " + channelName + " :You cannot kick a channel Operator.");
+        return ;
+    }
+
     for (it = channel->getClients().begin(); it != channel->getClients().end(); ++it)
     {
         server->send((*it), ":" + (*it)->getNickname() + " KICK " + channelName + " " + nickban + " " + reasons);
         
         if (nickban == (*it)->getNickname())
-            banClient = *it;
+            kickClient = *it;
     }
     
-    if (banClient)
-        channel->remove(banClient);
+    if (kickClient)
+        channel->remove(server, kickClient);
 }
 
 void Channel::topic(Server *server, Client *client, std::string data)
@@ -281,8 +361,6 @@ void Channel::list(Server *server, Client *client, std::string data)
 /*leave [channel]     leave channel*/
 void Channel::leave(Server *server, Client *client, std::string data)
 {
-    std::cout << "\033[35mLEAVE: " << client->getNickname() << "\033[0m" << std::endl;
-
     if (data.empty())
     {
         server->send(client, MSG_COMMAND_INVALID);
@@ -295,9 +373,11 @@ void Channel::leave(Server *server, Client *client, std::string data)
     
     if (!channel || !channel->isInTheChannel(client)) //Is not in the channel or the channel dont exist
         return ;
+    
+    std::cout << "\033[35mLEAVE: " << client->getNickname() << " from " << channel->getName() << "\033[0m" << std::endl;
 
     channel->send(server, NULL, LEAVE_CHANNEL(canal, client));
-    
-    channel->remove(client);
+
+    channel->remove(server, client);
     client->removeChannel(channel);
 }
