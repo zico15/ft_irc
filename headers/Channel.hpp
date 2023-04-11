@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:32:55 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/10 23:37:13 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 17:03:56 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Channel {
 		Channel(std::string	channel, std::string channelpass);
 		~Channel();
 		void 				   add(Client *client, Server *server);
-		void 				  remove(Client *client);
+		void 				  remove(Server *server, Client *client);
 		std::string 		  getName();
 		std::vector<Client *> &getClients();
 		size_t 					getSize();
@@ -48,7 +48,7 @@ class Channel {
 		bool 		isInTheChannel(Client *client);
 		bool		isOp(Client * client);
 		void 		send(Server *server, Client *client, std::string message);
-		void		rmOp(Client *client);
+		void		rmOp(Server *server, Client *client);
 		std::string nicksOnChannel(void);
 		
 		void 		who(Server *server, Client *client);

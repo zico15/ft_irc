@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 12:46:22 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/10 23:38:36 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 17:21:48 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void Channel::join(Server *server, Client *client, std::string data)
         server->send(client, ERR_BADCHANNELKEY(client->getNickname(), channelname));
 }
 
-void Channel::remove(Client *client){
+void Channel::remove(Server *server, Client *client){
     std::vector<Client *>::iterator it;
     
     //std::cout << " TES: " << " client: " << client->getNickname() << "\n";
@@ -97,12 +97,14 @@ void Channel::remove(Client *client){
     {
         if (client == *it)
         {
-            rmOp(*it);
+            rmOp(server, *it);
             _clients.erase(it);
             std::cout << "Channel: " << _channel  << " remove client: " << client->getNickname() << std::endl;
-            return ;
+            break ;
         }
     }
+    if (this->isOp(client))
+        this->rmOp(server, client);
 }
 
 std::string Channel::getName()
@@ -171,7 +173,7 @@ void Channel::send(Server *server, Client *client, std::string message)
     }
 }
 
-void Channel::rmOp(Client *client)
+void Channel::rmOp(Server *server, Client *client)
 {
     std::vector<Client *>::iterator  it;
 
@@ -180,8 +182,16 @@ void Channel::rmOp(Client *client)
         if ((*it) == client)
         {
             _op.erase(it);
-            return ;
+            break; ;
         }
+    }
+    if (_op.empty() && !this->getClients().empty())
+    {
+        Client *op = *this->getClients().begin();
+        this->_op.push_back(op);
+
+        std::string message = ":teste MODE " + this->getName() + " +o " + op->getNickname();
+        this->send(server, client, message);
     }
 }
 
@@ -244,7 +254,7 @@ void Channel::mode(Server *server, Client *client, std::string data)
             return ; 
         }
 
-        std::cout << " Channel: " <<   channelName << " operator added: " + clientOp->getNickname() << std::endl;
+       //std::cout << " Channel: " << channelName << " operator added: " + clientOp->getNickname() << std::endl;
         
         channel->_op.push_back(clientOp);
 
@@ -301,7 +311,7 @@ void Channel::kick(Server *server, Client *client, std::string data)
     }
     
     if (kickClient)
-        channel->remove(kickClient);
+        channel->remove(server, kickClient);
 }
 
 void Channel::topic(Server *server, Client *client, std::string data)
@@ -366,13 +376,8 @@ void Channel::leave(Server *server, Client *client, std::string data)
     
     std::cout << "\033[35mLEAVE: " << client->getNickname() << " from " << channel->getName() << "\033[0m" << std::endl;
 
-    if (channel->isOp(client))
-        channel->rmOp(client);
-
-    std::cout << "aqui" << std::endl;
     channel->send(server, NULL, LEAVE_CHANNEL(canal, client));
-        std::cout << "aqui2" << std::endl;
 
-    channel->remove(client);
+    channel->remove(server, client);
     client->removeChannel(channel);
 }

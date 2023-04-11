@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/10 23:30:56 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 17:22:26 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,15 +73,23 @@ void Server::quit(Server *server, Client *client, std::string data)
     (void)data;
     (void)server;
     
+    Channel *channel = NULL; 
     while (!client->getChannels().empty())
     {
+        
+        channel = client->getChannels().begin()->second;
+        if (!channel)
+            continue ;
+            
         std::cout << client->getChannels().begin()->second->getName() << " :Konversation terminated!" << client->getNickname() << std::endl;
         
-        client->getChannels().begin()->second->leave(server, client, client->getChannels().begin()->second->getName() + " :Konversation terminated!");
-       //client->getChannels().erase(client->getChannels().begin());
+        channel->send(server, client, LEAVE_CHANNEL(channel->getName(), client));
+
+        channel->remove(server, client);
+        client->removeChannel(channel);
     }
     
-   // server->deleteClient(client);
+    server->deleteClient(client);
 }
 
 /*

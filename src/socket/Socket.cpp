@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/09 13:10:03 by edos-san         ###   ########.fr       */
+/*   Updated: 2023/04/11 16:46:16 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,11 @@ void	Socket::recive(int i)
 }
 
 void	Socket::emit(int i, const std::string &data)
-{ 
+{
 	send(_fds[i].fd, data.c_str(), data.length(), 0);
 	_fds[i].revents = 0;
 	_fds[i].events = POLLIN | POLLOUT | POLLHUP;
+
 }
 
 void	Socket::emitAll(const std::string &data)

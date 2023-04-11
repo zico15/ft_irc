@@ -6,7 +6,7 @@
 /*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/05 22:12:02 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/11 17:09:07 by rteles           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ Client::Client(int fd, int index, std::string hostname): _hostname(hostname)
 Client::~Client() 
 {
     //std::cout << MSG_CLOSE_CLIENT(_username, std::to_string(_fd));
-    std::map<std::string, Channel *>::iterator it;
-    
-    for (it = _channels.begin(); it != _channels.end(); it++)
-    {
-        it->second->remove(this);
-    }
+   // std::map<std::string, Channel *>::iterator it;
+   // 
+   // for (it = _channels.begin(); it != _channels.end(); it++)
+   // {
+   //     it->second->remove(this);
+   // }
     
 }
 
