@@ -63,3 +63,21 @@ bool isNumber(std::string str)
             return false;
     return true; 
 }
+
+// static char	*ft_convert_base(char *str, int n, char *base, int size_base)
+// {
+// 	if (n <= -10 || n >= 10)
+// 		str = ft_convert_base(str, (n / size_base), base, size_base);
+// 	*str++ = base[(n % size_base) * ((n > 0) - (n < 0))];
+// 	*str = 0;
+// 	return (str);
+// }
+
+// std::string ft_itoa(int n)
+// {
+// 	char	buff[12];
+
+// 	buff[0] = '-';
+// 	ft_convert_base(buff + (n < 0), n, "0123456789", 10);
+// 	return (buff);
+// }

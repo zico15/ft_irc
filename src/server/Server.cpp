@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:36:54 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/11 19:27:53 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/15 20:54:29 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 #include "Client.hpp"
 #include "Msg.hpp"
 #include "Util.hpp"
+#include <string>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
 
 Server::Server(){
     
@@ -26,7 +30,7 @@ Server::Server(std::string hostname, int port, std::string password): _password(
     init(SERVER, hostname, port, 200);
 
     //Server
-    on("PING", &Server::ping);
+    on("FD", &Server::fd);
     on("CAP", &Server::cap);
     on("WHO", &Server::who);
     on("PASS",  &Server::pass);
@@ -121,12 +125,11 @@ void Server::who(Server *server, Client *client, std::string data)
 }
 
 //The function in bellow will send the message: "PONG :data" read for information here: 4.6.3 Pong message
-void Server::ping(Server *server, Client *client, std::string data)
+void Server::fd(Server *server, Client *client, std::string data)
 {
-    std::string reply = ("PONG :" + data );
-
-    //std::cout << YELLOW "the following message will be sent to the client: ->\t\t" RED << reply + RESET << std::endl;
-    server->send(client, reply);
+    (void) data;
+   // std::string reply ="FD :" + ft_itoa(client->getFd());
+    server->send(client, "reply");
 }
 
 //https://ircv3.net/specs/core/capability-negotiation-3.1.html#available-capabilities
@@ -203,13 +206,7 @@ void Server::connect()
 
 void Server::execute(Client *client, std::string event, std::string data)
 {
-    if (!client->isConnect() && event != "USER" && event != "NICK" && event != "PASS" && 
-    event != "WHO" && event !="CAP" && event != "PING" && event != "USERHOST")
-    {
-        deleteClient(client);
-        return ;
-    }
-    
+
 	function fun = _events[event];
 	if (!fun)  
         send(client, ERR_UNKNOWNERROR(data));

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 22:40:38 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/11 17:09:07 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/15 20:53:39 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void Client::msgPrivate(Server *server, Client *client, std::string data)
         if (channel)
         {
             std::vector<Client *> clients = channel->getClients();
-            std::vector<Client *>::iterator it;
+          //  std::vector<Client *>::iterator it;
         
             if (channel->isInTheChannel(client) == false) //Client is not in the Server
                 return ;

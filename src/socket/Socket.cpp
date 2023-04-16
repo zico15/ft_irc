@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rteles <rteles@student.42.fr>              +#+  +:+       +#+        */
+/*   By: edos-san <edos-san@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 21:59:02 by edos-san          #+#    #+#             */
-/*   Updated: 2023/04/11 19:29:25 by rteles           ###   ########.fr       */
+/*   Updated: 2023/04/12 16:47:21 by edos-san         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void	Socket::recive(int i)
 	event = uppcase(value.substr(0, value.find_first_of(SPACES, 0)));
 	value = &value[event.size()];
 	value = trim(value);
-	//std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
+	std::cout << "event: " << event << std::endl << "value: " << value << std::endl;
 	execute(_clients[i], event,  value);
 	_fds[i].events = POLLIN | POLLHUP;
 	_fds[i].revents = 0;
